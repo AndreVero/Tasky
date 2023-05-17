@@ -11,7 +11,7 @@ interface Preferences {
     fun saveUser(user: User)
 
     companion object {
-        const val JWT_TOKEN = "TOKEN"
+        const val TOKEN = "TOKEN"
         const val FULL_NAME = "FULL_NAME"
     }
 }

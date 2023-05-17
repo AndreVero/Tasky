@@ -16,7 +16,7 @@ class PreferencesImpl @Inject constructor(
 
     override fun isLoggedIn() = getUser() != null
     override fun getUser(): User? {
-        val token = pref.getString(Preferences.JWT_TOKEN, null)
+        val token = pref.getString(Preferences.TOKEN, null)
         val fullName = pref.getString(Preferences.FULL_NAME, null)
         if (token != null && fullName != null)
             return User(token = token, fullName = fullName)
@@ -25,7 +25,7 @@ class PreferencesImpl @Inject constructor(
 
     override fun saveUser(user: User) {
         pref.edit {
-            putString(Preferences.JWT_TOKEN, user.token)
+            putString(Preferences.TOKEN, user.token)
             putString(Preferences.FULL_NAME, user.fullName)
             commit()
         }
