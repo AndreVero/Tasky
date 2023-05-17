@@ -1,14 +1,17 @@
 package com.vero.tasky.core.domain.local
 
+import com.vero.tasky.core.domain.model.User
+
 interface Preferences {
 
     fun isLoggedIn() : Boolean
 
-    fun getJwtToken() : String?
+    fun getUser(): User?
 
-    fun setJwtToken(token: String)
+    fun saveUser(user: User)
 
     companion object {
-        const val JWT_TOKEN = "JWT_TOKEN"
+        const val JWT_TOKEN = "TOKEN"
+        const val FULL_NAME = "FULL_NAME"
     }
 }

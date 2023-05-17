@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.core.content.edit
 import com.vero.tasky.core.domain.local.Preferences
+import com.vero.tasky.core.domain.model.User
 import javax.inject.Inject
 
 class PreferencesImpl @Inject constructor(
@@ -13,15 +14,19 @@ class PreferencesImpl @Inject constructor(
     private val pref = application.getSharedPreferences(
         "com.vero.tasky", Context.MODE_PRIVATE)
 
-    override fun isLoggedIn() = getJwtToken() != null
-
-    override fun getJwtToken(): String? {
-        return pref.getString(Preferences.JWT_TOKEN, null)
+    override fun isLoggedIn() = getUser() != null
+    override fun getUser(): User? {
+        val token = pref.getString(Preferences.JWT_TOKEN, null)
+        val fullName = pref.getString(Preferences.FULL_NAME, null)
+        if (token != null && fullName != null)
+            return User(token = token, fullName = fullName)
+        return null
     }
 
-    override fun setJwtToken(token: String) {
+    override fun saveUser(user: User) {
         pref.edit {
-            putString(Preferences.JWT_TOKEN, token)
+            putString(Preferences.JWT_TOKEN, user.token)
+            putString(Preferences.FULL_NAME, user.fullName)
             commit()
         }
     }
