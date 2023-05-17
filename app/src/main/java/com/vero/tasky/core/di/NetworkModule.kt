@@ -1,7 +1,7 @@
 package com.vero.tasky.core.di
 
 import com.vero.tasky.BuildConfig
-import com.vero.tasky.core.interceptors.ApiKeyHeaderInterceptor
+import com.vero.tasky.core.data.interceptors.ApiKeyHeaderInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,4 +40,6 @@ object NetworkModule {
             .callTimeout(60, TimeUnit.SECONDS)
             .build()
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.vero.tasky.core.interceptors
+package com.vero.tasky.core.data.interceptors
 
 import com.vero.tasky.BuildConfig
 import okhttp3.Interceptor
