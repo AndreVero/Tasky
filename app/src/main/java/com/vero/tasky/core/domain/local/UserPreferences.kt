@@ -2,7 +2,7 @@ package com.vero.tasky.core.domain.local
 
 import com.vero.tasky.core.domain.model.User
 
-interface Preferences {
+interface UserPreferences {
 
     fun isLoggedIn() : Boolean
 

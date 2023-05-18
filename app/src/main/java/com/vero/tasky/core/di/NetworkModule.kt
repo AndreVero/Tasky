@@ -40,6 +40,4 @@ object NetworkModule {
             .callTimeout(60, TimeUnit.SECONDS)
             .build()
     }
-
-
 }

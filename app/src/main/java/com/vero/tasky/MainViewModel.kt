@@ -2,7 +2,7 @@ package com.vero.tasky
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vero.tasky.core.domain.local.Preferences
+import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val preferences: Preferences
+    private val preferences: UserPreferences
 ): ViewModel() {
 
     private var _state = MutableStateFlow(MainState(

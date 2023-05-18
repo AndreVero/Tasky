@@ -1,9 +1,7 @@
 package com.vero.tasky.core.presentation.components
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,8 +14,7 @@ fun RootNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = if (isLoggedIn) Screens.Agenda.route else Screens.Login.route,
-        modifier = Modifier.fillMaxSize()
+        startDestination = if (isLoggedIn) Screens.Agenda.route else Screens.Login.route
     ) {
         composable(route = Screens.Agenda.route) {
             Text(text = "Agenda")

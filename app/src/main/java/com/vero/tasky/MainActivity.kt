@@ -22,11 +22,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val state = viewModel.state
-        val isLoggedIn = state.value.isLoggedIn
+        val state = viewModel.state.value
 
         installSplashScreen().apply {
-            setKeepOnScreenCondition { state.value.isLoading }
+            setKeepOnScreenCondition { viewModel.state.value.isLoading }
         }
 
         setContent {
@@ -36,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) { RootNavigation(
                         navController = rememberNavController(),
-                        isLoggedIn = isLoggedIn
+                        isLoggedIn = state.isLoggedIn
                     )
                 }
             }

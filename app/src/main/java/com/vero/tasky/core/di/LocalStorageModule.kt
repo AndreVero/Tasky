@@ -1,7 +1,7 @@
 package com.vero.tasky.core.di
 
-import com.vero.tasky.core.data.local.PreferencesImpl
-import com.vero.tasky.core.domain.local.Preferences
+import com.vero.tasky.core.data.local.UserPreferencesImpl
+import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ abstract class LocalStorageModule {
     @Binds
     @Singleton
     abstract fun bindPreferences(
-        preferencesImpl: PreferencesImpl
-    ) : Preferences
+        preferencesImpl: UserPreferencesImpl
+    ) : UserPreferences
 
 }
