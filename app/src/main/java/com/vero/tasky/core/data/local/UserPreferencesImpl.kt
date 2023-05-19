@@ -36,7 +36,7 @@ class UserPreferencesImpl @Inject constructor(
         pref.edit {
             putString(UserPreferences.TOKEN, user.token)
             putString(UserPreferences.FULL_NAME, user.fullName)
-            commit()
+            apply()
         }
     }
 }
