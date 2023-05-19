@@ -16,7 +16,7 @@ class UserPreferencesImpl @Inject constructor(
     private val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
     private val pref = EncryptedSharedPreferences.create(
-        "com.vero.tasky1",
+        "com.vero.tasky",
         masterKey,
         context,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
@@ -27,8 +27,9 @@ class UserPreferencesImpl @Inject constructor(
     override fun getUser(): User? {
         val token = pref.getString(UserPreferences.TOKEN, null)
         val fullName = pref.getString(UserPreferences.FULL_NAME, null)
-        if (token != null && fullName != null)
-            return User(token = token, fullName = fullName)
+        val userId = pref.getString(UserPreferences.USER_ID, null)
+        if (token != null && fullName != null && userId != null)
+            return User(token = token, fullName = fullName, userId = userId)
         return null
     }
 
@@ -36,6 +37,7 @@ class UserPreferencesImpl @Inject constructor(
         pref.edit {
             putString(UserPreferences.TOKEN, user.token)
             putString(UserPreferences.FULL_NAME, user.fullName)
+            putString(UserPreferences.USER_ID, user.userId)
             apply()
         }
     }

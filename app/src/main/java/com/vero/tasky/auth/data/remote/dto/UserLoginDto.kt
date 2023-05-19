@@ -1,4 +1,4 @@
-package com.vero.tasky.auth.data.dto
+package com.vero.tasky.auth.data.remote.dto
 
 import com.squareup.moshi.JsonClass
 import com.vero.tasky.core.domain.model.User
@@ -13,6 +13,7 @@ data class UserLoginDto(
 fun UserLoginDto.toUser() : User {
     return User(
         fullName = fullName,
-        token = token
+        token = token,
+        userId = userId
     )
 }

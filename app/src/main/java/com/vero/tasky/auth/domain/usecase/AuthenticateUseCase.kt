@@ -1,9 +1,9 @@
-package com.vero.tasky.auth.domain.use_case
+package com.vero.tasky.auth.domain.usecase
 
 import com.vero.tasky.auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
-class Authenticate @Inject constructor(
+class AuthenticateUseCase @Inject constructor(
     private val authRepository: AuthRepository) {
 
     suspend operator fun invoke() : Result<Unit> {

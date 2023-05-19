@@ -1,6 +1,6 @@
 package com.vero.tasky.auth.di
 
-import com.vero.tasky.auth.data.network.AuthApi
+import com.vero.tasky.auth.data.remote.AuthApi
 import com.vero.tasky.auth.data.repository.AuthRepositoryImpl
 import com.vero.tasky.auth.domain.repository.AuthRepository
 import dagger.Module
