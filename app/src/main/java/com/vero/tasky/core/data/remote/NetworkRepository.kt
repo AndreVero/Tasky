@@ -2,7 +2,7 @@ package com.vero.tasky.core.data.remote
 
 import java.util.concurrent.CancellationException
 
-open class NetworkRepository {
+object ApiCallHandler {
 
     suspend fun <T> safeApiCall(call : suspend () -> T): Result<T> {
         return try {

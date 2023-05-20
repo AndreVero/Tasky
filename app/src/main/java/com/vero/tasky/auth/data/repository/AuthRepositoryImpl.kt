@@ -5,12 +5,12 @@ import com.vero.tasky.auth.data.remote.AuthApi
 import com.vero.tasky.auth.data.remote.request.LoginRequest
 import com.vero.tasky.auth.data.remote.request.RegisterRequest
 import com.vero.tasky.auth.domain.repository.AuthRepository
-import com.vero.tasky.core.data.remote.NetworkRepository
+import com.vero.tasky.core.data.remote.ApiCallHandler.safeApiCall
 import com.vero.tasky.core.domain.model.User
 
 class AuthRepositoryImpl(
     private val api : AuthApi
-) : NetworkRepository(), AuthRepository{
+) : AuthRepository{
 
     override suspend fun register(
         email: String,
