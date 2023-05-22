@@ -1,9 +1,8 @@
 package com.vero.tasky.auth.domain.usecase
 
 import com.vero.tasky.auth.domain.repository.AuthRepository
-import javax.inject.Inject
 
-class RegisterUseCase @Inject constructor(
+class RegisterUseCase (
     private val authRepository: AuthRepository
 ) {
 

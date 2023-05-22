@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Tasky</string>
+    <string name="passwrod_is_too_short">Password is too short!</string>
+    <string name="password_is_not_secure">Password should contain a digit, lowercase, and uppercase!</string>
+    <string name="login_title">Welcome Back!</string>
+    <string name="email_hint">Email address</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log in</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign up</string>
 </resources>
