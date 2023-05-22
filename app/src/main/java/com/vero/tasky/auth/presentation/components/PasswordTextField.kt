@@ -24,10 +24,10 @@ fun PasswordTextField(
     hintRes: Int,
     text: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isPasswordVisible: Boolean,
+    onPasswordVisibilityUpdate: () -> Unit
 ) {
-
-    var showPassword by remember { mutableStateOf(false) }
 
     TextField(
         value = text,
@@ -39,16 +39,15 @@ fun PasswordTextField(
             )
         },
         textStyle = MaterialTheme.typography.body1,
-
         singleLine = true,
-        visualTransformation = if (showPassword) {
+        visualTransformation = if (isPasswordVisible) {
             VisualTransformation.None
         } else {
             PasswordVisualTransformation()
         },
         trailingIcon = {
-            if (showPassword) {
-                IconButton(onClick = { showPassword = false }) {
+            if (!isPasswordVisible) {
+                IconButton(onClick = onPasswordVisibilityUpdate) {
                     Icon(
                         imageVector = Icons.Default.Visibility,
                         tint = MaterialTheme.colors.onTextFieldIcon,
@@ -56,7 +55,7 @@ fun PasswordTextField(
                     )
                 }
             } else {
-                IconButton(onClick = { showPassword = true }) {
+                IconButton(onClick = onPasswordVisibilityUpdate) {
                     Icon(
                         imageVector = Icons.Filled.VisibilityOff,
                         tint = MaterialTheme.colors.onTextFieldIcon,

@@ -39,7 +39,7 @@ fun VerifiableTextField(
                Icon(
                    imageVector = Icons.Default.Check,
                    contentDescription = "Field is valid",
-                   tint = MaterialTheme.colors.primary
+                   tint = MaterialTheme.colors.secondary
                )
        },
        colors = TextFieldDefaults.textFieldColors(
