@@ -1,5 +1,6 @@
 package com.vero.tasky.auth.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +13,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BaseAuthScreen(
-    titleRes: Int,
+    @StringRes titleRes: Int,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {

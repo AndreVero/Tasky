@@ -10,15 +10,15 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
-import com.vero.tasky.core.presentation.components.RootNavigation
+import com.vero.tasky.core.presentation.components.LocalScaffoldState
+import com.vero.tasky.core.presentation.navigation.RootNavigation
 import com.vero.tasky.ui.theme.TaskyTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,34 +36,30 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TaskyTheme {
-                val scaffoldState = rememberScaffoldState()
-                val coroutineScope = rememberCoroutineScope()
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    scaffoldState = scaffoldState,
-                    snackbarHost = {
-                        SnackbarHost(it) { data ->
-                            Snackbar(
-                                backgroundColor = Color.Red,
-                                snackbarData = data,
-                                contentColor = Color.White
-                            )
-                        }
-                    },
-                ) { paddingValues -> RootNavigation(
-                        navController = rememberNavController(),
-                        isLoggedIn = state.isLoggedIn,
-                        showError = { error ->
-                            coroutineScope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(
-                                    message = getString(error.message),
+                CompositionLocalProvider(
+                    LocalScaffoldState provides rememberScaffoldState()
+                ) {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        scaffoldState = LocalScaffoldState.current,
+                        snackbarHost = {
+                            SnackbarHost(it) { data ->
+                                Snackbar(
+                                    backgroundColor = Color.Red,
+                                    snackbarData = data,
+                                    contentColor = Color.White
                                 )
                             }
                         },
+                    ) { paddingValues -> RootNavigation(
+                        navController = rememberNavController(),
+                        isLoggedIn = state.isLoggedIn,
                         modifier = Modifier.padding(paddingValues)
                     )
+                    }
                 }
+
             }
         }
     }

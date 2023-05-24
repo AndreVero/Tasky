@@ -1,17 +1,16 @@
 package com.vero.tasky.auth.presentation.login
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.LoginUseCases
 import com.vero.tasky.auth.domain.usecase.password.PasswordValidationResult
 import com.vero.tasky.core.domain.local.UserPreferences
-import com.vero.tasky.core.presentation.ErrorType
-import com.vero.tasky.core.presentation.UIEvent
-import com.vero.tasky.core.presentation.navigation.Screens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -32,7 +31,7 @@ class LoginViewModel @Inject constructor(
     )
         private set
 
-    private val channel = Channel<UIEvent>()
+    private val channel = Channel<UiLoginEvent>()
     val uiEvent = channel.receiveAsFlow()
 
     fun onEvent(event: LoginEvent) {
@@ -50,11 +49,6 @@ class LoginViewModel @Inject constructor(
                     password = event.password
                 ))
             }
-            LoginEvent.OnPasswordVisibilityUpdate -> {
-                updateState(state.copy(
-                    isPasswordVisible = !state.isPasswordVisible
-                ))
-            }
             LoginEvent.SignUp -> signUp()
         }
     }
@@ -70,27 +64,27 @@ class LoginViewModel @Inject constructor(
                         password = password
                     ).onSuccess { user ->
                         userPreferences.saveUser(user)
-                        channel.send(UIEvent.NavigateTo(Screens.Agenda.route))
+                        channel.send(UiLoginEvent.OnLogIn)
                     }.onFailure {
                         updateState(state.copy(isLoading = false))
-                        showError(ErrorType.NetworkErrorOnLogin)
+                        showError(R.string.network_error_on_login)
                     }
                 }
             }
-            PasswordValidationResult.TOO_SHORT -> { showError(ErrorType.PasswordIsTooShow) }
-            PasswordValidationResult.NOT_SECURE -> { showError(ErrorType.PasswordIsNotSecure) }
+            PasswordValidationResult.TOO_SHORT -> { showError(R.string.password_is_too_short) }
+            PasswordValidationResult.NOT_SECURE -> { showError(R.string.password_is_not_secure) }
         }
     }
 
-    private fun showError(errorType: ErrorType) {
+    private fun showError(@StringRes message: Int) {
         viewModelScope.launch {
-            channel.send(UIEvent.ShowErrorMessage(errorType))
+            channel.send(UiLoginEvent.ShowErrorMessage(message))
         }
     }
 
     private fun signUp() {
         viewModelScope.launch {
-            channel.send(UIEvent.NavigateTo(route = Screens.SignUp.route))
+            channel.send(UiLoginEvent.OnSignUp)
         }
     }
     private fun updateState(newState: LoginState) {

@@ -1,5 +1,6 @@
 package com.vero.tasky.auth.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -21,13 +22,13 @@ import com.vero.tasky.ui.theme.textFieldBackground
 
 @Composable
 fun PasswordTextField(
-    hintRes: Int,
+    @StringRes hintRes: Int,
     text: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    isPasswordVisible: Boolean,
-    onPasswordVisibilityUpdate: () -> Unit
 ) {
+
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     TextField(
         value = text,
@@ -47,7 +48,7 @@ fun PasswordTextField(
         },
         trailingIcon = {
             if (!isPasswordVisible) {
-                IconButton(onClick = onPasswordVisibilityUpdate) {
+                IconButton(onClick = { isPasswordVisible = true } ) {
                     Icon(
                         imageVector = Icons.Default.Visibility,
                         tint = MaterialTheme.colors.onTextFieldIcon,
@@ -55,7 +56,7 @@ fun PasswordTextField(
                     )
                 }
             } else {
-                IconButton(onClick = onPasswordVisibilityUpdate) {
+                IconButton(onClick = { isPasswordVisible = false }) {
                     Icon(
                         imageVector = Icons.Filled.VisibilityOff,
                         tint = MaterialTheme.colors.onTextFieldIcon,
