@@ -6,32 +6,45 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vero.tasky.R
 import com.vero.tasky.auth.presentation.components.BaseAuthScreen
 import com.vero.tasky.auth.presentation.components.PasswordTextField
-import com.vero.tasky.core.presentation.ErrorType
-import com.vero.tasky.core.presentation.UIEvent
 import com.vero.tasky.core.presentation.components.LoadingTextButton
+import com.vero.tasky.core.presentation.components.LocalScaffoldState
 import com.vero.tasky.core.presentation.components.VerifiableTextField
 import com.vero.tasky.ui.theme.bottomText
 import com.vero.tasky.ui.theme.bottomTextAccent
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    navigateTo: (route: String) -> Unit,
-    showError: (errorType: ErrorType) -> Unit,
+    onSignUp: () -> Unit,
+    onLogIn: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val scaffoldState = LocalScaffoldState.current
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect {event ->
             when (event) {
-                is UIEvent.NavigateTo -> navigateTo(event.route)
-                is UIEvent.ShowErrorMessage -> showError(event.error)
+                UiLoginEvent.OnLogIn -> onLogIn()
+                UiLoginEvent.OnSignUp -> onSignUp()
+                is UiLoginEvent.ShowErrorMessage -> {
+                    coroutineScope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(event.message),
+                        )
+                    }
+                }
             }
         }
     }
@@ -56,10 +69,6 @@ fun LoginScreen(
                 onValueChange = {
                         password -> viewModel.onEvent(LoginEvent.OnPasswordUpdated(password))
                 },
-                isPasswordVisible = state.isPasswordVisible,
-                onPasswordVisibilityUpdate = {
-                    viewModel.onEvent(LoginEvent.OnPasswordVisibilityUpdate)
-                }
             )
             Spacer(modifier = Modifier.height(25.dp))
             LoadingTextButton(

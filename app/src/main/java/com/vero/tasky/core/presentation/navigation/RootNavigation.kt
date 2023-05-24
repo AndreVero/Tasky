@@ -1,4 +1,4 @@
-package com.vero.tasky.core.presentation.components
+package com.vero.tasky.core.presentation.navigation
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -7,14 +7,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.vero.tasky.auth.presentation.login.LoginScreen
-import com.vero.tasky.core.presentation.ErrorType
-import com.vero.tasky.core.presentation.navigation.Screens
 
 @Composable
 fun RootNavigation(
     navController: NavHostController,
     isLoggedIn: Boolean,
-    showError: (errorType: ErrorType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -30,8 +27,8 @@ fun RootNavigation(
         }
         composable(route = Screens.Login.route) {
             LoginScreen(
-                navigateTo = { route -> navController.navigate(route) },
-                showError = { error -> showError(error) }
+                onSignUp = { navController.navigate(Screens.SignUp.route) },
+                onLogIn = { navController.navigate(Screens.Agenda.route) }
             )
         }
     }

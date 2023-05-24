@@ -18,7 +18,7 @@ import retrofit2.Retrofit
 
 @Module
 @InstallIn(ViewModelComponent::class)
-object AuthNetworkModule {
+object AuthModule {
 
     @Provides
     @ViewModelScoped

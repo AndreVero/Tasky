@@ -1,5 +1,6 @@
 package com.vero.tasky.core.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -13,7 +14,7 @@ import com.vero.tasky.ui.theme.buttonText
 
 @Composable
 fun LoadingTextButton(
-    textRes: Int,
+    @StringRes textRes: Int,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     onClick : () -> Unit

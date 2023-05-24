@@ -1,5 +1,6 @@
 package com.vero.tasky.core.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -18,7 +19,7 @@ import com.vero.tasky.ui.theme.textFieldBackground
 @Composable
 fun VerifiableTextField(
     isValid: Boolean,
-    hintRes: Int,
+    @StringRes hintRes: Int,
     text: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier

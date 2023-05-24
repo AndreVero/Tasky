@@ -1,5 +1,6 @@
 package com.vero.tasky.core.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -11,7 +12,7 @@ import androidx.compose.ui.text.TextStyle
 @Composable
 fun ProgressBarText(
     isLoading: Boolean,
-    textRes: Int,
+    @StringRes textRes: Int,
     textStyle: TextStyle,
     modifier: Modifier = Modifier,
     allCaps: Boolean = true,
