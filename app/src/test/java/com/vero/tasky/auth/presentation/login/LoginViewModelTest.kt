@@ -7,6 +7,7 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.vero.tasky.auth.data.MainCoroutineRule
 import com.vero.tasky.auth.data.repository.AuthRepositoryFake
+import com.vero.tasky.auth.domain.repository.AuthRepository
 import com.vero.tasky.auth.domain.usecase.LoginUseCase
 import com.vero.tasky.auth.domain.usecase.LoginUseCases
 import com.vero.tasky.auth.domain.usecase.ValidateEmailUseCase
@@ -25,9 +26,16 @@ class LoginViewModelTest {
     val coroutineRule = MainCoroutineRule()
 
     private lateinit var viewModel: LoginViewModel
+    private lateinit var authRepository: AuthRepository
+
+    companion object {
+        private const val VALID_PASSWORD = "1234QWertyu"
+        private const val TOO_SHORT_PASSWORD = ""
+    }
 
     @Before
     fun setUp() {
+        authRepository = AuthRepositoryFake()
         viewModel = LoginViewModel(
             savedStateHandle = SavedStateHandle(
                 initialState = mapOf(
@@ -35,17 +43,19 @@ class LoginViewModelTest {
                         isLoading = false,
                         isPasswordVisible = false ,
                         isEmailValid = true,
-                        password = "123",
-                        emailAddress = "123"
+                        password = VALID_PASSWORD,
+                        emailAddress = "test@gmail.com"
                     )
                 )
             ),
             userPreferences = mockk(relaxed = true),
             loginUseCases = LoginUseCases(
                 validatePasswordUseCase = mockk(relaxed = true) {
-                    every { invoke(password = any()) } returns PasswordValidationResult.SUCCESS },
+                    every { invoke(password = VALID_PASSWORD) } returns PasswordValidationResult.SUCCESS
+                    every { invoke(password = TOO_SHORT_PASSWORD) } returns PasswordValidationResult.TOO_SHORT
+                                                                },
                 validateEmailUseCase = ValidateEmailUseCase(emailMatcher = mockk(relaxed = true)),
-                loginUseCase = LoginUseCase(AuthRepositoryFake())
+                loginUseCase = LoginUseCase(authRepository)
             )
         )
     }
@@ -56,6 +66,47 @@ class LoginViewModelTest {
         viewModel.uiEvent.test {
             val item = awaitItem()
             assertThat(item).isEqualTo(UiLoginEvent.OnLogIn)
+        }
+    }
+
+    @Test
+    fun `Login, email isn't valid, return error`() = runTest {
+        viewModel.onEvent(LoginEvent.OnEmailUpdated(""))
+        viewModel.onEvent(LoginEvent.LogIn)
+        viewModel.uiEvent.test {
+            val item = awaitItem()
+            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
+        }
+    }
+
+    @Test
+    fun `Login, password isn't valid, return error`() = runTest {
+        viewModel.onEvent(LoginEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
+        viewModel.onEvent(LoginEvent.LogIn)
+        viewModel.uiEvent.test {
+            val item = awaitItem()
+            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
+        }
+    }
+
+    @Test
+    fun `Login, email and password aren't valid, return error`() = runTest {
+        viewModel.onEvent(LoginEvent.OnEmailUpdated(""))
+        viewModel.onEvent(LoginEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
+        viewModel.onEvent(LoginEvent.LogIn)
+        viewModel.uiEvent.test {
+            val item = awaitItem()
+            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
+        }
+    }
+
+    @Test
+    fun `Login, failure response from repository, return error`() = runTest {
+        (authRepository as AuthRepositoryFake).resultLogin = Result.failure(Throwable("Test"))
+        viewModel.onEvent(LoginEvent.LogIn)
+        viewModel.uiEvent.test {
+            val item = awaitItem()
+            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
         }
     }
 }

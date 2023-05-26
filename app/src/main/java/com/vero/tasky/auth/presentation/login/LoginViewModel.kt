@@ -36,7 +36,7 @@ class LoginViewModel @Inject constructor(
 
     fun onEvent(event: LoginEvent) {
         when(event) {
-            LoginEvent.LogIn -> if (state.isEmailValid) logIn()
+            LoginEvent.LogIn -> logIn()
             is LoginEvent.OnEmailUpdated -> {
                 val email = event.email
                 updateState(state.copy(
@@ -54,25 +54,39 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun logIn() {
-        val password = state.password
-        when (loginUseCases.validatePasswordUseCase(password)) {
-            PasswordValidationResult.SUCCESS -> {
-                updateState(state.copy(isLoading = true))
-                viewModelScope.launch {
-                    loginUseCases.loginUseCase(
-                        email = state.emailAddress,
-                        password = password
-                    ).onSuccess { user ->
-                        userPreferences.saveUser(user)
-                        channel.send(UiLoginEvent.OnLogIn)
-                    }.onFailure {
-                        updateState(state.copy(isLoading = false))
-                        showError(R.string.network_error_on_login)
+        if (state.isEmailValid) {
+            val password = state.password
+            when (loginUseCases.validatePasswordUseCase(password)) {
+                PasswordValidationResult.SUCCESS -> {
+                    updateState(state.copy(isLoading = true))
+                    viewModelScope.launch {
+                        loginUseCases.loginUseCase(
+                            email = state.emailAddress,
+                            password = password
+                        ).onSuccess { user ->
+                            userPreferences.saveUser(user)
+                            channel.send(UiLoginEvent.OnLogIn)
+                        }.onFailure {
+                            updateState(state.copy(isLoading = false))
+                            showError(R.string.network_error_on_login)
+                        }
                     }
                 }
+                PasswordValidationResult.TOO_SHORT -> {
+                    showError(R.string.password_is_too_short)
+                }
+                PasswordValidationResult.NO_UPPERCASE -> {
+                    showError(R.string.password_is_not_secure_uppercase)
+                }
+                PasswordValidationResult.NO_DIGIT -> {
+                    showError(R.string.password_is_not_secure_digit)
+                }
+                PasswordValidationResult.NO_LOWERCASE -> {
+                    showError(R.string.password_is_not_secure_lowercase)
+                }
             }
-            PasswordValidationResult.TOO_SHORT -> { showError(R.string.password_is_too_short) }
-            PasswordValidationResult.NOT_SECURE -> { showError(R.string.password_is_not_secure) }
+        } else {
+            showError(R.string.password_is_not_secure_lowercase)
         }
     }
 
