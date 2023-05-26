@@ -86,7 +86,7 @@ class LoginViewModel @Inject constructor(
                 }
             }
         } else {
-            showError(R.string.password_is_not_secure_lowercase)
+            showError(R.string.email_not_valid)
         }
     }
 
