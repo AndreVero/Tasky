@@ -9,7 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.LoginUseCases
-import com.vero.tasky.auth.domain.usecase.password.PasswordValidationResult
+import com.vero.tasky.auth.util.EmailErrorHandler
+import com.vero.tasky.auth.util.PasswordErrorHandler
 import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -54,39 +55,34 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun logIn() {
-        if (state.isEmailValid) {
-            val password = state.password
-            when (loginUseCases.validatePasswordUseCase(password)) {
-                PasswordValidationResult.SUCCESS -> {
-                    updateState(state.copy(isLoading = true))
-                    viewModelScope.launch {
-                        loginUseCases.loginUseCase(
-                            email = state.emailAddress,
-                            password = password
-                        ).onSuccess { user ->
-                            userPreferences.saveUser(user)
-                            channel.send(UiLoginEvent.OnLogIn)
-                        }.onFailure {
-                            updateState(state.copy(isLoading = false))
-                            showError(R.string.network_error_on_login)
-                        }
-                    }
-                }
-                PasswordValidationResult.TOO_SHORT -> {
-                    showError(R.string.password_is_too_short)
-                }
-                PasswordValidationResult.NO_UPPERCASE -> {
-                    showError(R.string.password_is_not_secure_uppercase)
-                }
-                PasswordValidationResult.NO_DIGIT -> {
-                    showError(R.string.password_is_not_secure_digit)
-                }
-                PasswordValidationResult.NO_LOWERCASE -> {
-                    showError(R.string.password_is_not_secure_lowercase)
-                }
+        EmailErrorHandler.validateEmail(
+            isEmailValid = state.isEmailValid,
+            onEmailIsValid = ::onEmailIsValid,
+            showError = ::showError
+        )
+    }
+
+    private fun onEmailIsValid() {
+        PasswordErrorHandler.onPasswordValid(
+            passwordValidationResult = loginUseCases.validatePasswordUseCase(state.password),
+            onPasswordIsValid = ::onPasswordIsValid,
+            showError = ::showError
+        )
+    }
+
+    private fun onPasswordIsValid() {
+        updateState(state.copy(isLoading = true))
+        viewModelScope.launch {
+            loginUseCases.loginUseCase(
+                email = state.emailAddress,
+                password = state.password
+            ).onSuccess { user ->
+                userPreferences.saveUser(user)
+                channel.send(UiLoginEvent.OnLogIn)
+            }.onFailure {
+                updateState(state.copy(isLoading = false))
+                showError(R.string.network_error_on_login)
             }
-        } else {
-            showError(R.string.email_not_valid)
         }
     }
 

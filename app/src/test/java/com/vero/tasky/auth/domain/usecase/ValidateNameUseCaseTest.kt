@@ -13,10 +13,11 @@ class ValidateNameUseCaseTest {
     }
 
     @Test fun `Validate name, too long name, result false`() {
-        val longStr = StringBuilder()
-        for (i in 0..51)
-            longStr.append(i)
-        val result = validateNameUseCase.invoke(longStr.toString())
+        val longStr = buildString {
+            repeat(51) { append(it) }
+
+        }
+        val result = validateNameUseCase.invoke(longStr)
         assertThat(result).isFalse()
     }
 

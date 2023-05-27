@@ -5,9 +5,7 @@ import com.vero.tasky.auth.data.remote.AuthApi
 import com.vero.tasky.auth.data.repository.AuthRepositoryImpl
 import com.vero.tasky.auth.domain.matcher.EmailMatcher
 import com.vero.tasky.auth.domain.repository.AuthRepository
-import com.vero.tasky.auth.domain.usecase.LoginUseCase
-import com.vero.tasky.auth.domain.usecase.LoginUseCases
-import com.vero.tasky.auth.domain.usecase.ValidateEmailUseCase
+import com.vero.tasky.auth.domain.usecase.*
 import com.vero.tasky.auth.domain.usecase.password.ValidatePasswordUseCase
 import dagger.Module
 import dagger.Provides
@@ -51,4 +49,17 @@ object AuthModule {
         )
     }
 
+    @Provides
+    @ViewModelScoped
+    fun provideRegisterUseCases(
+        emailMatcher: EmailMatcher,
+        authRepository: AuthRepository,
+    ) : RegistrationUseCases {
+        return RegistrationUseCases(
+            validateEmailUseCase = ValidateEmailUseCase(emailMatcher),
+            validatePasswordUseCase = ValidatePasswordUseCase(),
+            validateNameUseCase = ValidateNameUseCase(),
+            registerUseCase = RegisterUseCase(authRepository)
+        )
+    }
 }
