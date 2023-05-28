@@ -9,8 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.LoginUseCases
-import com.vero.tasky.auth.util.EmailErrorHandler
-import com.vero.tasky.auth.util.PasswordErrorHandler
+import com.vero.tasky.auth.util.PasswordValidator
 import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -37,7 +36,7 @@ class LoginViewModel @Inject constructor(
 
     fun onEvent(event: LoginEvent) {
         when(event) {
-            LoginEvent.LogIn -> logIn()
+            LoginEvent.LogIn -> validateUserInfo()
             is LoginEvent.OnEmailUpdated -> {
                 val email = event.email
                 updateState(state.copy(
@@ -54,23 +53,27 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun validateUserInfo() {
+        if (state.isEmailValid) {
+            validatePassword()
+        } else {
+            showError(R.string.email_not_valid)
+        }
+    }
+
+    private fun validatePassword() {
+        val result = PasswordValidator.validatePassword(
+            passwordValidationResult = loginUseCases.validatePasswordUseCase(state.password)
+        )
+
+        if (result.isValid) {
+            logIn()
+        } else {
+            result.error?.let { showError(it) }
+        }
+    }
+
     private fun logIn() {
-        EmailErrorHandler.validateEmail(
-            isEmailValid = state.isEmailValid,
-            onEmailIsValid = ::onEmailIsValid,
-            showError = ::showError
-        )
-    }
-
-    private fun onEmailIsValid() {
-        PasswordErrorHandler.onPasswordValid(
-            passwordValidationResult = loginUseCases.validatePasswordUseCase(state.password),
-            onPasswordIsValid = ::onPasswordIsValid,
-            showError = ::showError
-        )
-    }
-
-    private fun onPasswordIsValid() {
         updateState(state.copy(isLoading = true))
         viewModelScope.launch {
             loginUseCases.loginUseCase(

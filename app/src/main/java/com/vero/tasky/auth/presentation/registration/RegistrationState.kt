@@ -9,6 +9,6 @@ data class RegistrationState(
     val name: String = "",
     val isNameValid: Boolean = false,
     val password: String = "",
-    val email: String = "",
+    val emailAddress: String = "",
     val isEmailValid: Boolean = false,
 ) : Parcelable

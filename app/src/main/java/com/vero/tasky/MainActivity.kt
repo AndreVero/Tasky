@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
-import com.vero.tasky.core.presentation.components.LocalScaffoldState
+import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
 import com.vero.tasky.core.presentation.navigation.RootNavigation
 import com.vero.tasky.ui.theme.TaskyTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,15 +36,22 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TaskyTheme {
-
+                val localSnackbarHostState = LocalSnackbarHostState.current
                 CompositionLocalProvider(
-                    LocalScaffoldState provides rememberScaffoldState()
+                    LocalSnackbarHostState provides localSnackbarHostState
                 ) {
+                    val errorMessage = viewModel.errorMessage
+                    LaunchedEffect(errorMessage, localSnackbarHostState) {
+                        if (errorMessage == null)
+                            return@LaunchedEffect
+                        else
+                            localSnackbarHostState.showSnackbar(getString(errorMessage))
+                        viewModel.onMessageErrorSeen()
+                    }
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
-                        scaffoldState = LocalScaffoldState.current,
                         snackbarHost = {
-                            SnackbarHost(it) { data ->
+                            SnackbarHost(hostState = LocalSnackbarHostState.current) { data ->
                                 Snackbar(
                                     backgroundColor = Color.Red,
                                     snackbarData = data,
@@ -59,7 +66,6 @@ class MainActivity : ComponentActivity() {
                     )
                     }
                 }
-
             }
         }
     }

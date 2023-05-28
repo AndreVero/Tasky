@@ -9,8 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.RegistrationUseCases
-import com.vero.tasky.auth.util.EmailErrorHandler
-import com.vero.tasky.auth.util.PasswordErrorHandler
+import com.vero.tasky.auth.util.PasswordValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -35,16 +34,11 @@ class RegistrationViewModel @Inject constructor(
 
     fun onEvent(event: RegistrationEvent) {
         when(event) {
-            RegistrationEvent.OnBackPressed -> {
-                viewModelScope.launch {
-                    channel.send(UiRegistrationEvent.OnBackPressed)
-                }
-            }
             is RegistrationEvent.OnEmailUpdated -> {
                 val email = event.email
                 updateState(
                     state.copy(
-                        email = email,
+                        emailAddress = email,
                         isEmailValid = registrationUseCases.validateEmailUseCase(email)
                     )
                 )
@@ -63,35 +57,43 @@ class RegistrationViewModel @Inject constructor(
                     state.copy(password = event.password)
                 )
             }
-            RegistrationEvent.SignUp -> signUp()
+            RegistrationEvent.SignUp -> validateUserInfo()
         }
     }
 
-    private fun signUp() {
+    private fun validateUserInfo() {
         if (state.isNameValid) {
-            EmailErrorHandler.validateEmail(
-                isEmailValid = state.isEmailValid,
-                onEmailIsValid = ::onEmailIsValid,
-                showError = ::showError
-            )
+            validateEmail()
         } else {
             showError(R.string.name_not_valid)
         }
     }
 
-    private fun onEmailIsValid() {
-        PasswordErrorHandler.onPasswordValid(
-            passwordValidationResult = registrationUseCases.validatePasswordUseCase(state.password),
-            onPasswordIsValid = ::onPasswordIsValid,
-            showError = ::showError
-        )
+    private fun validateEmail() {
+        if (state.isEmailValid) {
+            validatePassword()
+        } else {
+            showError(R.string.email_not_valid)
+        }
     }
 
-    private fun onPasswordIsValid() {
+    private fun validatePassword() {
+        val result = PasswordValidator.validatePassword(
+            passwordValidationResult = registrationUseCases.validatePasswordUseCase(state.password)
+        )
+
+        if (result.isValid) {
+            signUp()
+        } else {
+            result.error?.let { showError(it) }
+        }
+    }
+
+    private fun signUp() {
         updateState(state.copy(isLoading = true))
         viewModelScope.launch {
             registrationUseCases.registerUseCase(
-                email = state.email,
+                email = state.emailAddress,
                 password = state.password,
                 fullName = state.name,
             )

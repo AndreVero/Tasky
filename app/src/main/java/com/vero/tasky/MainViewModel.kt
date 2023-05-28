@@ -1,18 +1,23 @@
 package com.vero.tasky
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vero.tasky.auth.domain.usecase.AuthenticateUseCase
 import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val preferences: UserPreferences
+    private val preferences: UserPreferences,
+    private val authenticateUseCase: AuthenticateUseCase
 ): ViewModel() {
 
     private var _state = MutableStateFlow(MainState(
@@ -20,13 +25,36 @@ class MainViewModel @Inject constructor(
     ))
     val state = _state.asStateFlow()
 
+    var errorMessage by mutableStateOf<Int?>(null)
+        private set
+
+    fun onMessageErrorSeen() {
+        errorMessage = null
+    }
+
     init {
         viewModelScope.launch {
-            if (!_state.value.isLoggedIn) {
-                // imitates /authenticate network request
-                delay(2000)
+            if (_state.value.isLoggedIn) {
+                validateToken()
+            } else {
+                _state.value = _state.value.copy(isLoading = false)
             }
-            _state.value = _state.value.copy(isLoading = false)
         }
+    }
+
+    private suspend fun validateToken() {
+        authenticateUseCase()
+            .onSuccess {
+                _state.value = _state.value.copy(isLoading = false)
+            }
+            .onFailure { error ->
+                if (error is HttpException && error.code() == 401) {
+                    preferences.clear()
+                    _state.value = _state.value.copy(isLoading = false, isLoggedIn = false)
+                    errorMessage = R.string.token_expired
+                } else {
+                    errorMessage = R.string.network_error_on_authenticate
+                }
+            }
     }
 }

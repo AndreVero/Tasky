@@ -41,4 +41,10 @@ class UserPreferencesImpl @Inject constructor(
             apply()
         }
     }
+
+    override fun clear() {
+        pref.edit {
+            clear()
+        }
+    }
 }
