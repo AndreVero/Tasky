@@ -17,7 +17,7 @@ import com.vero.tasky.R
 import com.vero.tasky.auth.presentation.components.BaseAuthScreen
 import com.vero.tasky.auth.presentation.components.PasswordTextField
 import com.vero.tasky.core.presentation.components.LoadingTextButton
-import com.vero.tasky.core.presentation.components.LocalScaffoldState
+import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
 import com.vero.tasky.core.presentation.components.VerifiableTextField
 import com.vero.tasky.ui.theme.bottomText
 import com.vero.tasky.ui.theme.bottomTextAccent
@@ -30,8 +30,8 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = LocalScaffoldState.current
     val context = LocalContext.current
+    val snackbarHostState = LocalSnackbarHostState.current
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect {event ->
@@ -40,7 +40,7 @@ fun LoginScreen(
                 UiLoginEvent.OnSignUp -> onSignUp()
                 is UiLoginEvent.ShowErrorMessage -> {
                     coroutineScope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(
+                        snackbarHostState.showSnackbar(
                             message = context.getString(event.message),
                         )
                     }

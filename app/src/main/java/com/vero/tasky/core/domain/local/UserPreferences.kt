@@ -10,6 +10,8 @@ interface UserPreferences {
 
     fun saveUser(user: User)
 
+    fun clear()
+
     companion object {
         const val TOKEN = "TOKEN"
         const val FULL_NAME = "FULL_NAME"

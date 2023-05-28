@@ -7,11 +7,16 @@
     <string name="email_not_valid">Email address isn\'t valid!</string>
     <string name="name_not_valid">The name should be in the range of 4 and 51 symbols</string>
     <string name="login_title">Welcome Back!</string>
+    <string name="sign_up_title">Create your account</string>
     <string name="email_hint">Email address</string>
+    <string name="name_hint">Name</string>
     <string name="password">Password</string>
     <string name="log_in">Log in</string>
+    <string name="get_started">Get started</string>
     <string name="dont_have_account">Don\'t have an account?</string>
     <string name="sign_up">Sign up</string>
     <string name="network_error_on_login">Something went wrong, please try again later!</string>
+    <string name="network_error_on_authenticate">Something went wrong, please try again later!</string>
     <string name="network_error_on_registration">Something went wrong, please try again later!</string>
+    <string name="token_expired">Token expired, please log in!</string>
 </resources>
