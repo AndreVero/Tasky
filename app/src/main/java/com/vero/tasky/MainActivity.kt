@@ -44,9 +44,10 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(errorMessage, localSnackbarHostState) {
                         if (errorMessage == null)
                             return@LaunchedEffect
-                        else
+                        else {
                             localSnackbarHostState.showSnackbar(getString(errorMessage))
-                        viewModel.onMessageErrorSeen()
+                            viewModel.onMessageErrorSeen()
+                        }
                     }
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
