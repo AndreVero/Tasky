@@ -1,7 +1,8 @@
 package com.vero.tasky.core.presentation.components
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -26,13 +27,18 @@ fun LoadingTextButton(
             backgroundColor = MaterialTheme.colors.buttonBackground,
             contentColor = MaterialTheme.colors.buttonText
         ),
-        modifier = modifier
+        contentPadding = PaddingValues(
+            top = 12.dp,
+            bottom = 12.dp,
+            start = 8.dp,
+            end = 8.dp
+        ),
+        modifier = modifier.height(55.dp)
     ) {
         ProgressBarText(
             isLoading = isLoading,
             textRes = textRes,
             textStyle = MaterialTheme.typography.h3,
-            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
         )
     }
 }

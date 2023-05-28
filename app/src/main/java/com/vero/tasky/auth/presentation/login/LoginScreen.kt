@@ -73,7 +73,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(25.dp))
             LoadingTextButton(
                 textRes = R.string.log_in,
-                isLoading = false,
+                isLoading = state.isLoading,
                 onClick = { viewModel.onEvent(LoginEvent.LogIn) },
                 modifier = Modifier.fillMaxWidth()
             )

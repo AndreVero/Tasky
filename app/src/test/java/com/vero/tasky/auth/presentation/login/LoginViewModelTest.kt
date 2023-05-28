@@ -41,7 +41,6 @@ class LoginViewModelTest {
                 initialState = mapOf(
                     "state" to LoginState(
                         isLoading = false,
-                        isPasswordVisible = false ,
                         isEmailValid = true,
                         password = VALID_PASSWORD,
                         emailAddress = "test@gmail.com"
