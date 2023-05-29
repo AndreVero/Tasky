@@ -9,7 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.LoginUseCases
-import com.vero.tasky.auth.util.PasswordValidator
+import com.vero.tasky.auth.util.PasswordErrorParser
+import com.vero.tasky.auth.util.PasswordParsedResult
 import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -62,14 +63,12 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun validatePassword() {
-        val result = PasswordValidator.validatePassword(
-            passwordValidationResult = loginUseCases.validatePasswordUseCase(state.password)
-        )
+        val validationResult = loginUseCases.validatePasswordUseCase(state.password)
+        val parsedResult = PasswordErrorParser.parse(validationResult)
 
-        if (result.isValid) {
-            logIn()
-        } else {
-            result.error?.let { showError(it) }
+        when (parsedResult) {
+            is PasswordParsedResult.Invalid -> showError(parsedResult.error)
+            PasswordParsedResult.Valid -> logIn()
         }
     }
 

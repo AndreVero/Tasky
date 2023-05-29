@@ -1,15 +1,14 @@
 package com.vero.tasky
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.auth.domain.usecase.AuthenticateUseCase
 import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -25,12 +24,8 @@ class MainViewModel @Inject constructor(
     ))
     val state = _state.asStateFlow()
 
-    var errorMessage by mutableStateOf<Int?>(null)
-        private set
-
-    fun onMessageErrorSeen() {
-        errorMessage = null
-    }
+    private val channel = Channel<Int>()
+    val uiEvent = channel.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -51,9 +46,9 @@ class MainViewModel @Inject constructor(
                 if (error is HttpException && error.code() == 401) {
                     preferences.clear()
                     _state.value = _state.value.copy(isLoading = false, isLoggedIn = false)
-                    errorMessage = R.string.token_expired
+                    channel.send(R.string.token_expired)
                 } else {
-                    errorMessage = R.string.network_error_on_authenticate
+                    channel.send(R.string.network_error_on_authenticate)
                 }
             }
     }

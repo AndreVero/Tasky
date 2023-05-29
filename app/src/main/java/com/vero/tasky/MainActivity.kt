@@ -40,15 +40,13 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalSnackbarHostState provides localSnackbarHostState
                 ) {
-                    val errorMessage = viewModel.errorMessage
-                    LaunchedEffect(errorMessage, localSnackbarHostState) {
-                        if (errorMessage == null)
-                            return@LaunchedEffect
-                        else {
+
+                    LaunchedEffect(true) {
+                        viewModel.uiEvent.collect {errorMessage ->
                             localSnackbarHostState.showSnackbar(getString(errorMessage))
-                            viewModel.onMessageErrorSeen()
                         }
                     }
+
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         snackbarHost = {
