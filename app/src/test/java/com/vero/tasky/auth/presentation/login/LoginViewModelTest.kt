@@ -5,6 +5,7 @@ package com.vero.tasky.auth.presentation.login
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.vero.tasky.R
 import com.vero.tasky.auth.data.MainCoroutineRule
 import com.vero.tasky.auth.data.repository.AuthRepositoryFake
 import com.vero.tasky.auth.domain.repository.AuthRepository
@@ -74,7 +75,8 @@ class LoginViewModelTest {
         viewModel.onEvent(LoginEvent.LogIn)
         viewModel.uiEvent.test {
             val item = awaitItem()
-            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
+            assertThat((item as UiLoginEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.email_not_valid)
         }
     }
 
@@ -84,7 +86,8 @@ class LoginViewModelTest {
         viewModel.onEvent(LoginEvent.LogIn)
         viewModel.uiEvent.test {
             val item = awaitItem()
-            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
+            assertThat((item as UiLoginEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.password_is_too_short)
         }
     }
 
@@ -94,8 +97,12 @@ class LoginViewModelTest {
         viewModel.onEvent(LoginEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
         viewModel.onEvent(LoginEvent.LogIn)
         viewModel.uiEvent.test {
-            val item = awaitItem()
-            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
+            val emailItem = awaitItem()
+            assertThat((emailItem as UiLoginEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.email_not_valid)
+            val passwordItem = awaitItem()
+            assertThat((passwordItem as UiLoginEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.password_is_too_short)
         }
     }
 
@@ -105,7 +112,8 @@ class LoginViewModelTest {
         viewModel.onEvent(LoginEvent.LogIn)
         viewModel.uiEvent.test {
             val item = awaitItem()
-            assertThat(item).isInstanceOf(UiLoginEvent.ShowErrorMessage::class.java)
+            assertThat((item as UiLoginEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.network_error_on_login)
         }
     }
 }
