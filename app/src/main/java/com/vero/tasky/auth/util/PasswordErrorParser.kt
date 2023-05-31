@@ -7,22 +7,22 @@ object PasswordErrorParser {
 
     fun parse(
         passwordValidationResult: PasswordValidationResult,
-    ) : PasswordParsedResult {
+    ) : ValidationResult {
         return when (passwordValidationResult) {
             PasswordValidationResult.SUCCESS -> {
-                PasswordParsedResult.Valid
+                ValidationResult.Valid
             }
             PasswordValidationResult.TOO_SHORT -> {
-                PasswordParsedResult.Invalid(error = R.string.password_is_too_short)
+                ValidationResult.Invalid(error = R.string.password_is_too_short)
             }
             PasswordValidationResult.NO_UPPERCASE -> {
-                PasswordParsedResult.Invalid(error = R.string.password_is_not_secure_uppercase)
+                ValidationResult.Invalid(error = R.string.password_is_not_secure_uppercase)
             }
             PasswordValidationResult.NO_DIGIT -> {
-                PasswordParsedResult.Invalid(error = R.string.password_is_too_short)
+                ValidationResult.Invalid(error = R.string.password_is_too_short)
             }
             PasswordValidationResult.NO_LOWERCASE -> {
-                PasswordParsedResult.Invalid(error = R.string.password_is_not_secure_lowercase)
+                ValidationResult.Invalid(error = R.string.password_is_not_secure_lowercase)
             }
         }
     }

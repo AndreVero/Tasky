@@ -14,6 +14,7 @@ import com.vero.tasky.auth.domain.usecase.ValidateEmailUseCase
 import com.vero.tasky.auth.domain.usecase.password.PasswordValidationResult
 import io.mockk.every
 import io.mockk.mockk
+import com.vero.tasky.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -83,7 +84,8 @@ class RegistrationViewModelTest {
         viewModel.onEvent(RegistrationEvent.SignUp)
         viewModel.uiEvent.test {
             val item = awaitItem()
-            Truth.assertThat(item).isInstanceOf(UiRegistrationEvent.ShowErrorMessage::class.java)
+            Truth.assertThat((item as UiRegistrationEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.email_not_valid)
         }
     }
 
@@ -93,7 +95,8 @@ class RegistrationViewModelTest {
         viewModel.onEvent(RegistrationEvent.SignUp)
         viewModel.uiEvent.test {
             val item = awaitItem()
-            Truth.assertThat(item).isInstanceOf(UiRegistrationEvent.ShowErrorMessage::class.java)
+            Truth.assertThat((item as UiRegistrationEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.name_not_valid)
         }
     }
 
@@ -103,7 +106,8 @@ class RegistrationViewModelTest {
         viewModel.onEvent(RegistrationEvent.SignUp)
         viewModel.uiEvent.test {
             val item = awaitItem()
-            Truth.assertThat(item).isInstanceOf(UiRegistrationEvent.ShowErrorMessage::class.java)
+            Truth.assertThat((item as UiRegistrationEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.password_is_too_short)
         }
     }
 
@@ -114,8 +118,15 @@ class RegistrationViewModelTest {
         viewModel.onEvent(RegistrationEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
         viewModel.onEvent(RegistrationEvent.SignUp)
         viewModel.uiEvent.test {
-            val item = awaitItem()
-            Truth.assertThat(item).isInstanceOf(UiRegistrationEvent.ShowErrorMessage::class.java)
+            val nameItem = awaitItem()
+            Truth.assertThat((nameItem as UiRegistrationEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.name_not_valid)
+            val emailItem = awaitItem()
+            Truth.assertThat((emailItem as UiRegistrationEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.email_not_valid)
+            val passwordItem = awaitItem()
+            Truth.assertThat((passwordItem as UiRegistrationEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.password_is_too_short)
         }
     }
 
@@ -123,9 +134,11 @@ class RegistrationViewModelTest {
     fun `Register, failure response from repository, return error`() = runTest {
         (authRepository as AuthRepositoryFake).resultRegister = Result.failure(Throwable("Test"))
         viewModel.onEvent(RegistrationEvent.SignUp)
+
         viewModel.uiEvent.test {
             val item = awaitItem()
-            Truth.assertThat(item).isInstanceOf(UiRegistrationEvent.ShowErrorMessage::class.java)
+            Truth.assertThat((item as UiRegistrationEvent.ShowErrorMessage).message)
+                .isEqualTo(R.string.network_error_on_registration)
         }
     }
 }

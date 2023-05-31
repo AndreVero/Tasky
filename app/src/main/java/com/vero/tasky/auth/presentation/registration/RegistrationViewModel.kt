@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.RegistrationUseCases
 import com.vero.tasky.auth.util.PasswordErrorParser
-import com.vero.tasky.auth.util.PasswordParsedResult
+import com.vero.tasky.auth.util.ValidationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -58,49 +58,59 @@ class RegistrationViewModel @Inject constructor(
                     state.copy(password = event.password)
                 )
             }
-            RegistrationEvent.SignUp -> validateUserInfo()
-        }
-    }
-
-    private fun validateUserInfo() {
-        if (state.isNameValid) {
-            validateEmail()
-        } else {
-            showError(R.string.name_not_valid)
-        }
-    }
-
-    private fun validateEmail() {
-        if (state.isEmailValid) {
-            validatePassword()
-        } else {
-            showError(R.string.email_not_valid)
-        }
-    }
-
-    private fun validatePassword() {
-        val validationResult = registrationUseCases.validatePasswordUseCase(state.password)
-        val parsedResult = PasswordErrorParser.parse(validationResult)
-
-        when(parsedResult) {
-            is PasswordParsedResult.Invalid -> showError(parsedResult.error)
-            PasswordParsedResult.Valid -> signUp()
+            RegistrationEvent.SignUp -> signUp()
         }
     }
 
     private fun signUp() {
-        updateState(state.copy(isLoading = true))
-        viewModelScope.launch {
-            registrationUseCases.registerUseCase(
-                email = state.emailAddress,
-                password = state.password,
-                fullName = state.name,
-            )
-                .onSuccess { channel.send(UiRegistrationEvent.OnSignUp) }
-                .onFailure {
-                    updateState(state.copy(isLoading = false))
-                    showError(R.string.network_error_on_login)
-                }
+        val isNameValid = isNameValid()
+        val isEmailValid = isEmailValid()
+        val isPasswordValid = isPasswordValid()
+
+        if (isEmailValid && isNameValid && isPasswordValid) {
+            updateState(state.copy(isLoading = true))
+            viewModelScope.launch {
+                registrationUseCases.registerUseCase(
+                    email = state.emailAddress,
+                    password = state.password,
+                    fullName = state.name,
+                )
+                    .onSuccess { channel.send(UiRegistrationEvent.OnSignUp) }
+                    .onFailure {
+                        updateState(state.copy(isLoading = false))
+                        showError(R.string.network_error_on_registration)
+                    }
+            }
+        }
+    }
+    private fun isNameValid() : Boolean {
+        return if (state.isNameValid) {
+            true
+        } else {
+            showError(R.string.name_not_valid)
+            false
+        }
+    }
+
+    private fun isEmailValid() : Boolean {
+        return if (state.isEmailValid) {
+            true
+        } else {
+            showError(R.string.email_not_valid)
+            false
+        }
+    }
+
+    private fun isPasswordValid() : Boolean {
+        val validationResult = registrationUseCases.validatePasswordUseCase(state.password)
+        val parsedResult = PasswordErrorParser.parse(validationResult)
+
+        return when(parsedResult) {
+            is ValidationResult.Invalid -> {
+                showError(parsedResult.error)
+                return false
+            }
+            ValidationResult.Valid -> true
         }
     }
 
