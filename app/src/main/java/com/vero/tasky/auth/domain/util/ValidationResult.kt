@@ -1,4 +1,4 @@
-package com.vero.tasky.auth.util
+package com.vero.tasky.auth.domain.util
 
 import androidx.annotation.StringRes
 

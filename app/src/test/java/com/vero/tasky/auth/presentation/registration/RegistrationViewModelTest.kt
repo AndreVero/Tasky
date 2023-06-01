@@ -82,33 +82,21 @@ class RegistrationViewModelTest {
     fun `Register, email isn't valid, return error`() = runTest {
         viewModel.onEvent(RegistrationEvent.OnEmailUpdated(""))
         viewModel.onEvent(RegistrationEvent.SignUp)
-        viewModel.uiEvent.test {
-            val item = awaitItem()
-            Truth.assertThat((item as UiRegistrationEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.email_not_valid)
-        }
+        Truth.assertThat(viewModel.state.isErrorEmail).isTrue()
     }
 
     @Test
     fun `Register, name isn't valid, return error`() = runTest {
         viewModel.onEvent(RegistrationEvent.OnNameUpdated(TOO_SHORT_NAME))
         viewModel.onEvent(RegistrationEvent.SignUp)
-        viewModel.uiEvent.test {
-            val item = awaitItem()
-            Truth.assertThat((item as UiRegistrationEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.name_not_valid)
-        }
+        Truth.assertThat(viewModel.state.isErrorName).isTrue()
     }
 
     @Test
     fun `Register, password isn't valid, return error`() = runTest {
         viewModel.onEvent(RegistrationEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
         viewModel.onEvent(RegistrationEvent.SignUp)
-        viewModel.uiEvent.test {
-            val item = awaitItem()
-            Truth.assertThat((item as UiRegistrationEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.password_is_too_short)
-        }
+        Truth.assertThat(viewModel.state.isErrorPassword).isTrue()
     }
 
     @Test
@@ -117,17 +105,9 @@ class RegistrationViewModelTest {
         viewModel.onEvent(RegistrationEvent.OnNameUpdated(TOO_SHORT_NAME))
         viewModel.onEvent(RegistrationEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
         viewModel.onEvent(RegistrationEvent.SignUp)
-        viewModel.uiEvent.test {
-            val nameItem = awaitItem()
-            Truth.assertThat((nameItem as UiRegistrationEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.name_not_valid)
-            val emailItem = awaitItem()
-            Truth.assertThat((emailItem as UiRegistrationEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.email_not_valid)
-            val passwordItem = awaitItem()
-            Truth.assertThat((passwordItem as UiRegistrationEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.password_is_too_short)
-        }
+        Truth.assertThat(viewModel.state.isErrorEmail).isTrue()
+        Truth.assertThat(viewModel.state.isErrorPassword).isTrue()
+        Truth.assertThat(viewModel.state.isErrorName).isTrue()
     }
 
     @Test

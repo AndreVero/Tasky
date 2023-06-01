@@ -1,4 +1,4 @@
-package com.vero.tasky.auth.util
+package com.vero.tasky.auth.domain.util
 
 import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.password.PasswordValidationResult
@@ -19,7 +19,7 @@ object PasswordErrorParser {
                 ValidationResult.Invalid(error = R.string.password_is_not_secure_uppercase)
             }
             PasswordValidationResult.NO_DIGIT -> {
-                ValidationResult.Invalid(error = R.string.password_is_too_short)
+                ValidationResult.Invalid(error = R.string.password_is_not_secure_digit)
             }
             PasswordValidationResult.NO_LOWERCASE -> {
                 ValidationResult.Invalid(error = R.string.password_is_not_secure_lowercase)

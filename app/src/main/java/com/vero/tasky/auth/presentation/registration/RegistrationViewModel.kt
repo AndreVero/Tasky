@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.auth.domain.usecase.RegistrationUseCases
-import com.vero.tasky.auth.util.PasswordErrorParser
-import com.vero.tasky.auth.util.ValidationResult
+import com.vero.tasky.auth.domain.util.PasswordErrorParser
+import com.vero.tasky.auth.domain.util.ValidationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -40,7 +40,9 @@ class RegistrationViewModel @Inject constructor(
                 updateState(
                     state.copy(
                         emailAddress = email,
-                        isEmailValid = registrationUseCases.validateEmailUseCase(email)
+                        isEmailValid = registrationUseCases.validateEmailUseCase(email),
+                        isErrorEmail = false,
+                        emailLabel = R.string.email_hint
                     )
                 )
             }
@@ -49,13 +51,19 @@ class RegistrationViewModel @Inject constructor(
                 updateState(
                     state.copy(
                         name = name,
-                        isNameValid = registrationUseCases.validateNameUseCase(name)
+                        isNameValid = registrationUseCases.validateNameUseCase(name),
+                        isErrorName = false,
+                        nameLabel = R.string.name_hint,
                     )
                 )
             }
             is RegistrationEvent.OnPasswordUpdated -> {
                 updateState(
-                    state.copy(password = event.password)
+                    state.copy(
+                        password = event.password,
+                        isErrorPassword = false,
+                        passwordLabel = R.string.password
+                    )
                 )
             }
             RegistrationEvent.SignUp -> signUp()
@@ -63,11 +71,9 @@ class RegistrationViewModel @Inject constructor(
     }
 
     private fun signUp() {
-        val isNameValid = isNameValid()
-        val isEmailValid = isEmailValid()
-        val isPasswordValid = isPasswordValid()
+        val validationResult = isPasswordValid()
 
-        if (isEmailValid && isNameValid && isPasswordValid) {
+        if (state.isEmailValid && validationResult is ValidationResult.Valid && state.isNameValid) {
             updateState(state.copy(isLoading = true))
             viewModelScope.launch {
                 registrationUseCases.registerUseCase(
@@ -81,37 +87,38 @@ class RegistrationViewModel @Inject constructor(
                         showError(R.string.network_error_on_registration)
                     }
             }
-        }
-    }
-    private fun isNameValid() : Boolean {
-        return if (state.isNameValid) {
-            true
         } else {
-            showError(R.string.name_not_valid)
-            false
+            showTextFieldsErrors(validationResult)
         }
     }
 
-    private fun isEmailValid() : Boolean {
-        return if (state.isEmailValid) {
-            true
-        } else {
-            showError(R.string.email_not_valid)
-            false
-        }
-    }
-
-    private fun isPasswordValid() : Boolean {
-        val validationResult = registrationUseCases.validatePasswordUseCase(state.password)
-        val parsedResult = PasswordErrorParser.parse(validationResult)
-
-        return when(parsedResult) {
+    private fun showTextFieldsErrors(validationResult: ValidationResult) {
+        when (validationResult) {
+            ValidationResult.Valid -> Unit
             is ValidationResult.Invalid -> {
-                showError(parsedResult.error)
-                return false
+                updateState(state.copy(
+                    isErrorPassword = true,
+                    passwordLabel = validationResult.error)
+                )
             }
-            ValidationResult.Valid -> true
         }
+        if (!state.isEmailValid) {
+            updateState(state.copy(
+                isErrorEmail = true,
+                emailLabel = R.string.email_not_valid)
+            )
+        }
+        if (!state.isNameValid) {
+            updateState(state.copy(
+                isErrorName = true,
+                nameLabel = R.string.name_not_valid)
+            )
+        }
+    }
+
+    private fun isPasswordValid() : ValidationResult {
+        val validationResult = registrationUseCases.validatePasswordUseCase(state.password)
+        return PasswordErrorParser.parse(validationResult)
     }
 
     private fun showError(@StringRes message: Int) {

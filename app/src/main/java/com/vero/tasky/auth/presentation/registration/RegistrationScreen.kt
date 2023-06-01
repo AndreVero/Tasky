@@ -57,28 +57,31 @@ fun RegistrationScreen(
         Column {
             VerifiableTextField(
                 isValid = state.isNameValid,
-                hintRes = R.string.name_hint,
+                label = state.nameLabel,
                 text = state.name,
                 onValueChange = {
                         email -> viewModel.onEvent(RegistrationEvent.OnNameUpdated(email))
-                }
+                },
+                isError = state.isErrorName
             )
             Spacer(modifier = Modifier.height(16.dp))
             VerifiableTextField(
                 isValid = state.isEmailValid,
-                hintRes = R.string.email_hint,
+                label = state.emailLabel,
                 text = state.emailAddress,
                 onValueChange = {
                         email -> viewModel.onEvent(RegistrationEvent.OnEmailUpdated(email))
-                }
+                },
+                isError = state.isErrorEmail
             )
             Spacer(modifier = Modifier.height(16.dp))
             PasswordTextField(
-                hintRes = R.string.password,
+                label = state.passwordLabel,
                 text = state.password,
                 onValueChange = {
                         password -> viewModel.onEvent(RegistrationEvent.OnPasswordUpdated(password))
                 },
+                isError = state.isErrorPassword
             )
             Spacer(modifier = Modifier.height(25.dp))
             LoadingTextButton(

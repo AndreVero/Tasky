@@ -12,37 +12,33 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.vero.tasky.ui.theme.onTextFieldHint
 import com.vero.tasky.ui.theme.text
 import com.vero.tasky.ui.theme.textFieldBackground
 
 @Composable
 fun VerifiableTextField(
     isValid: Boolean,
-    @StringRes hintRes: Int,
+    @StringRes label: Int,
     text: String,
+    isError: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
    TextField(
        value = text,
        onValueChange = onValueChange,
-       placeholder = {
-           Text(
-               text = stringResource(id = hintRes),
-               color = MaterialTheme.colors.onTextFieldHint
-           )
-       },
        textStyle = MaterialTheme.typography.body1,
        singleLine = true,
+       isError = isError,
        trailingIcon = {
-           if (isValid) 
+           if (isValid)
                Icon(
                    imageVector = Icons.Default.Check,
                    contentDescription = "Field is valid",
                    tint = MaterialTheme.colors.secondary
                )
        },
+       label = { Text(text = stringResource(id = label),) },
        colors = TextFieldDefaults.textFieldColors(
            textColor = MaterialTheme.colors.text,
            backgroundColor = MaterialTheme.colors.textFieldBackground,

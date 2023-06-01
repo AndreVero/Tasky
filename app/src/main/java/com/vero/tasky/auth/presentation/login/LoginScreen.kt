@@ -58,13 +58,15 @@ fun LoginScreen(
         Column {
             VerifiableTextField(
                 isValid = state.isEmailValid,
-                hintRes = R.string.email_hint,
+                label = state.emailLabel,
+                isError = state.isErrorEmail,
                 text = state.emailAddress,
                 onValueChange = { email -> viewModel.onEvent(LoginEvent.OnEmailUpdated(email)) }
             )
             Spacer(modifier = Modifier.height(16.dp))
             PasswordTextField(
-                hintRes = R.string.password,
+                label = state.passwordLabel,
+                isError = state.isErrorPassword,
                 text = state.password,
                 onValueChange = {
                         password -> viewModel.onEvent(LoginEvent.OnPasswordUpdated(password))

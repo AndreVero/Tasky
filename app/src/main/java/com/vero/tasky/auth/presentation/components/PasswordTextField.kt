@@ -15,15 +15,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.vero.tasky.ui.theme.onTextFieldHint
 import com.vero.tasky.ui.theme.onTextFieldIcon
 import com.vero.tasky.ui.theme.text
 import com.vero.tasky.ui.theme.textFieldBackground
 
 @Composable
 fun PasswordTextField(
-    @StringRes hintRes: Int,
+    @StringRes label: Int,
     text: String,
+    isError: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -33,12 +33,6 @@ fun PasswordTextField(
     TextField(
         value = text,
         onValueChange = onValueChange,
-        placeholder = {
-            Text(
-                text = stringResource(id = hintRes),
-                color = MaterialTheme.colors.onTextFieldHint
-            )
-        },
         textStyle = MaterialTheme.typography.body1,
         singleLine = true,
         visualTransformation = if (isPasswordVisible) {
@@ -65,6 +59,8 @@ fun PasswordTextField(
                 }
             }
         },
+        isError = isError,
+        label = { Text(text = stringResource(id = label),) },
         colors = TextFieldDefaults.textFieldColors(
             textColor = MaterialTheme.colors.text,
             backgroundColor = MaterialTheme.colors.textFieldBackground,
