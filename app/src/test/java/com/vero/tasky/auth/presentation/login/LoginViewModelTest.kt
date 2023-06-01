@@ -73,22 +73,14 @@ class LoginViewModelTest {
     fun `Login, email isn't valid, return error`() = runTest {
         viewModel.onEvent(LoginEvent.OnEmailUpdated(""))
         viewModel.onEvent(LoginEvent.LogIn)
-        viewModel.uiEvent.test {
-            val item = awaitItem()
-            assertThat((item as UiLoginEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.email_not_valid)
-        }
+        assertThat(viewModel.state.isErrorEmail).isTrue()
     }
 
     @Test
     fun `Login, password isn't valid, return error`() = runTest {
         viewModel.onEvent(LoginEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
         viewModel.onEvent(LoginEvent.LogIn)
-        viewModel.uiEvent.test {
-            val item = awaitItem()
-            assertThat((item as UiLoginEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.password_is_too_short)
-        }
+        assertThat(viewModel.state.isErrorPassword).isTrue()
     }
 
     @Test
@@ -96,14 +88,8 @@ class LoginViewModelTest {
         viewModel.onEvent(LoginEvent.OnEmailUpdated(""))
         viewModel.onEvent(LoginEvent.OnPasswordUpdated(TOO_SHORT_PASSWORD))
         viewModel.onEvent(LoginEvent.LogIn)
-        viewModel.uiEvent.test {
-            val emailItem = awaitItem()
-            assertThat((emailItem as UiLoginEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.email_not_valid)
-            val passwordItem = awaitItem()
-            assertThat((passwordItem as UiLoginEvent.ShowErrorMessage).message)
-                .isEqualTo(R.string.password_is_too_short)
-        }
+        assertThat(viewModel.state.isErrorPassword).isTrue()
+        assertThat(viewModel.state.isErrorEmail).isTrue()
     }
 
     @Test
