@@ -59,7 +59,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun logIn() {
-        val validationResult = isPasswordValid()
+        val validationResult = validatePassword()
 
         if (state.isEmailValid && validationResult is ValidationResult.Valid) {
             updateState(state.copy(isLoading = true))
@@ -98,7 +98,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun isPasswordValid() : ValidationResult {
+    private fun validatePassword() : ValidationResult {
         val validationResult = loginUseCases.validatePasswordUseCase(state.password)
         return PasswordErrorParser.parse(validationResult)
     }
