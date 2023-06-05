@@ -1,9 +1,9 @@
 package com.vero.tasky.agenda.domain.model
 
 data class Reminder(
-    val id: String,
-    val title: String,
-    val description: String?,
-    val time: Long,
-    val remindAt: Long,
-)
+    override val id: String,
+    override val title: String,
+    override val description: String?,
+    override val remindAt: Long,
+    override val time: Long,
+) : AgendaItem
