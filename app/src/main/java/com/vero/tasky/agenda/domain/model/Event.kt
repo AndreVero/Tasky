@@ -1,14 +1,14 @@
 package com.vero.tasky.agenda.domain.model
 
 data class Event(
-    val id: String,
-    val title: String,
-    val description: String,
-    val from: Long,
+    override val id: String,
+    override val title: String,
+    override val description: String?,
+    override val remindAt: Long,
+    override val time: Long,
     val to: Long,
-    val remindAt: Long,
     val host: String,
     val isUserEventCreator: Boolean,
     val attendees: List<Attendee>,
-    val photos: List<Photo>
-)
+    val networkPhotos: List<NetworkPhoto>
+) : AgendaItem

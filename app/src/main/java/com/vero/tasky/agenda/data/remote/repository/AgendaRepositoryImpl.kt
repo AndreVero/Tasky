@@ -1,5 +1,8 @@
 package com.vero.tasky.agenda.data.remote.repository
 
+import com.vero.tasky.agenda.data.local.dao.EventDao
+import com.vero.tasky.agenda.data.local.dao.ReminderDao
+import com.vero.tasky.agenda.data.local.dao.TaskDao
 import com.vero.tasky.agenda.data.remote.network.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.request.SyncAgendaRequest
 import com.vero.tasky.agenda.domain.model.Agenda
@@ -9,16 +12,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class AgendaRepositoryImpl(
-    private val api: AgendaApi
+    private val api: AgendaApi,
+    private val taskDao: TaskDao,
+    private val eventDao: EventDao,
+    private val reminderDao: ReminderDao,
 ) : AgendaRepository {
 
     override suspend fun getAgendaForDay(timezone: String, time: Long): Flow<Result<Agenda>> = flow {
     }
 
     override suspend fun syncAgenda(
-        deletedEventsIds: List<String>?,
-        deletedTasksIds: List<String>?,
-        deletedReminderIds: List<String>?
+        deletedEventsIds: List<String>,
+        deletedTasksIds: List<String>,
+        deletedReminderIds: List<String>
     ): Result<Unit> = ApiCallHandler.safeApiCall {
             api.syncAgenda(
                 SyncAgendaRequest(

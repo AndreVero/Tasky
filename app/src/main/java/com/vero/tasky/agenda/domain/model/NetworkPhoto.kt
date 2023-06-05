@@ -1,6 +1,6 @@
 package com.vero.tasky.agenda.domain.model
 
-data class Photo (
+data class NetworkPhoto (
     val key: String,
-    val path: String,
+    val url: String,
 )
