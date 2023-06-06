@@ -2,6 +2,7 @@ package com.vero.tasky.agenda.data.local.dao
 
 import androidx.room.*
 import com.vero.tasky.agenda.data.local.entities.TaskEntity
+import kotlinx.coroutines.flow.Flow
 
 interface TaskDao {
 
@@ -15,7 +16,7 @@ interface TaskDao {
     fun deleteTasks(vararg events: TaskEntity)
 
     @Transaction
-    @Query("SELECT * FROM task")
-    fun loadTasksForDay(epoch: Long) : List<TaskEntity>
+    @Query("SELECT * FROM task WHERE DATE(:timestamp) = CURDATE()")
+    fun loadTasksForDay(timestamp: Long) : Flow<List<TaskEntity>>
 
 }

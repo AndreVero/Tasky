@@ -37,6 +37,6 @@ class AgendaRepositoryImpl(
 
     override suspend fun getFullAgenda() =
         ApiCallHandler.safeApiCall {
-            Agenda(emptyList(), emptyList(), emptyList())
+            Agenda(emptyList())
         }
 }
