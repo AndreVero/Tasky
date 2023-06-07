@@ -1,26 +1,27 @@
 package com.vero.tasky.agenda.data.local.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.vero.tasky.agenda.domain.model.Attendee
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = EventEntity::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("eventId"),
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class AttendeeEntity(
-    @PrimaryKey(autoGenerate = false) val userId: String,
+    @PrimaryKey(autoGenerate = false)
+    val userId: String,
     val email: String,
     val fullName: String,
+    @ColumnInfo(index = true)
     val eventId: String,
     val isGoing: Boolean,
     val remindAt: Long,
 )
-
-fun AttendeeEntity.toAttendee() : Attendee {
-    return Attendee(
-        email = email,
-        fullName = fullName,
-        eventId = eventId,
-        isGoing = isGoing,
-        remindAt = remindAt,
-        userId = userId
-    )
-}

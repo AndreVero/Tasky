@@ -1,14 +1,14 @@
 package com.vero.tasky.agenda.domain.repository
 
-import com.vero.tasky.agenda.domain.model.Agenda
+import com.vero.tasky.agenda.domain.model.AgendaItem
 import kotlinx.coroutines.flow.Flow
 
 interface AgendaRepository {
 
     suspend fun getAgendaForDay(
         timezone: String,
-        time: Long
-    ) : Flow<Result<Agenda>>
+        timestamp: Long
+    ) : Flow<List<AgendaItem>>
 
     suspend fun syncAgenda(
         deletedEventsIds : List<String>,
@@ -16,5 +16,5 @@ interface AgendaRepository {
         deletedReminderIds: List<String>,
     ) : Result<Unit>
 
-    suspend fun getFullAgenda() : Result<Agenda>
+    suspend fun getFullAgenda() : Result<Unit>
 }
