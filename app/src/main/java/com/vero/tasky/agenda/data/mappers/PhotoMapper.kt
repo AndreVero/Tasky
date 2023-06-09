@@ -5,26 +5,23 @@ import com.vero.tasky.agenda.data.local.entities.RemotePhotoEntity
 import com.vero.tasky.agenda.data.remote.network.dto.PhotoDto
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 
-object PhotoMapper {
+fun PhotoDto.toPhotoEntity(eventId: String): RemotePhotoEntity {
+    return RemotePhotoEntity(
+        key = this.key,
+        path = this.url,
+        eventId = eventId
+    )
+}
 
-    fun toPhotoEntity(eventId: String, photoDto: PhotoDto) : RemotePhotoEntity {
-        return RemotePhotoEntity(
-            key = photoDto.key,
-            path = photoDto.url,
-            eventId = eventId
-        )
-    }
+fun RemotePhotoEntity.toNetworkPhoto(): AgendaPhoto.RemotePhoto {
+    return AgendaPhoto.RemotePhoto(
+        key = this.key,
+        url = this.path
+    )
+}
 
-    fun toNetworkPhoto(remotePhotoEntity: RemotePhotoEntity) : AgendaPhoto.RemotePhoto {
-        return AgendaPhoto.RemotePhoto(
-            key = remotePhotoEntity.key,
-            url = remotePhotoEntity.path
-        )
-    }
-
-    fun toLocalPhoto(localPhotoEntity: LocalPhotoEntity) : AgendaPhoto.LocalPhoto {
-        return AgendaPhoto.LocalPhoto(
-            uri = localPhotoEntity.path
-        )
-    }
+fun LocalPhotoEntity.toLocalPhoto(): AgendaPhoto.LocalPhoto {
+    return AgendaPhoto.LocalPhoto(
+        uri = this.path
+    )
 }

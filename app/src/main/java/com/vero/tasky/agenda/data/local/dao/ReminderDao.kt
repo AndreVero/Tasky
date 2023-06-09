@@ -2,6 +2,7 @@ package com.vero.tasky.agenda.data.local.dao
 
 import androidx.room.*
 import com.vero.tasky.agenda.data.local.entities.ReminderEntity
+import kotlinx.coroutines.flow.Flow
 
 interface ReminderDao {
 

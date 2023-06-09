@@ -4,27 +4,23 @@ import com.vero.tasky.agenda.data.local.entities.AttendeeEntity
 import com.vero.tasky.agenda.data.remote.network.dto.AttendeeDto
 import com.vero.tasky.agenda.domain.model.Attendee
 
-object AttendeeMapper {
-
-    fun toAttendeeEntity(attendeeDto: AttendeeDto) : AttendeeEntity {
-        return AttendeeEntity(
-            userId = attendeeDto.userId,
-            email = attendeeDto.email,
-            fullName = attendeeDto.fullName,
-            eventId = attendeeDto.eventId,
-            isGoing = attendeeDto.isGoing,
-            remindAt = attendeeDto.remindAt
-        )
-    }
-
-    fun toAttendee(attendeeEntity: AttendeeEntity) : Attendee {
-        return Attendee(
-            email = attendeeEntity.email,
-            fullName = attendeeEntity.fullName,
-            eventId = attendeeEntity.eventId,
-            isGoing = attendeeEntity.isGoing,
-            remindAt = attendeeEntity.remindAt,
-            userId = attendeeEntity.userId
-        )
-    }
+fun AttendeeDto.toAttendeeEntity() : AttendeeEntity {
+    return AttendeeEntity(
+        userId = this.userId,
+        email = this.email,
+        fullName = this.fullName,
+        eventId = this.eventId,
+        isGoing = this.isGoing,
+        remindAt = this.remindAt
+    )
+}
+fun AttendeeEntity.toAttendee() : Attendee {
+    return Attendee(
+        email = this.email,
+        fullName = this.fullName,
+        eventId = this.eventId,
+        isGoing = this.isGoing,
+        remindAt = this.remindAt,
+        userId = this.userId
+    )
 }

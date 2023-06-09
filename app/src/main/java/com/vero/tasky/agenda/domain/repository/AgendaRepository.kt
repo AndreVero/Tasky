@@ -11,9 +11,9 @@ interface AgendaRepository {
     ) : Flow<List<AgendaItem>>
 
     suspend fun syncAgenda(
-        deletedEventsIds : List<String>,
-        deletedTasksIds: List<String>,
-        deletedReminderIds: List<String>,
+        deletedEventIds : Array<String>,
+        deletedTaskIds: Array<String>,
+        deletedReminderIds: Array<String>,
     ) : Result<Unit>
 
     suspend fun getFullAgenda() : Result<Unit>

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.remote.network.AgendaApi
-import com.vero.tasky.agenda.data.remote.repository.AgendaRepositoryImpl
+import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import dagger.Module
 import dagger.Provides

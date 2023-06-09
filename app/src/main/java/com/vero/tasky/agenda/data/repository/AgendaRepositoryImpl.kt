@@ -1,19 +1,19 @@
-package com.vero.tasky.agenda.data.remote.repository
+package com.vero.tasky.agenda.data.repository
 
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ReminderDao
 import com.vero.tasky.agenda.data.local.dao.TaskDao
-import com.vero.tasky.agenda.data.mappers.EventMapper
-import com.vero.tasky.agenda.data.mappers.ReminderMapper
-import com.vero.tasky.agenda.data.mappers.TaskMapper
+import com.vero.tasky.agenda.data.mappers.*
 import com.vero.tasky.agenda.data.remote.network.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.dto.AgendaDto
 import com.vero.tasky.agenda.data.remote.network.request.SyncAgendaRequest
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
-import com.vero.tasky.core.data.remote.ApiCallHandler
+import com.vero.tasky.core.data.remote.safeApiCall
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
@@ -31,7 +31,7 @@ class AgendaRepositoryImpl(
 
         emit(getAgendaItemsFromDao(timestamp))
 
-        ApiCallHandler.safeApiCall {
+        safeApiCall {
             val networkAgendaItems = api.getAgendaForDay(timezone, timestamp)
             saveAgendaItems(networkAgendaItems)
         }
@@ -40,49 +40,45 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun syncAgenda(
-        deletedEventsIds: List<String>,
-        deletedTasksIds: List<String>,
-        deletedReminderIds: List<String>
-    ): Result<Unit> = ApiCallHandler.safeApiCall {
+        deletedEventIds: Array<String>,
+        deletedTaskIds: Array<String>,
+        deletedReminderIds: Array<String>
+    ): Result<Unit> = safeApiCall {
         api.syncAgenda(
             SyncAgendaRequest(
-                deletedEventsIds = deletedEventsIds,
-                deletedTasksIds = deletedTasksIds,
+                deletedEventIds = deletedEventIds,
+                deletedTaskIds = deletedTaskIds,
                 deletedReminderIds = deletedReminderIds
             )
         )
     }
 
-    override suspend fun getFullAgenda() = ApiCallHandler.safeApiCall {
+    override suspend fun getFullAgenda() = safeApiCall {
         val result = api.getFullAgenda()
         saveAgendaItems(result)
     }
 
     private fun getAgendaItemsFromDao(timestamp: Long) : List<AgendaItem> {
         val agendaItems = mutableListOf<AgendaItem>()
-        agendaItems.addAll(taskDao.loadTasksForDay(timestamp).map {
-            TaskMapper.toTask(it)
-        })
-        agendaItems.addAll(eventDao.loadEventsForDay(timestamp).map {
-            EventMapper.toEvent(it)
-        })
-        agendaItems.addAll(reminderDao.loadRemindersForDay(timestamp).map {
-            ReminderMapper.toReminder(it)
-        })
+        agendaItems.addAll(taskDao.loadTasksForDay(timestamp).map { it.toTask() })
+        agendaItems.addAll(eventDao.loadEventsForDay(timestamp).map {it.toEvent() })
+        agendaItems.addAll(reminderDao.loadRemindersForDay(timestamp).map { it.toReminder() })
         return agendaItems
     }
 
     private suspend fun saveAgendaItems(agendaDto: AgendaDto) {
         supervisorScope {
+            val jobsList = mutableListOf<Job>()
             agendaDto.events.map { eventDto ->
-                launch { eventDao.insertEvents(EventMapper.toEventEntity(eventDto)) }
-            }.forEach { job -> job.join() }
+                jobsList.add(launch { eventDao.insertEvents(eventDto.toEventEntity()) })
+            }
             agendaDto.tasks.map { taskDto ->
-                launch { taskDao.insertTasks(TaskMapper.toTaskEntity(taskDto)) }
-            }.forEach { job -> job.join() }
+                jobsList.add(launch { taskDao.insertTasks(taskDto.toTaskEntity()) })
+            }
             agendaDto.reminders.map { reminderDto ->
-                launch { reminderDao.insertReminders(ReminderMapper.toReminderEntity(reminderDto)) }
-            }.forEach { job -> job.join() }
+                jobsList.add(launch { reminderDao.insertReminders(reminderDto.toReminderEntity()) })
+            }
+            jobsList.joinAll()
         }
     }
 }
