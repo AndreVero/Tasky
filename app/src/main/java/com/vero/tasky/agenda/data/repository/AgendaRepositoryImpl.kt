@@ -70,6 +70,14 @@ class AgendaRepositoryImpl(
         supervisorScope {
             val jobsList = mutableListOf<Job>()
             agendaDto.events.map { eventDto ->
+                eventDto.attendees.forEach {
+                    jobsList.add( launch { eventDao.insertAttendees(it.toAttendeeEntity()) })
+                }
+                eventDto.photos.forEach {
+                    jobsList.add(
+                        launch { eventDao.insertRemotePhotoEntity(it.toPhotoEntity(eventDto.id)) }
+                    )
+                }
                 jobsList.add(launch { eventDao.insertEvents(eventDto.toEventEntity()) })
             }
             agendaDto.tasks.map { taskDto ->

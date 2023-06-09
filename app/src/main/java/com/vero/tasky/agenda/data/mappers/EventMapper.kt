@@ -16,18 +16,15 @@ fun EventDto.toEventEntity(): EventEntity {
         to = this.to,
         remindAt = this.remindAt,
         host = this.host,
-        isUserEventCreator = this.isUserEventCreator,
-        attendees = this.attendees.map { it.toAttendeeEntity() },
-        networkPhotos = this.photos.map { it.toPhotoEntity(this.id) },
-        localPhotos = emptyList()
+        isUserEventCreator = this.isUserEventCreator
     )
 }
 
 fun EventWithPhotosAndAttendees.toEvent(): AgendaItem.Event {
     val event = this.event
     val photos = mutableListOf<AgendaPhoto>()
-    photos.addAll(event.networkPhotos.map { it.toNetworkPhoto() })
-    photos.addAll(event.localPhotos.map { it.toLocalPhoto() })
+    photos.addAll(this.networkPhotos.map { it.toNetworkPhoto() })
+    photos.addAll(this.localPhotos.map { it.toLocalPhoto() })
 
     return AgendaItem.Event(
         id = event.id,
