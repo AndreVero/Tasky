@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "event")
 data class EventEntity(
-    @PrimaryKey(autoGenerate = false) val id: String,
+    @PrimaryKey(autoGenerate = false)
+    val id: String,
     val title: String,
     val description: String?,
     val remindAt: Long,
@@ -14,6 +15,6 @@ data class EventEntity(
     val host: String,
     val isUserEventCreator: Boolean,
     val attendees: List<AttendeeEntity>,
-    val networkPhotos: List<NetworkPhotoEntity>,
+    val networkPhotos: List<RemotePhotoEntity>,
     val localPhotos: List<LocalPhotoEntity>,
 )

@@ -2,7 +2,6 @@ package com.vero.tasky.agenda.data.local.dao
 
 import androidx.room.*
 import com.vero.tasky.agenda.data.local.entities.ReminderEntity
-import kotlinx.coroutines.flow.Flow
 
 interface ReminderDao {
 
@@ -16,7 +15,11 @@ interface ReminderDao {
     fun deleteReminders(vararg events: ReminderEntity)
 
     @Transaction
-    @Query("SELECT * FROM reminder WHERE DATE(:timestamp) = CURDATE()")
-    fun loadRemindersForDay(timestamp: Long) : Flow<List<ReminderEntity>>
+    @Query("""
+        SELECT *
+        FROM reminder
+        WHERE DATE(:timestamp) = CURDATE()
+    """)
+    fun loadRemindersForDay(timestamp: Long) : List<ReminderEntity>
 
 }

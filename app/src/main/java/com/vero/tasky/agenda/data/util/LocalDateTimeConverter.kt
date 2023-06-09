@@ -12,7 +12,7 @@ object LocalDateTimeConverter {
     }
 
     fun localDateTimeToLong(localDateTime: LocalDateTime) : Long {
-        return localDateTime.toEpochSecond(ZoneOffset.UTC)
+        return localDateTime.toEpochSecond(ZoneOffset.of(ZoneOffset.systemDefault().id))
     }
 
 }
