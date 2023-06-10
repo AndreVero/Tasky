@@ -13,8 +13,5 @@ data class EventEntity(
     val time: Long,
     val to: Long,
     val host: String,
-    val isUserEventCreator: Boolean,
-    val attendees: List<AttendeeEntity>,
-    val networkPhotos: List<RemotePhotoEntity>,
-    val localPhotos: List<LocalPhotoEntity>,
+    val isUserEventCreator: Boolean
 )

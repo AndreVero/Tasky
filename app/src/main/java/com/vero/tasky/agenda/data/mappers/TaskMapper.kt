@@ -5,28 +5,25 @@ import com.vero.tasky.agenda.data.remote.network.dto.TaskDto
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
 import com.vero.tasky.agenda.domain.model.AgendaItem
 
-object TaskMapper {
-
-    fun toTaskEntity(taskDto: TaskDto) : TaskEntity {
-        return TaskEntity(
-            id = taskDto.id,
-            title = taskDto.title,
-            description = taskDto.description,
-            remindAt = taskDto.remindAt,
-            time = taskDto.time,
-            isDone = taskDto.isDone
-        )
-    }
-
-    fun toTask(taskEntity: TaskEntity) : AgendaItem.Task {
-        return AgendaItem.Task(
-            id = taskEntity.id,
-            title = taskEntity.title,
-            description = taskEntity.description,
-            remindAt = LocalDateTimeConverter.longToLocalDateTime(taskEntity.remindAt),
-            time = LocalDateTimeConverter.longToLocalDateTime(taskEntity.time),
-            isDone = taskEntity.isDone
-        )
-    }
-
+fun TaskDto.toTaskEntity(): TaskEntity {
+    return TaskEntity(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        remindAt = this.remindAt,
+        time = this.time,
+        isDone = this.isDone
+    )
 }
+
+fun TaskEntity.toTask(): AgendaItem.Task {
+    return AgendaItem.Task(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        remindAt = LocalDateTimeConverter.longToLocalDateTime(this.remindAt),
+        time = LocalDateTimeConverter.longToLocalDateTime(this.time),
+        isDone = this.isDone
+    )
+}
+

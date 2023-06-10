@@ -7,43 +7,35 @@ import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 
-object EventMapper {
+fun EventDto.toEventEntity(): EventEntity {
+    return EventEntity(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        time = this.from,
+        to = this.to,
+        remindAt = this.remindAt,
+        host = this.host,
+        isUserEventCreator = this.isUserEventCreator
+    )
+}
 
-    fun toEventEntity(eventDto: EventDto) : EventEntity {
-        return EventEntity(
-            id = eventDto.id,
-            title = eventDto.title,
-            description = eventDto.description,
-            time = eventDto.from,
-            to = eventDto.to,
-            remindAt = eventDto.remindAt,
-            host = eventDto.host,
-            isUserEventCreator = eventDto.isUserEventCreator,
-            attendees = eventDto.attendees.map { AttendeeMapper.toAttendeeEntity(it) },
-            networkPhotos = eventDto.photos.map { PhotoMapper.toPhotoEntity(eventDto.id, it) },
-            localPhotos = emptyList()
-        )
-    }
+fun EventWithPhotosAndAttendees.toEvent(): AgendaItem.Event {
+    val event = this.event
+    val photos = mutableListOf<AgendaPhoto>()
+    photos.addAll(this.networkPhotos.map { it.toNetworkPhoto() })
+    photos.addAll(this.localPhotos.map { it.toLocalPhoto() })
 
-    fun toEvent(item: EventWithPhotosAndAttendees) : AgendaItem.Event {
-        val event = item.event
-        val photos = mutableListOf<AgendaPhoto>()
-        photos.addAll(event.networkPhotos.map { PhotoMapper.toNetworkPhoto(it) })
-        photos.addAll(event.localPhotos.map { PhotoMapper.toLocalPhoto(it) })
-
-        return AgendaItem.Event (
-            id = event.id,
-            title = event.title,
-            description = event.description,
-            remindAt = LocalDateTimeConverter.longToLocalDateTime(event.remindAt),
-            time = LocalDateTimeConverter.longToLocalDateTime(event.time),
-            to = LocalDateTimeConverter.longToLocalDateTime(event.to),
-            host = event.host,
-            isUserEventCreator = event.isUserEventCreator,
-            attendees = item.attendees.map { AttendeeMapper.toAttendee(it) },
-            photos = photos
-        )
-
-    }
-
+    return AgendaItem.Event(
+        id = event.id,
+        title = event.title,
+        description = event.description,
+        remindAt = LocalDateTimeConverter.longToLocalDateTime(event.remindAt),
+        time = LocalDateTimeConverter.longToLocalDateTime(event.time),
+        to = LocalDateTimeConverter.longToLocalDateTime(event.to),
+        host = event.host,
+        isUserEventCreator = event.isUserEventCreator,
+        attendees = this.attendees.map { it.toAttendee() },
+        photos = photos
+    )
 }
