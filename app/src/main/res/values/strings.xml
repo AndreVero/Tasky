@@ -19,4 +19,5 @@
     <string name="network_error_on_authenticate">Something went wrong, please try again later!</string>
     <string name="network_error_on_registration">Something went wrong, please try again later!</string>
     <string name="token_expired">Token expired, please log in!</string>
+    <string name="failed_to_log_out">Failed to log out, try again later!</string>
 </resources>

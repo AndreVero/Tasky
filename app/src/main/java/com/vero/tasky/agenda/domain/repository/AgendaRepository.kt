@@ -19,4 +19,6 @@ interface AgendaRepository {
     ) : Result<Unit>
 
     suspend fun getFullAgenda() : Result<Unit>
+
+    suspend fun logOut() : Result<Unit>
 }

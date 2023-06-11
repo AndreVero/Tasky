@@ -1,5 +1,9 @@
 package com.vero.tasky.agenda.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Attendee (
     val email: String,
     val fullName: String,
@@ -7,4 +11,4 @@ data class Attendee (
     val eventId: String,
     val isGoing: Boolean,
     val remindAt: Long,
-)
+) : Parcelable
