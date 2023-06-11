@@ -22,7 +22,10 @@ class SyncAgendaWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         if (runAttemptCount >= 3)
             return Result.failure()
+
         val agendaItems = dao.loadDeletedAgendaItems()
+        if (agendaItems.isEmpty())
+            Result.success()
 
         val result = agendaRepository.syncAgenda(
             deletedEventIds = agendaItems.filter { it.type == AgendaItemType.Event }.map { it.id },
