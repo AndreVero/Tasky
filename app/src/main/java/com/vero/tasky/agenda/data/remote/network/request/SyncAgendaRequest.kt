@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class SyncAgendaRequest (
-    val deletedEventIds : Array<String>,
-    val deletedTaskIds: Array<String>,
-    val deletedReminderIds: Array<String>,
+    val deletedEventIds : List<String>,
+    val deletedTaskIds: List<String>,
+    val deletedReminderIds: List<String>,
 )
