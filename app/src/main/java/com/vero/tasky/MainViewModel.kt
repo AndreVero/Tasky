@@ -2,6 +2,8 @@ package com.vero.tasky
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vero.tasky.agenda.domain.usecase.GetFullAgendaUseCase
+import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
 import com.vero.tasky.auth.domain.usecase.AuthenticateUseCase
 import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val preferences: UserPreferences,
-    private val authenticateUseCase: AuthenticateUseCase
+    private val authenticateUseCase: AuthenticateUseCase,
+    private val syncAgendaUseCase: SyncAgendaUseCase,
+    private val getFullAgendaUseCase: GetFullAgendaUseCase,
 ): ViewModel() {
 
     private var _state = MutableStateFlow(MainState(
@@ -41,6 +45,8 @@ class MainViewModel @Inject constructor(
         authenticateUseCase()
             .onSuccess {
                 _state.value = _state.value.copy(isLoading = false)
+                syncAgendaUseCase.invoke()
+                getFullAgendaUseCase.invoke()
             }
             .onFailure { error ->
                 if (error is HttpException && error.code() == 401) {

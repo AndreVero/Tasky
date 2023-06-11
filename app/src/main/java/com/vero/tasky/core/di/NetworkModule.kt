@@ -2,6 +2,8 @@ package com.vero.tasky.core.di
 
 import com.vero.tasky.BuildConfig
 import com.vero.tasky.core.data.interceptors.ApiKeyHeaderInterceptor
+import com.vero.tasky.core.data.interceptors.AuthorizationTokenHeaderInterceptor
+import com.vero.tasky.core.domain.local.UserPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,9 +33,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient() : OkHttpClient{
+    fun provideOkHttpClient(preferences: UserPreferences) : OkHttpClient{
         return OkHttpClient.Builder()
             .addInterceptor(ApiKeyHeaderInterceptor())
+            .addInterceptor(AuthorizationTokenHeaderInterceptor(preferences))
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
