@@ -9,6 +9,8 @@ import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import retrofit2.HttpException
 
 @HiltWorker
@@ -30,10 +32,16 @@ class SyncAgendaWorker @AssistedInject constructor(
         val result = agendaRepository.syncAgenda(
             deletedEventIds = agendaItems.filter { it.type == AgendaItemType.Event }.map { it.id },
             deletedTaskIds = agendaItems.filter { it.type == AgendaItemType.Task }.map { it.id },
-            deletedReminderIds =agendaItems.filter { it.type == AgendaItemType.Reminder }.map { it.id },
+            deletedReminderIds = agendaItems.filter { it.type == AgendaItemType.Reminder }.map { it.id },
         )
-        return if (result.isSuccess)
+        return if (result.isSuccess) {
+            supervisorScope {
+                agendaItems.map {
+                    launch { dao.deleteAgendaItem(it) }
+                }.forEach { it.join() }
+            }
             Result.success()
+        }
         else {
             result.exceptionOrNull()?.let { exception ->
                 if (exception is HttpException && exception.code() == 401)
