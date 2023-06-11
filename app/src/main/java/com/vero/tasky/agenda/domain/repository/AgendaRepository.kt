@@ -10,10 +10,12 @@ interface AgendaRepository {
         timestamp: Long
     ) : Flow<List<AgendaItem>>
 
+    suspend fun updateAgendaForDay(timezone: String, timestamp: Long): Result<Unit>
+
     suspend fun syncAgenda(
-        deletedEventIds : Array<String>,
-        deletedTaskIds: Array<String>,
-        deletedReminderIds: Array<String>,
+        deletedEventIds : List<String>,
+        deletedTaskIds: List<String>,
+        deletedReminderIds: List<String>,
     ) : Result<Unit>
 
     suspend fun getFullAgenda() : Result<Unit>

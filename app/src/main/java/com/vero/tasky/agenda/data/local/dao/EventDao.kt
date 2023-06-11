@@ -35,6 +35,6 @@ interface EventDao {
         FROM event
         WHERE DATE(:timestamp) = CURDATE()
     """)
-    fun loadEventsForDay(timestamp: Long) : List<EventWithPhotosAndAttendees>
+    fun loadEventsForDay(timestamp: Long) : Flow<List<EventWithPhotosAndAttendees>>
 
 }

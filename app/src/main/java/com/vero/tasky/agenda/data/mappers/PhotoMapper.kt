@@ -13,7 +13,7 @@ fun PhotoDto.toPhotoEntity(eventId: String): RemotePhotoEntity {
     )
 }
 
-fun RemotePhotoEntity.toNetworkPhoto(): AgendaPhoto.RemotePhoto {
+fun RemotePhotoEntity.toRemotePhoto(): AgendaPhoto.RemotePhoto {
     return AgendaPhoto.RemotePhoto(
         key = this.key,
         url = this.path

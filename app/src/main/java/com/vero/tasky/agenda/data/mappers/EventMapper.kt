@@ -23,7 +23,7 @@ fun EventDto.toEventEntity(): EventEntity {
 fun EventWithPhotosAndAttendees.toEvent(): AgendaItem.Event {
     val event = this.event
     val photos = mutableListOf<AgendaPhoto>()
-    photos.addAll(this.networkPhotos.map { it.toNetworkPhoto() })
+    photos.addAll(this.networkPhotos.map { it.toRemotePhoto() })
     photos.addAll(this.localPhotos.map { it.toLocalPhoto() })
 
     return AgendaItem.Event(

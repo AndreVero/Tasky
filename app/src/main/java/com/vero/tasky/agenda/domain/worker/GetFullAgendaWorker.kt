@@ -17,15 +17,19 @@ class GetFullAgendaWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
+        if (runAttemptCount >= 3)
+            return Result.failure()
         val result = agendaRepository.getFullAgenda()
-        if (result.isSuccess)
-            return Result.success()
+        return if (result.isSuccess)
+            Result.success()
         else {
             result.exceptionOrNull()?.let { exception ->
-                if (exception is HttpException && exception.code() == 500)
-                    return Result.retry()
+                if (exception is HttpException && exception.code() == 401)
+                    Result.failure()
+                else
+                    Result.retry()
             }
+            Result.retry()
         }
-        return Result.failure()
     }
 }

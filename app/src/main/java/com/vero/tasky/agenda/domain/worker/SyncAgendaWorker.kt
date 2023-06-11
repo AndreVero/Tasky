@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.vero.tasky.agenda.data.local.dao.DeletedAgendaItemDao
+import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -13,32 +15,30 @@ import retrofit2.HttpException
 class SyncAgendaWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val workerParameters: WorkerParameters,
-    private val agendaRepository: AgendaRepository
+    private val agendaRepository: AgendaRepository,
+    private val dao: DeletedAgendaItemDao,
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
-        val deletedEventIds = inputData.getStringArray(DELETED_EVENT_IDS) ?: emptyArray()
-        val deletedTaskIds = inputData.getStringArray(DELETED_TASK_IDS) ?: emptyArray()
-        val deletedReminderIds = inputData.getStringArray(DELETED_REMINDER_IDS) ?: emptyArray()
+        if (runAttemptCount >= 3)
+            return Result.failure()
+        val agendaItems = dao.loadDeletedAgendaItems()
+
         val result = agendaRepository.syncAgenda(
-            deletedEventIds = deletedEventIds,
-            deletedTaskIds = deletedTaskIds,
-            deletedReminderIds = deletedReminderIds,
+            deletedEventIds = agendaItems.filter { it.type == AgendaItemType.Event }.map { it.id },
+            deletedTaskIds = agendaItems.filter { it.type == AgendaItemType.Task }.map { it.id },
+            deletedReminderIds =agendaItems.filter { it.type == AgendaItemType.Reminder }.map { it.id },
         )
-        if (result.isSuccess)
-            return Result.success()
+        return if (result.isSuccess)
+            Result.success()
         else {
             result.exceptionOrNull()?.let { exception ->
-                if (exception is HttpException && exception.code() == 500)
-                    return Result.retry()
+                if (exception is HttpException && exception.code() == 401)
+                    Result.failure()
+                else
+                    Result.retry()
             }
+            Result.retry()
         }
-        return Result.failure()
-    }
-
-    companion object {
-        const val DELETED_EVENT_IDS = "DELETED_EVENT_IDS"
-        const val DELETED_TASK_IDS = "DELETED_TASK_IDS"
-        const val DELETED_REMINDER_IDS = "DELETED_REMINDER_IDS"
     }
 }

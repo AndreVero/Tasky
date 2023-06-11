@@ -2,10 +2,16 @@ package com.vero.tasky.agenda.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.vero.tasky.agenda.data.local.AgendaDatabase
+import com.vero.tasky.agenda.data.local.dao.DeletedAgendaItemDao
 import com.vero.tasky.agenda.data.remote.network.AgendaApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
+import com.vero.tasky.agenda.data.workmanagerrunner.GetFullAgendaWorkManagerRunnerImpl
+import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaWorkManagerRunnerImpl
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
+import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkManagerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkManagerRunner
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,5 +48,29 @@ object AgendaModule {
             context,
             AgendaDatabase::class.java, "agenda_db"
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetFullAgendaWorkManagerRunner(workManager: WorkManager)
+        : GetFullAgendaWorkManagerRunner {
+        return GetFullAgendaWorkManagerRunnerImpl(
+            workManager = workManager
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncAgendaWorkManagerRunner(workManager: WorkManager)
+        : SyncAgendaWorkManagerRunner {
+        return SyncAgendaWorkManagerRunnerImpl(
+            workManager = workManager
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeletedAgendaItemDao(db: AgendaDatabase) : DeletedAgendaItemDao {
+        return db.deletedAgendaItemDao()
     }
 }

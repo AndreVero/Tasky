@@ -12,7 +12,8 @@ import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.core.data.remote.safeApiCall
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -27,22 +28,32 @@ class AgendaRepositoryImpl(
     override suspend fun getAgendaForDay(
         timezone: String,
         timestamp: Long
-    ) : Flow<List<AgendaItem>> = flow {
+    ) : Flow<List<AgendaItem>> {
 
-        emit(getAgendaItemsFromDao(timestamp))
+        val taskFlow = taskDao.loadTasksForDay(timestamp).map {
+            it.map { taskEntity ->  taskEntity.toTask() }
+        }
+        val eventFlow = eventDao.loadEventsForDay(timestamp).map {
+            it.map { eventEntity ->  eventEntity.toEvent() }
+        }
+        val reminderFlow = reminderDao.loadRemindersForDay(timestamp).map {
+            it.map { reminderEntity ->  reminderEntity.toReminder() }
+        }
+        return merge(taskFlow, eventFlow, reminderFlow)
+    }
 
-        safeApiCall {
+    override suspend fun updateAgendaForDay(timezone: String,
+                                            timestamp: Long): Result<Unit> {
+        return safeApiCall {
             val networkAgendaItems = api.getAgendaForDay(timezone, timestamp)
             saveAgendaItems(networkAgendaItems)
         }
-
-        emit(getAgendaItemsFromDao(timestamp))
     }
 
     override suspend fun syncAgenda(
-        deletedEventIds: Array<String>,
-        deletedTaskIds: Array<String>,
-        deletedReminderIds: Array<String>
+        deletedEventIds: List<String>,
+        deletedTaskIds: List<String>,
+        deletedReminderIds: List<String>
     ): Result<Unit> = safeApiCall {
         api.syncAgenda(
             SyncAgendaRequest(
@@ -56,14 +67,6 @@ class AgendaRepositoryImpl(
     override suspend fun getFullAgenda() = safeApiCall {
         val result = api.getFullAgenda()
         saveAgendaItems(result)
-    }
-
-    private fun getAgendaItemsFromDao(timestamp: Long) : List<AgendaItem> {
-        val agendaItems = mutableListOf<AgendaItem>()
-        agendaItems.addAll(taskDao.loadTasksForDay(timestamp).map { it.toTask() })
-        agendaItems.addAll(eventDao.loadEventsForDay(timestamp).map {it.toEvent() })
-        agendaItems.addAll(reminderDao.loadRemindersForDay(timestamp).map { it.toReminder() })
-        return agendaItems
     }
 
     private suspend fun saveAgendaItems(agendaDto: AgendaDto) {
