@@ -69,6 +69,10 @@ class AgendaRepositoryImpl(
         saveAgendaItems(result)
     }
 
+    override suspend fun logOut() = safeApiCall {
+        api.logOut()
+    }
+
     private suspend fun saveAgendaItems(agendaDto: AgendaDto) {
         supervisorScope {
             val jobsList = mutableListOf<Job>()

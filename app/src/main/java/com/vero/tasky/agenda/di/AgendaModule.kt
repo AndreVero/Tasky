@@ -10,6 +10,10 @@ import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.GetFullAgendaWorkManagerRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaWorkManagerRunnerImpl
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
+import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
+import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
+import com.vero.tasky.agenda.domain.usecase.LogOutUseCase
+import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkManagerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkManagerRunner
 import dagger.Module
@@ -72,5 +76,15 @@ object AgendaModule {
     @Singleton
     fun provideDeletedAgendaItemDao(db: AgendaDatabase) : DeletedAgendaItemDao {
         return db.deletedAgendaItemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAgendaUseCases(agendaRepository: AgendaRepository) : AgendaUseCases {
+        return AgendaUseCases(
+            getAgendaForDayUseCase = GetAgendaForDayUseCase(agendaRepository),
+            updateAgendaForDayUseCase = UpdateAgendaForDayUseCase(agendaRepository),
+            logOutUseCase = LogOutUseCase(agendaRepository)
+        )
     }
 }

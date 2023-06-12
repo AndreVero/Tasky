@@ -1,5 +1,7 @@
 package com.vero.tasky.agenda.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
 sealed class AgendaItem(
@@ -8,8 +10,9 @@ sealed class AgendaItem(
     open val description: String?,
     open val time: LocalDateTime,
     open val remindAt: LocalDateTime
-) {
+) : Parcelable {
 
+    @Parcelize
     data class Reminder(
         override val id: String,
         override val title: String,
@@ -24,6 +27,7 @@ sealed class AgendaItem(
             time = time
         )
 
+    @Parcelize
     data class Task(
         override val id: String,
         override val title: String,
@@ -39,6 +43,7 @@ sealed class AgendaItem(
             time = time
         )
 
+    @Parcelize
     data class Event(
         override val id: String,
         override val title: String,
