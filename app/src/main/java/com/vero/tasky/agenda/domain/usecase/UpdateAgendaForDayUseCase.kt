@@ -6,8 +6,8 @@ class UpdateAgendaForDayUseCase(
     private val agendaRepository: AgendaRepository
 ) {
 
-    suspend operator fun invoke(timezone: String, timestamp: Long) {
-        agendaRepository.updateAgendaForDay(timezone, timestamp)
+    suspend operator fun invoke(timestamp: Long) {
+        agendaRepository.updateAgendaForDay(timestamp)
     }
 
 }

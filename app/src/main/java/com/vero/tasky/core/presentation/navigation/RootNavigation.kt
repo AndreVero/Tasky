@@ -29,6 +29,7 @@ fun RootNavigation(
                 onBackPressed = { navController.popBackStack() })
         }
         composable(route = Screens.Login.route) {
+            navController.popBackStack()
             LoginScreen(
                 onSignUp = { navController.navigate(Screens.Registration.route) },
                 onLogIn = { navController.navigate(Screens.Agenda.route) }

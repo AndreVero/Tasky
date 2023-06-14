@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.vero.tasky.agenda.data.local.dao.DeletedAgendaItemDao
-import com.vero.tasky.agenda.domain.model.AgendaItemType
+import com.vero.tasky.agenda.data.local.dao.DeletedEventsDao
+import com.vero.tasky.agenda.data.local.dao.DeletedRemindersDao
+import com.vero.tasky.agenda.data.local.dao.DeletedTasksDao
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import retrofit2.HttpException
@@ -18,27 +20,39 @@ class SyncAgendaWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val agendaRepository: AgendaRepository,
-    private val dao: DeletedAgendaItemDao,
+    private val deletedTasksDao: DeletedTasksDao,
+    private val deletedRemindersDao: DeletedRemindersDao,
+    private val deletedEventsDao: DeletedEventsDao
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
         if (runAttemptCount >= 3)
             return Result.failure()
 
-        val agendaItems = dao.loadDeletedAgendaItems()
-        if (agendaItems.isEmpty())
+        val tasks = deletedTasksDao.loadTasks()
+        val reminders = deletedRemindersDao.loadReminders()
+        val events = deletedEventsDao.loadEvents()
+
+        if (tasks.isEmpty() && reminders.isEmpty() && events.isEmpty())
             Result.success()
 
         val result = agendaRepository.syncAgenda(
-            deletedEventIds = agendaItems.filter { it.type == AgendaItemType.Event }.map { it.id },
-            deletedTaskIds = agendaItems.filter { it.type == AgendaItemType.Task }.map { it.id },
-            deletedReminderIds = agendaItems.filter { it.type == AgendaItemType.Reminder }.map { it.id },
+            deletedEventIds = events.map { it.id },
+            deletedTaskIds = tasks.map { it.id },
+            deletedReminderIds = reminders.map { it.id }
         )
         return if (result.isSuccess) {
             supervisorScope {
-                agendaItems.map {
-                    launch { dao.deleteAgendaItem(it) }
-                }.forEach { it.join() }
+                val taskJobs = tasks.map {
+                    launch { deletedTasksDao.deleteTask(it) }
+                }
+                val eventJobs = events.map {
+                    launch { deletedEventsDao.deleteEvent(it) }
+                }
+                val reminderJobs = reminders.map {
+                    launch { deletedRemindersDao.deleteReminder(it) }
+                }
+                (taskJobs + eventJobs + reminderJobs).joinAll()
             }
             Result.success()
         }

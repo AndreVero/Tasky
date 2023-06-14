@@ -15,7 +15,6 @@ interface TaskDao {
     @Delete
     fun deleteTasks(vararg events: TaskEntity)
 
-    @Transaction
     @Query("""
         SELECT *
         FROM task

@@ -2,12 +2,11 @@ package com.vero.tasky.agenda.data.workmanagerrunner
 
 import androidx.work.*
 import com.vero.tasky.agenda.domain.worker.SyncAgendaWorker
-import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkManagerRunner
-import javax.inject.Inject
+import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
 
-class SyncAgendaWorkManagerRunnerImpl @Inject constructor(
+class SyncAgendaWorkerRunnerImpl(
     private val workManager: WorkManager
-) : SyncAgendaWorkManagerRunner {
+) : SyncAgendaWorkerRunner {
 
     override fun run() {
         val workRequest = OneTimeWorkRequestBuilder<SyncAgendaWorker>()

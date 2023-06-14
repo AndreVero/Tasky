@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     LaunchedEffect(true) {
-                        viewModel.uiEvent.collect {errorMessage ->
+                        viewModel.uiEvent.collect { errorMessage ->
                             localSnackbarHostState.showSnackbar(getString(errorMessage))
                         }
                     }

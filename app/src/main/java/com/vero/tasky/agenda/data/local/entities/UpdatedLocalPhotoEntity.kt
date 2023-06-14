@@ -8,14 +8,14 @@ import androidx.room.PrimaryKey
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = EventEntity::class,
+            entity = UpdatedEventEntity::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("eventId"),
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
-data class LocalPhotoEntity(
+data class UpdatedLocalPhotoEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     @ColumnInfo(index = true)
