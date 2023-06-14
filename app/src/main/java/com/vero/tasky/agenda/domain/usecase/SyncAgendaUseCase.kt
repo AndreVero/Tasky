@@ -1,12 +1,12 @@
 package com.vero.tasky.agenda.domain.usecase
 
-import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkManagerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
 import javax.inject.Inject
 
 class SyncAgendaUseCase @Inject constructor(
-    private val syncAgendaWorkManagerRunner: SyncAgendaWorkManagerRunner
+    private val syncAgendaWorkerRunner: SyncAgendaWorkerRunner
 ) {
     operator fun invoke() {
-        syncAgendaWorkManagerRunner.run()
+        syncAgendaWorkerRunner.run()
     }
 }

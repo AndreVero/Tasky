@@ -10,13 +10,11 @@ import com.vero.tasky.agenda.data.remote.network.request.SyncAgendaRequest
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.core.data.remote.safeApiCall
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
+import java.util.*
 
 class AgendaRepositoryImpl(
     private val api: AgendaApi,
@@ -25,11 +23,7 @@ class AgendaRepositoryImpl(
     private val reminderDao: ReminderDao,
 ) : AgendaRepository {
 
-    override suspend fun getAgendaForDay(
-        timezone: String,
-        timestamp: Long
-    ) : Flow<List<AgendaItem>> {
-
+    override suspend fun getAgendaForDay(timestamp: Long) : Flow<List<AgendaItem>> {
         val taskFlow = taskDao.loadTasksForDay(timestamp).map {
             it.map { taskEntity ->  taskEntity.toTask() }
         }
@@ -42,11 +36,12 @@ class AgendaRepositoryImpl(
         return merge(taskFlow, eventFlow, reminderFlow)
     }
 
-    override suspend fun updateAgendaForDay(timezone: String,
-                                            timestamp: Long): Result<Unit> {
+    override suspend fun updateAgendaForDay(timestamp: Long): Result<Unit> {
         return safeApiCall {
-            val networkAgendaItems = api.getAgendaForDay(timezone, timestamp)
-            saveAgendaItems(networkAgendaItems)
+            withContext(Dispatchers.IO) {
+                val networkAgendaItems = api.getAgendaForDay(TimeZone.getDefault().id, timestamp)
+                saveAgendaItems(networkAgendaItems)
+            }
         }
     }
 
@@ -65,12 +60,10 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun getFullAgenda() = safeApiCall {
-        val result = api.getFullAgenda()
-        saveAgendaItems(result)
-    }
-
-    override suspend fun logOut() = safeApiCall {
-        api.logOut()
+        withContext(Dispatchers.IO) {
+            val result = api.getFullAgenda()
+            saveAgendaItems(result)
+        }
     }
 
     private suspend fun saveAgendaItems(agendaDto: AgendaDto) {

@@ -15,7 +15,6 @@ interface ReminderDao {
     @Delete
     fun deleteReminders(vararg events: ReminderEntity)
 
-    @Transaction
     @Query("""
         SELECT *
         FROM reminder

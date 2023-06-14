@@ -4,7 +4,6 @@ import androidx.room.*
 import com.vero.tasky.agenda.data.local.EventWithPhotosAndAttendees
 import com.vero.tasky.agenda.data.local.entities.AttendeeEntity
 import com.vero.tasky.agenda.data.local.entities.EventEntity
-import com.vero.tasky.agenda.data.local.entities.LocalPhotoEntity
 import com.vero.tasky.agenda.data.local.entities.RemotePhotoEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -19,9 +18,6 @@ interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertRemotePhotoEntity(vararg events: RemotePhotoEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLocalPhotoEntity(vararg events: LocalPhotoEntity)
 
     @Update
     fun updateEvents(vararg events: EventEntity)

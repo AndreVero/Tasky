@@ -20,9 +20,6 @@ interface AgendaApi {
         @Body syncAgendaRequest: SyncAgendaRequest
     )
 
-    @GET("logout")
-    suspend fun logOut()
-
     @GET("fullAgenda")
     suspend fun getFullAgenda() : AgendaDto
 }

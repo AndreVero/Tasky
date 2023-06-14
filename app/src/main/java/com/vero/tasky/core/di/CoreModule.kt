@@ -3,7 +3,9 @@ package com.vero.tasky.core.di
 import com.vero.tasky.BuildConfig
 import com.vero.tasky.core.data.interceptors.ApiKeyHeaderInterceptor
 import com.vero.tasky.core.data.interceptors.AuthorizationTokenHeaderInterceptor
+import com.vero.tasky.core.data.interceptors.UnauthorizedInterceptor
 import com.vero.tasky.core.domain.local.UserPreferences
+import com.vero.tasky.core.domain.util.eventbus.LogOutEventBus
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +19,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object CoreModule {
 
     @Provides
     @Singleton
@@ -33,14 +35,25 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(preferences: UserPreferences) : OkHttpClient{
+    fun provideOkHttpClient(
+        preferences: UserPreferences,
+        unauthorizedInterceptor: UnauthorizedInterceptor
+    ) : OkHttpClient{
         return OkHttpClient.Builder()
             .addInterceptor(ApiKeyHeaderInterceptor())
             .addInterceptor(AuthorizationTokenHeaderInterceptor(preferences))
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .addInterceptor(unauthorizedInterceptor)
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
             .callTimeout(60, TimeUnit.SECONDS)
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideLogOutEventBus() : LogOutEventBus {
+        return LogOutEventBus()
+    }
+
 }

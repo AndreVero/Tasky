@@ -43,4 +43,8 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun logOut() = safeApiCall {
+        api.logOut()
+    }
+
 }

@@ -2,10 +2,10 @@ package com.vero.tasky
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vero.tasky.agenda.domain.usecase.GetFullAgendaUseCase
-import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
-import com.vero.tasky.auth.domain.usecase.AuthenticateUseCase
 import com.vero.tasky.core.domain.local.UserPreferences
+import com.vero.tasky.core.domain.usecase.MainUseCases
+import com.vero.tasky.core.domain.util.eventbus.LogOutEventBus
+import com.vero.tasky.core.domain.util.eventbus.LogOutEventBusEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,9 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val preferences: UserPreferences,
-    private val authenticateUseCase: AuthenticateUseCase,
-    private val syncAgendaUseCase: SyncAgendaUseCase,
-    private val getFullAgendaUseCase: GetFullAgendaUseCase,
+    private val mainUseCases: MainUseCases,
+    private val logOutEventBus: LogOutEventBus,
 ): ViewModel() {
 
     private var _state = MutableStateFlow(MainState(
@@ -39,14 +38,35 @@ class MainViewModel @Inject constructor(
                 _state.value = _state.value.copy(isLoading = false)
             }
         }
+
+        viewModelScope.launch {
+            logOutEventBus.logOutFlow.collect { event ->
+                when(event) {
+                    LogOutEventBusEvent.LogOut -> {
+                        viewModelScope.launch {
+                            mainUseCases.logOutUseCase()
+                                .onSuccess { logOut() }
+                                .onFailure { channel.send(R.string.failed_to_log_out) }
+                        }
+                    }
+                    LogOutEventBusEvent.UnauthorizedException -> logOut()
+                }
+
+            }
+        }
+    }
+
+    private fun logOut() {
+        mainUseCases.clearDatabaseUseCase()
+        _state.value = _state.value.copy(isLoggedIn = false)
     }
 
     private suspend fun validateToken() {
-        authenticateUseCase()
+        mainUseCases.authenticateUseCase()
             .onSuccess {
                 _state.value = _state.value.copy(isLoading = false)
-                syncAgendaUseCase.invoke()
-                getFullAgendaUseCase.invoke()
+                mainUseCases.syncAgendaUseCase.invoke()
+                mainUseCases.getFullAgendaUseCase.invoke()
             }
             .onFailure { error ->
                 if (error is HttpException && error.code() == 401) {
