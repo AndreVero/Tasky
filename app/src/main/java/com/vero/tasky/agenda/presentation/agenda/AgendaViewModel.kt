@@ -89,7 +89,7 @@ class AgendaViewModel @Inject constructor(
             userShortName = UserNameParser.toShortName(preferences.getUser()?.fullName ?: ""),
             monthLabel = date.month.getDisplayName(TextStyle.FULL, Locale.getDefault()),
             days = days,
-            dayLabel = LocalDateParser.getDayLabel(days[0]),
+            dayLabel = LocalDateParser.getDayLabel(days[0].date),
         )
     }
 
