@@ -3,7 +3,7 @@ package com.vero.tasky.agenda.data.local.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "created_event")
+@Entity(tableName = "updated_event")
 data class UpdatedEventEntity(
     @PrimaryKey(autoGenerate = false)
     val id: String,

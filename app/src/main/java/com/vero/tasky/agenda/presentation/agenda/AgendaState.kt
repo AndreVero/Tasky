@@ -11,5 +11,6 @@ data class AgendaState(
     val monthLabel: String = "",
     val days: List<Day> = emptyList(),
     val dayLabel: String = "",
+    val currentAgendaItem: AgendaItem? = null,
     val agendaItems: List<AgendaItem> = emptyList()
 ) : Parcelable

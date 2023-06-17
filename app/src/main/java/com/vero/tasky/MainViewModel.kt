@@ -57,7 +57,9 @@ class MainViewModel @Inject constructor(
     }
 
     private fun logOut() {
-        mainUseCases.clearDatabaseUseCase()
+        viewModelScope.launch {
+            mainUseCases.clearDatabaseUseCase()
+        }
         _state.value = _state.value.copy(isLoggedIn = false)
     }
 

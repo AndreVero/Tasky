@@ -18,7 +18,7 @@ interface ReminderDao {
     @Query("""
         SELECT *
         FROM reminder
-        WHERE DATE(:timestamp) = CURDATE()
+        WHERE DATE(:timestamp) = DATE()
     """)
     fun loadRemindersForDay(timestamp: Long) : Flow<List<ReminderEntity>>
 

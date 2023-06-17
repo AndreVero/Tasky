@@ -1,12 +1,14 @@
 package com.vero.tasky.agenda.presentation.agenda.components
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.vero.tasky.ui.theme.profileText
 
 @Composable
 fun ProfileIcon(
@@ -23,6 +25,8 @@ fun ProfileIcon(
                     radius = this.size.maxDimension
                 )
             },
-        text = text,
+        color = MaterialTheme.colors.profileText,
+        text = text.uppercase(),
+        style = MaterialTheme.typography.h3
     )
 }

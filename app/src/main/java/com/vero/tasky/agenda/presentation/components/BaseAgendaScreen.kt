@@ -25,7 +25,7 @@ fun BaseAgendaScreen(
             modifier = Modifier
                 .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .fillMaxWidth()
-                .height(54.dp)
+                .height(80.dp)
                 .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
         )
         Box (
@@ -34,7 +34,7 @@ fun BaseAgendaScreen(
                 .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .fillMaxHeight()
                 .background(MaterialTheme.colors.primaryVariant)
-                .padding(top = 50.dp, start = 16.dp, end = 16.dp)
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
         )
     }
 }
