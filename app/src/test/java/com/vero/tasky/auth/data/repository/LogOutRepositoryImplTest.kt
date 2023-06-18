@@ -18,7 +18,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
-class LogOutRepositoryImplTest {
+class AuthRepositoryImplTest {
 
     private lateinit var repository: AuthRepositoryImpl
     private lateinit var mockWebServer: MockWebServer

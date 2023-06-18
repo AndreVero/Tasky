@@ -13,6 +13,8 @@ import com.vero.tasky.auth.domain.usecase.LoginUseCase
 import com.vero.tasky.auth.domain.usecase.LoginUseCases
 import com.vero.tasky.auth.domain.usecase.ValidateEmailUseCase
 import com.vero.tasky.auth.domain.usecase.password.PasswordValidationResult
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBusEvent
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +30,7 @@ class LoginViewModelTest {
 
     private lateinit var viewModel: LoginViewModel
     private lateinit var authRepository: AuthRepository
+    private lateinit var authEventBus: AuthEventBus
 
     companion object {
         private const val VALID_PASSWORD = "1234QWertyu"
@@ -36,6 +39,7 @@ class LoginViewModelTest {
 
     @Before
     fun setUp() {
+        authEventBus = AuthEventBus()
         authRepository = AuthRepositoryFake()
         viewModel = LoginViewModel(
             savedStateHandle = SavedStateHandle(
@@ -55,17 +59,18 @@ class LoginViewModelTest {
                     every { invoke(password = TOO_SHORT_PASSWORD) } returns PasswordValidationResult.TOO_SHORT
                                                                 },
                 validateEmailUseCase = ValidateEmailUseCase(emailMatcher = mockk(relaxed = true)),
-                loginUseCase = LoginUseCase(authRepository)
-            )
+                loginUseCase = LoginUseCase(authRepository),
+            ),
+            authEventBus = authEventBus
         )
     }
 
     @Test
     fun `Login, correct info, return results`() = runTest {
         viewModel.onEvent(LoginEvent.LogIn)
-        viewModel.uiEvent.test {
+        authEventBus.authFlow.test {
             val item = awaitItem()
-            assertThat(item).isEqualTo(UiLoginEvent.OnLogIn)
+            assertThat(item).isEqualTo(AuthEventBusEvent.LogIn)
         }
     }
 
