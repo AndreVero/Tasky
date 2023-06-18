@@ -1,6 +1,6 @@
 package com.vero.tasky.agenda.presentation.util
 
-import com.vero.tasky.agenda.domain.model.Day
+import com.vero.tasky.agenda.presentation.agenda.model.Day
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*

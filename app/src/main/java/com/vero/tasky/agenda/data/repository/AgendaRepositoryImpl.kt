@@ -33,15 +33,13 @@ class AgendaRepositoryImpl(
         val reminderFlow = reminderDao.loadRemindersForDay(timestamp).map {
             it.map { reminderEntity ->  reminderEntity.toReminder() }
         }
-        return merge(taskFlow, eventFlow, reminderFlow)
+        return merge(taskFlow, eventFlow, reminderFlow).map { it.sortedBy { item -> item.time } }
     }
 
     override suspend fun updateAgendaForDay(timestamp: Long): Result<Unit> {
         return safeApiCall {
-            withContext(Dispatchers.IO) {
-                val networkAgendaItems = api.getAgendaForDay(TimeZone.getDefault().id, timestamp)
-                saveAgendaItems(networkAgendaItems)
-            }
+            val networkAgendaItems = api.getAgendaForDay(TimeZone.getDefault().id, timestamp)
+            saveAgendaItems(networkAgendaItems)
         }
     }
 
@@ -60,10 +58,8 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun getFullAgenda() = safeApiCall {
-        withContext(Dispatchers.IO) {
-            val result = api.getFullAgenda()
-            saveAgendaItems(result)
-        }
+        val result = api.getFullAgenda()
+        saveAgendaItems(result)
     }
 
     private suspend fun saveAgendaItems(agendaDto: AgendaDto) {

@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(
     onSignUp: () -> Unit,
-    onLogIn: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -36,7 +35,6 @@ fun LoginScreen(
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect {event ->
             when (event) {
-                UiLoginEvent.OnLogIn -> onLogIn()
                 UiLoginEvent.OnSignUp -> onSignUp()
                 is UiLoginEvent.ShowErrorMessage -> {
                     coroutineScope.launch {

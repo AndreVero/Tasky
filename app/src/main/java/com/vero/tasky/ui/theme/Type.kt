@@ -20,33 +20,28 @@ val Inter = FontFamily(
 )
 
 val Typography = Typography(
+    defaultFontFamily = Inter,
     h1 = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 30.sp
     ),
     body1 = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
     body2 = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Light,
         fontSize = 14.sp
     ),
     h2 = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp
     ),
     h3 = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp
     ),
     h4 = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
     ),
@@ -54,29 +49,32 @@ val Typography = Typography(
 
 val Typography.Inter700Size11: TextStyle
     get() = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 11.sp
     )
 
 val Typography.Inter700Size17: TextStyle
     get() = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 17.sp
     )
 
 val Typography.Inter700Size20: TextStyle
     get() = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp
     )
 
 val Typography.Inter400Size14: TextStyle
     get() = TextStyle(
-        fontFamily = Inter,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp
+    )
+
+val Typography.Inter400Size16: TextStyle
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
     )
 

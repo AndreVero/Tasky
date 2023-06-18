@@ -14,9 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
-import com.vero.tasky.ui.theme.task
+import com.vero.tasky.ui.theme.taskBackgroundColor
 
 @Composable
 fun CircleCheckBox(
@@ -32,13 +34,13 @@ fun CircleCheckBox(
             .background(MaterialTheme.colors.background)
             .padding(1.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colors.task),
+            .background(taskBackgroundColor),
         contentAlignment = Alignment.Center
     ) {
         if (agendaItem.isDone)
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Check box",
+                contentDescription = stringResource(id = R.string.is_done),
                 tint = MaterialTheme.colors.background
             )
     }

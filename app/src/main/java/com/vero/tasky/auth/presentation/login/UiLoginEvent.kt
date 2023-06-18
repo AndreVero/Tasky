@@ -4,6 +4,5 @@ import androidx.annotation.StringRes
 
 sealed interface UiLoginEvent {
     object OnSignUp : UiLoginEvent
-    object OnLogIn : UiLoginEvent
     data class ShowErrorMessage(@StringRes val message: Int) : UiLoginEvent
 }
