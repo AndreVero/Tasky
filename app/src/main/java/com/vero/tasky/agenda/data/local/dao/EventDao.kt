@@ -29,7 +29,7 @@ interface EventDao {
     @Query("""
         SELECT *
         FROM event
-        WHERE DATE(:timestamp) = CURDATE()
+        WHERE DATE(:timestamp) = DATE()
     """)
     fun loadEventsForDay(timestamp: Long) : Flow<List<EventWithPhotosAndAttendees>>
 

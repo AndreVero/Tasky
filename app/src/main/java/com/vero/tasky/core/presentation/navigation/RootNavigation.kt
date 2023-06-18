@@ -1,11 +1,11 @@
 package com.vero.tasky.core.presentation.navigation
 
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.vero.tasky.agenda.presentation.agenda.AgendaScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.auth.presentation.registration.RegistrationScreen
 
@@ -21,15 +21,15 @@ fun RootNavigation(
         modifier = modifier
     ) {
         composable(route = Screens.Agenda.route) {
-            Text(text = "Agenda")
+            AgendaScreen(onLogOut = {}
+            )
         }
         composable(route = Screens.Registration.route) {
             RegistrationScreen(
-                onSignUp = { navController.navigate(Screens.Agenda.route) },
+                onSignUp = { navController.navigate(Screens.Login.route) },
                 onBackPressed = { navController.popBackStack() })
         }
         composable(route = Screens.Login.route) {
-            navController.popBackStack()
             LoginScreen(
                 onSignUp = { navController.navigate(Screens.Registration.route) },
                 onLogIn = { navController.navigate(Screens.Agenda.route) }

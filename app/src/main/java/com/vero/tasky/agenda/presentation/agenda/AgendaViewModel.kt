@@ -7,8 +7,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
+import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
-import com.vero.tasky.agenda.domain.util.LocalDateParser
+import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.agenda.domain.util.UserNameParser
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.util.eventbus.LogOutEventBus
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
@@ -32,8 +34,10 @@ class AgendaViewModel @Inject constructor(
     private val logOutEventBus: LogOutEventBus,
 ) : ViewModel() {
 
-    var state by mutableStateOf(savedStateHandle.get(STATE_KEY)
-        ?: getInitialState(LocalDate.now()))
+    var state by mutableStateOf(
+        savedStateHandle.get(STATE_KEY)
+            ?: getInitialState(LocalDate.now())
+    )
         private set
 
     private val channel = Channel<UiAgendaEvent>()
@@ -41,7 +45,9 @@ class AgendaViewModel @Inject constructor(
 
     private var currentDayJob: Job? = null
 
-    init { getAgendaForChosenDay(LocalDate.now()) }
+    init {
+        getAgendaForChosenDay(LocalDate.now())
+    }
 
     fun onEvent(event: AgendaEvent) {
         when (event) {
@@ -49,6 +55,10 @@ class AgendaViewModel @Inject constructor(
             is AgendaEvent.DeleteAgendaItem -> {}
             AgendaEvent.LogOut -> { logOut() }
             is AgendaEvent.OnDayClick -> { getAgendaForChosenDay(event.date) }
+            AgendaEvent.OnNewItemClick -> {}
+            is AgendaEvent.EditAgendaItem -> {}
+            is AgendaEvent.OnCheckChanged -> {}
+            is AgendaEvent.OpenAgendaItem -> {}
         }
     }
 
@@ -70,10 +80,11 @@ class AgendaViewModel @Inject constructor(
         currentDayJob = viewModelScope.launch {
             agendaUseCases.getAgendaForDayUseCase(timestamp = timestamp)
                 .collectLatest { items ->
-                updateState(state.copy(
-                    agendaItems = items
-                ))
-            }
+                    updateState(
+                        state.copy(agendaItems = items)
+                    )
+                    setCurrentAgendaItem(day, items)
+                }
         }
 
         viewModelScope.launch {
@@ -83,15 +94,32 @@ class AgendaViewModel @Inject constructor(
         updateState(getInitialState(date = day))
     }
 
-    private fun getInitialState(date: LocalDate) : AgendaState {
+    private fun getInitialState(date: LocalDate): AgendaState {
         val days = LocalDateParser.getNextDaysFromDate(date)
         return AgendaState(
             userShortName = UserNameParser.toShortName(preferences.getUser()?.fullName ?: ""),
             monthLabel = date.month.getDisplayName(TextStyle.FULL, Locale.getDefault()),
             days = days,
-            dayLabel = LocalDateParser.getDayLabel(days[0]),
+            dayLabel = LocalDateParser.getDayLabel(days[3].date),
         )
     }
+
+    private fun setCurrentAgendaItem(date: LocalDate, agendaItems: List<AgendaItem>) {
+        if (date != LocalDate.now())
+            updateState(state.copy(currentAgendaItem = null))
+        else {
+            val currentDayTime = LocalDateTime.now()
+            var currentAgendaItem: AgendaItem? = null
+            agendaItems.forEach { agendaItem ->
+                if (currentDayTime >= agendaItem.time)
+                    currentAgendaItem = agendaItem
+                else
+                    return@forEach
+            }
+            updateState(state.copy(currentAgendaItem = currentAgendaItem))
+        }
+    }
+
 
     companion object {
         private const val STATE_KEY = "state"

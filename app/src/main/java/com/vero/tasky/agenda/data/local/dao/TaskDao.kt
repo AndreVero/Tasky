@@ -18,7 +18,7 @@ interface TaskDao {
     @Query("""
         SELECT *
         FROM task
-        WHERE DATE(:timestamp) = CURDATE()
+        WHERE DATE(:timestamp) = DATE()
     """)
     fun loadTasksForDay(timestamp: Long) : Flow<List<TaskEntity>>
 
