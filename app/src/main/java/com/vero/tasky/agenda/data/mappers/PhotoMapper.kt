@@ -1,6 +1,6 @@
 package com.vero.tasky.agenda.data.mappers
 
-import com.vero.tasky.agenda.data.local.entities.CreatedLocalPhotoEntity
+import com.vero.tasky.agenda.data.local.entities.LocalPhotoEntity
 import com.vero.tasky.agenda.data.local.entities.RemotePhotoEntity
 import com.vero.tasky.agenda.data.remote.network.dto.PhotoDto
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
@@ -20,7 +20,7 @@ fun RemotePhotoEntity.toRemotePhoto(): AgendaPhoto.RemotePhoto {
     )
 }
 
-fun CreatedLocalPhotoEntity.toLocalPhoto(): AgendaPhoto.LocalPhoto {
+fun LocalPhotoEntity.toLocalPhoto(): AgendaPhoto.LocalPhoto {
     return AgendaPhoto.LocalPhoto(
         uri = this.path
     )

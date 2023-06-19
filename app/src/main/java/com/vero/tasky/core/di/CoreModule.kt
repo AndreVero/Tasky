@@ -5,7 +5,7 @@ import com.vero.tasky.core.data.interceptors.ApiKeyHeaderInterceptor
 import com.vero.tasky.core.data.interceptors.AuthorizationTokenHeaderInterceptor
 import com.vero.tasky.core.data.interceptors.UnauthorizedInterceptor
 import com.vero.tasky.core.domain.local.UserPreferences
-import com.vero.tasky.core.domain.util.eventbus.LogOutEventBus
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,8 +52,8 @@ object CoreModule {
 
     @Provides
     @Singleton
-    fun provideLogOutEventBus() : LogOutEventBus {
-        return LogOutEventBus()
+    fun provideLogOutEventBus() : AuthEventBus {
+        return AuthEventBus()
     }
 
 }

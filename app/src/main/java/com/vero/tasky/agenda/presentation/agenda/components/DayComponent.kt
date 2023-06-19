@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.vero.tasky.agenda.domain.model.Day
+import com.vero.tasky.agenda.presentation.agenda.model.Day
 import com.vero.tasky.ui.theme.*
 import java.time.LocalDate
 import java.time.format.TextStyle

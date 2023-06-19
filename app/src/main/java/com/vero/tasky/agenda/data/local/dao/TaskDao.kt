@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 interface TaskDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTasks(vararg events: TaskEntity)
+    suspend fun insertTasks(vararg events: TaskEntity)
 
     @Update
-    fun updateTasks(vararg events: TaskEntity)
+    suspend fun updateTasks(vararg events: TaskEntity)
 
     @Delete
-    fun deleteTasks(vararg events: TaskEntity)
+    suspend fun deleteTasks(vararg events: TaskEntity)
 
     @Query("""
         SELECT *

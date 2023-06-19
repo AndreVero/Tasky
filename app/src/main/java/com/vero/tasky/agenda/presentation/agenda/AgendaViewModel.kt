@@ -12,8 +12,8 @@ import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.agenda.domain.util.UserNameParser
 import com.vero.tasky.core.domain.local.UserPreferences
-import com.vero.tasky.core.domain.util.eventbus.LogOutEventBus
-import com.vero.tasky.core.domain.util.eventbus.LogOutEventBusEvent
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBusEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -31,7 +31,7 @@ class AgendaViewModel @Inject constructor(
     private val preferences: UserPreferences,
     private val agendaUseCases: AgendaUseCases,
     private val savedStateHandle: SavedStateHandle,
-    private val logOutEventBus: LogOutEventBus,
+    private val authEventBus: AuthEventBus,
 ) : ViewModel() {
 
     var state by mutableStateOf(
@@ -51,20 +51,16 @@ class AgendaViewModel @Inject constructor(
 
     fun onEvent(event: AgendaEvent) {
         when (event) {
-            is AgendaEvent.ChangeAgendaItemStatus -> {}
-            is AgendaEvent.DeleteAgendaItem -> {}
+            is AgendaEvent.DeleteAgendaItem -> { }
             AgendaEvent.LogOut -> { logOut() }
             is AgendaEvent.OnDayClick -> { getAgendaForChosenDay(event.date) }
-            AgendaEvent.OnNewItemClick -> {}
-            is AgendaEvent.EditAgendaItem -> {}
-            is AgendaEvent.OnCheckChanged -> {}
-            is AgendaEvent.OpenAgendaItem -> {}
+            is AgendaEvent.OnCheckChanged -> { }
         }
     }
 
     private fun logOut() {
         viewModelScope.launch {
-            logOutEventBus.sendEvent(LogOutEventBusEvent.LogOut)
+            authEventBus.sendEvent(AuthEventBusEvent.LogOut)
         }
     }
 
@@ -109,13 +105,7 @@ class AgendaViewModel @Inject constructor(
             updateState(state.copy(currentAgendaItem = null))
         else {
             val currentDayTime = LocalDateTime.now()
-            var currentAgendaItem: AgendaItem? = null
-            agendaItems.forEach { agendaItem ->
-                if (currentDayTime >= agendaItem.time)
-                    currentAgendaItem = agendaItem
-                else
-                    return@forEach
-            }
+            val currentAgendaItem = agendaItems.findLast { it.time <= currentDayTime }
             updateState(state.copy(currentAgendaItem = currentAgendaItem))
         }
     }

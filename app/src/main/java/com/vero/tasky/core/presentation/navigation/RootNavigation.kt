@@ -21,7 +21,10 @@ fun RootNavigation(
         modifier = modifier
     ) {
         composable(route = Screens.Agenda.route) {
-            AgendaScreen(onLogOut = {}
+            AgendaScreen(
+                openEventScreen = { },
+                openReminderScreen = { },
+                openTaskScreen = { }
             )
         }
         composable(route = Screens.Registration.route) {
@@ -32,7 +35,6 @@ fun RootNavigation(
         composable(route = Screens.Login.route) {
             LoginScreen(
                 onSignUp = { navController.navigate(Screens.Registration.route) },
-                onLogIn = { navController.navigate(Screens.Agenda.route) }
             )
         }
     }

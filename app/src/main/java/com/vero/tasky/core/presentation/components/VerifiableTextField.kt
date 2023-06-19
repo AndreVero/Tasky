@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.vero.tasky.R
 import com.vero.tasky.ui.theme.text
 import com.vero.tasky.ui.theme.textFieldBackground
 
@@ -34,7 +35,7 @@ fun VerifiableTextField(
            if (isValid)
                Icon(
                    imageVector = Icons.Default.Check,
-                   contentDescription = "Field is valid",
+                   contentDescription = stringResource(id = R.string.field_is_valid),
                    tint = MaterialTheme.colors.secondary
                )
        },

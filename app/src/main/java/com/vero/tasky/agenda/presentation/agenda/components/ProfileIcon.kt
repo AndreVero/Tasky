@@ -14,7 +14,7 @@ import com.vero.tasky.ui.theme.profileText
 fun ProfileIcon(
     text: String,
     color: Color,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
 ) {
     Text(
         modifier = modifier

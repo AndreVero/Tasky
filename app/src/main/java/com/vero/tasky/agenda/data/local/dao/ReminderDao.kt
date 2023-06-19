@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 interface ReminderDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertReminders(vararg events: ReminderEntity)
+    suspend fun insertReminders(vararg events: ReminderEntity)
 
     @Update
-    fun updateReminders(vararg events: ReminderEntity)
+    suspend fun updateReminders(vararg events: ReminderEntity)
 
     @Delete
-    fun deleteReminders(vararg events: ReminderEntity)
+    suspend fun deleteReminders(vararg events: ReminderEntity)
 
     @Query("""
         SELECT *

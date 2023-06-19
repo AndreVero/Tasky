@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.vero.tasky.R
 import com.vero.tasky.ui.theme.onTextFieldIcon
 import com.vero.tasky.ui.theme.text
 import com.vero.tasky.ui.theme.textFieldBackground
@@ -46,7 +47,7 @@ fun PasswordTextField(
                     Icon(
                         imageVector = Icons.Default.Visibility,
                         tint = MaterialTheme.colors.onTextFieldIcon,
-                        contentDescription = "Visibility"
+                        contentDescription = stringResource(id = R.string.visibility)
                     )
                 }
             } else {
@@ -54,7 +55,7 @@ fun PasswordTextField(
                     Icon(
                         imageVector = Icons.Filled.VisibilityOff,
                         tint = MaterialTheme.colors.onTextFieldIcon,
-                        contentDescription = "Visibility off"
+                        contentDescription = stringResource(id = R.string.visibility_off)
                     )
                 }
             }

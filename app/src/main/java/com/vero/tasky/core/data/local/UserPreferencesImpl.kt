@@ -38,7 +38,6 @@ class UserPreferencesImpl @Inject constructor(
             putString(UserPreferences.TOKEN, user.token)
             putString(UserPreferences.FULL_NAME, user.fullName)
             putString(UserPreferences.USER_ID, user.userId)
-            apply()
         }
     }
 

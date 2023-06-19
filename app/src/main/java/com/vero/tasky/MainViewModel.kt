@@ -4,13 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.usecase.MainUseCases
-import com.vero.tasky.core.domain.util.eventbus.LogOutEventBus
-import com.vero.tasky.core.domain.util.eventbus.LogOutEventBusEvent
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBusEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -19,12 +17,14 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val preferences: UserPreferences,
     private val mainUseCases: MainUseCases,
-    private val logOutEventBus: LogOutEventBus,
-): ViewModel() {
+    private val authEventBus: AuthEventBus,
+) : ViewModel() {
 
-    private var _state = MutableStateFlow(MainState(
-        isLoggedIn = preferences.isLoggedIn()
-    ))
+    private var _state = MutableStateFlow(
+        MainState(
+            isLoggedIn = preferences.isLoggedIn()
+        )
+    )
     val state = _state.asStateFlow()
 
     private val channel = Channel<Int>()
@@ -39,28 +39,29 @@ class MainViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
-            logOutEventBus.logOutFlow.collect { event ->
-                when(event) {
-                    LogOutEventBusEvent.LogOut -> {
-                        viewModelScope.launch {
-                            mainUseCases.logOutUseCase()
-                                .onSuccess { logOut() }
-                                .onFailure { channel.send(R.string.failed_to_log_out) }
-                        }
-                    }
-                    LogOutEventBusEvent.UnauthorizedException -> logOut()
-                }
 
+        authEventBus.authFlow.onEach { event ->
+            when (event) {
+                AuthEventBusEvent.LogOut -> {
+                    viewModelScope.launch {
+                        mainUseCases.logOut()
+                            .onSuccess { logOut() }
+                            .onFailure { channel.send(R.string.failed_to_log_out) }
+                    }
+                }
+                AuthEventBusEvent.UnauthorizedException -> logOut()
+                AuthEventBusEvent.LogIn -> { _state.value = _state.value.copy(isLoggedIn = true) }
             }
-        }
+        }.launchIn(viewModelScope)
+
     }
 
     private fun logOut() {
         viewModelScope.launch {
-            mainUseCases.clearDatabaseUseCase()
+            mainUseCases.clearDatabase()
+            preferences.clear()
+            _state.value = _state.value.copy(isLoggedIn = false)
         }
-        _state.value = _state.value.copy(isLoggedIn = false)
     }
 
     private suspend fun validateToken() {

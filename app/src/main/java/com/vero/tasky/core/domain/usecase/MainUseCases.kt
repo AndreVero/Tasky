@@ -11,6 +11,6 @@ data class MainUseCases @Inject constructor(
     val authenticateUseCase: AuthenticateUseCase,
     val syncAgendaUseCase: SyncAgendaUseCase,
     val getFullAgendaUseCase: GetFullAgendaUseCase,
-    val clearDatabaseUseCase: ClearDatabaseUseCase,
-    val logOutUseCase: LogOutUseCase
+    val clearDatabase: ClearDatabaseUseCase,
+    val logOut: LogOutUseCase
 )

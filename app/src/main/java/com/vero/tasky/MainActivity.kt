@@ -11,6 +11,7 @@ import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -28,10 +29,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val state = viewModel.state.value
+        val state = viewModel.state
 
         installSplashScreen().apply {
-            setKeepOnScreenCondition { viewModel.state.value.isLoading }
+            setKeepOnScreenCondition { state.value.isLoading }
         }
 
         setContent {
@@ -58,11 +59,12 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         },
-                    ) { paddingValues -> RootNavigation(
-                        navController = rememberNavController(),
-                        isLoggedIn = state.isLoggedIn,
-                        modifier = Modifier.padding(paddingValues)
-                    )
+                    ) { paddingValues ->
+                        RootNavigation(
+                            navController = rememberNavController(),
+                            isLoggedIn = state.collectAsState().value.isLoggedIn,
+                            modifier = Modifier.padding(paddingValues)
+                        )
                     }
                 }
             }

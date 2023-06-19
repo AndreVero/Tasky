@@ -12,6 +12,8 @@ import com.vero.tasky.auth.domain.usecase.LoginUseCases
 import com.vero.tasky.auth.domain.util.PasswordErrorParser
 import com.vero.tasky.auth.domain.util.ValidationResult
 import com.vero.tasky.core.domain.local.UserPreferences
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
+import com.vero.tasky.core.domain.util.eventbus.AuthEventBusEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -22,7 +24,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val userPreferences: UserPreferences,
-    private val loginUseCases: LoginUseCases
+    private val loginUseCases: LoginUseCases,
+    private val authEventBus: AuthEventBus,
     ) : ViewModel()
 {
     var state by mutableStateOf(
@@ -69,7 +72,7 @@ class LoginViewModel @Inject constructor(
                     password = state.password
                 ).onSuccess { user ->
                     userPreferences.saveUser(user)
-                    channel.send(UiLoginEvent.OnLogIn)
+                    authEventBus.sendEvent(AuthEventBusEvent.LogIn)
                 }.onFailure {
                     updateState(state.copy(isLoading = false))
                     showError(R.string.network_error_on_login)

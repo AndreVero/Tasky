@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.work.WorkManager
 import com.vero.tasky.agenda.data.local.AgendaDatabase
-import com.vero.tasky.agenda.data.local.dao.DeletedEventsDao
-import com.vero.tasky.agenda.data.local.dao.DeletedRemindersDao
-import com.vero.tasky.agenda.data.local.dao.DeletedTasksDao
+import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
 import com.vero.tasky.agenda.data.remote.network.AgendaApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.GetFullAgendaWorkerRunnerImpl
@@ -75,20 +73,8 @@ object AgendaModule {
 
     @Provides
     @Singleton
-    fun provideDeletedTasksDao(db: AgendaDatabase) : DeletedTasksDao {
-        return db.deletedTasksDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideDeletedEventsDao(db: AgendaDatabase) : DeletedEventsDao {
-        return db.deletedEventsDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideDeletedRemindersDao(db: AgendaDatabase) : DeletedRemindersDao {
-        return db.deletedRemindersDao()
+    fun provideDeletedTasksDao(db: AgendaDatabase) : ModifiedAgendaItemDao {
+        return db.modifiedAgendaItemDao()
     }
 
     @Provides

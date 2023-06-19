@@ -20,4 +20,22 @@
     <string name="network_error_on_registration">Something went wrong, please try again later!</string>
     <string name="token_expired">Token expired, please log in!</string>
     <string name="failed_to_log_out">Failed to log out, try again later!</string>
+    <string name="logout">Logout</string>
+    <string name="open">Open</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="more">More</string>
+    <string name="event">Event</string>
+    <string name="task">Task</string>
+    <string name="reminder">Reminder</string>
+    <string name="add_new_title">Add new title</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_agenda_item">Are you sure you want to delete agenda item?</string>
+    <string name="is_done">Is done</string>
+    <string name="field_is_valid">Field is valid</string>
+    <string name="back">Back</string>
+    <string name="visibility">Visibility</string>
+    <string name="visibility_off">Visibility off</string>
+    <string name="month_drop_down">Month drop-down</string>
 </resources>

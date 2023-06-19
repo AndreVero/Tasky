@@ -2,7 +2,7 @@ package com.vero.tasky.agenda.presentation.agenda
 
 import android.os.Parcelable
 import com.vero.tasky.agenda.domain.model.AgendaItem
-import com.vero.tasky.agenda.domain.model.Day
+import com.vero.tasky.agenda.presentation.agenda.model.Day
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

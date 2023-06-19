@@ -6,22 +6,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.vero.tasky.R
+import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.presentation.agenda.components.*
 import com.vero.tasky.agenda.presentation.components.BaseAgendaScreen
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
@@ -31,20 +29,27 @@ import kotlinx.coroutines.launch
 @Composable
 fun AgendaScreen(
     viewModel: AgendaViewModel = hiltViewModel(),
-    onLogOut: () -> Unit,
+    openEventScreen: (isEditable: Boolean) -> Unit,
+    openTaskScreen: (isEditable: Boolean) -> Unit,
+    openReminderScreen: (isEditable: Boolean) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val snackbarHostState = LocalSnackbarHostState.current
 
-
     val dialogState = rememberMaterialDialogState()
     val state = viewModel.state
+
+    var isLogOutDropDownVisible by remember {
+        mutableStateOf(false)
+    }
+    var isActionDropDownVisible by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                UiAgendaEvent.OnLogOut -> onLogOut()
                 is UiAgendaEvent.ShowErrorMessage -> {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
@@ -60,6 +65,8 @@ fun AgendaScreen(
         onDayPicked = { date -> viewModel.onEvent(AgendaEvent.OnDayClick(date)) },
         dialogState = dialogState
     )
+
+
 
     BaseAgendaScreen(
         headerContent = {
@@ -78,16 +85,27 @@ fun AgendaScreen(
                 Spacer(modifier = Modifier.width(5.dp))
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Month drop-down"
+                    contentDescription = stringResource(id = R.string.month_drop_down)
                 )
             }
-            ProfileIcon(
-                text = state.userShortName,
-                color = MaterialTheme.colors.profileIcon,
-                modifier = Modifier.align(
-                    Alignment.CenterEnd
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                ProfileIcon(
+                    text = state.userShortName,
+                    color = MaterialTheme.colors.profileIcon,
+                    modifier = Modifier.clickable { isLogOutDropDownVisible = true }
                 )
-            )
+                if (isLogOutDropDownVisible) {
+                    DefaultDropDownMenu(
+                        actions = hashMapOf(
+                            R.string.logout to { viewModel.onEvent(AgendaEvent.LogOut) }
+                        ),
+                        onDismissRequest = { isLogOutDropDownVisible = false }
+                    )
+                }
+            }
         },
         bodyContent = {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -117,25 +135,51 @@ fun AgendaScreen(
                         AgendaComponent(
                             agendaItem = agendaItem,
                             isCurrent = agendaItem == state.currentAgendaItem,
-                            onOpenClick = {},
-                            onEditClick = {},
-                            onDeleteClick = {},
-                            onCheckChanged = {}
+                            onOpenClick = {
+                                when (agendaItem) {
+                                    is AgendaItem.Task -> openTaskScreen(false)
+                                    is AgendaItem.Reminder -> openReminderScreen(false)
+                                    is AgendaItem.Event -> openEventScreen(false)
+                                }
+                            },
+                            onEditClick = {
+                                when (agendaItem) {
+                                    is AgendaItem.Task -> openTaskScreen(true)
+                                    is AgendaItem.Reminder -> openReminderScreen(true)
+                                    is AgendaItem.Event -> openEventScreen(true)
+                                }
+                            },
+                            onDeleteClick = {
+                                viewModel.onEvent(AgendaEvent.DeleteAgendaItem(agendaItem))
+                            },
+                            onCheckChanged = { item ->
+                                viewModel.onEvent(AgendaEvent.OnCheckChanged(item))
+                            }
                         )
                     }
                 })
             }
             FloatingActionButton(
-                onClick = { viewModel.onEvent(AgendaEvent.OnNewItemClick) },
+                onClick = { isActionDropDownVisible = true },
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.buttonBackground,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 40.dp)
             ) {
+                if (isActionDropDownVisible) {
+                    DefaultDropDownMenu(
+                        actions = hashMapOf(
+                            R.string.event to { openEventScreen(true) },
+                            R.string.task to { openTaskScreen(true) },
+                            R.string.reminder to { openReminderScreen(true) }
+                        ),
+                        onDismissRequest = { isActionDropDownVisible = false }
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add new item",
+                    contentDescription = stringResource(id = R.string.add_new_title),
                     tint = MaterialTheme.colors.buttonText
                 )
             }

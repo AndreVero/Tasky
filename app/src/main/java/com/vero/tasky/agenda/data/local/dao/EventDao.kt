@@ -11,19 +11,19 @@ import kotlinx.coroutines.flow.Flow
 interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertEvents(vararg events: EventEntity)
+    suspend fun insertEvents(vararg events: EventEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAttendees(vararg events: AttendeeEntity)
+    suspend fun insertAttendees(vararg events: AttendeeEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertRemotePhotoEntity(vararg events: RemotePhotoEntity)
+    suspend fun insertRemotePhotoEntity(vararg events: RemotePhotoEntity)
 
     @Update
-    fun updateEvents(vararg events: EventEntity)
+    suspend fun updateEvents(vararg events: EventEntity)
 
     @Delete
-    fun deleteEvents(vararg events: EventEntity)
+    suspend fun deleteEvents(vararg events: EventEntity)
 
     @Transaction
     @Query("""

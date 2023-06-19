@@ -50,13 +50,13 @@ val Colors.profileIcon : Color
 val Colors.profileText : Color
     get() = LightBlue
 
-val Colors.task : Color
+val taskBackgroundColor : Color
     get() = Green
 
-val Colors.reminder : Color
+val reminderBackgroundColor : Color
     get() = Light2
 
-val Colors.event : Color
+val eventBackgroundColor : Color
     get() = LightGreen
 
 val Colors.selectedDay : Color

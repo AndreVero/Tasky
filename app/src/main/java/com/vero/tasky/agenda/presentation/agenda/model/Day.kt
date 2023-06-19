@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.domain.model
+package com.vero.tasky.agenda.presentation.agenda.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
