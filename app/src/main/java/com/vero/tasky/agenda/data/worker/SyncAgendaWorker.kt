@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.domain.worker
+package com.vero.tasky.agenda.data.worker
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
@@ -41,9 +41,16 @@ class SyncAgendaWorker @AssistedInject constructor(
         )
         return if (result.isSuccess) {
             supervisorScope {
-                tasks.map {
-                    launch { modifiedAgendaItemDao.deleteAgendaItem() }
-                }.joinAll()
+                val taskJobs = tasks.map {
+                    launch { modifiedAgendaItemDao.deleteAgendaItem(it) }
+                }
+                val eventsJob = events.map {
+                    launch { modifiedAgendaItemDao.deleteAgendaItem(it) }
+                }
+                val reminderJobs = reminders.map {
+                    launch { modifiedAgendaItemDao.deleteAgendaItem(it) }
+                }
+                (taskJobs + eventsJob + reminderJobs).joinAll()
             }
             Result.success()
         }

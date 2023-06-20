@@ -1,7 +1,7 @@
 package com.vero.tasky.agenda.data.workmanagerrunner
 
 import androidx.work.*
-import com.vero.tasky.agenda.domain.worker.SyncAgendaWorker
+import com.vero.tasky.agenda.data.worker.SyncAgendaWorker
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
 
 class SyncAgendaWorkerRunnerImpl(

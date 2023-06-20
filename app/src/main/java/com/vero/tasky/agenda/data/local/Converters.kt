@@ -8,32 +8,21 @@ class Converters {
 
     @TypeConverter
     fun fromAgendaItemType(type: AgendaItemType) : String {
-        return type.value
+        return type.toString()
     }
 
     @TypeConverter
     fun toAgendaItemType(value: String) : AgendaItemType {
-        return when (value) {
-            AgendaItemType.TASK.value -> AgendaItemType.TASK
-            AgendaItemType.EVENT.value -> AgendaItemType.EVENT
-            AgendaItemType.REMINDER.value -> AgendaItemType.REMINDER
-            else -> AgendaItemType.EVENT
-        }
+        return AgendaItemType.valueOf(value)
     }
 
     @TypeConverter
     fun fromModificationType(type: ModificationType) : String {
-        return type.value
+        return type.toString()
     }
 
     @TypeConverter
     fun toModificationType(value: String) : ModificationType {
-        return when (value) {
-            ModificationType.CREATED.value -> ModificationType.CREATED
-            ModificationType.DELETED.value -> ModificationType.DELETED
-            ModificationType.UPDATED.value -> ModificationType.UPDATED
-            else -> ModificationType.CREATED
-        }
+        return ModificationType.valueOf(value)
     }
-
 }
