@@ -12,8 +12,17 @@ val validAgendaResponse = """
     "remindAt": 123456789,
     "host": "123",
     "isUserEventCreator": true,
-    "attendees": [],
-    "photos": []
+    "attendees": [ { "email": "1", 
+"fullName": "1",
+"userId": "1", 
+"eventId": "1", 
+"isGoing": true, 
+"remindAt": 123456789
+} ],
+    "photos": [{
+"key": "1", 
+"url": "1" 
+}]
     }
     ],
     "tasks": [

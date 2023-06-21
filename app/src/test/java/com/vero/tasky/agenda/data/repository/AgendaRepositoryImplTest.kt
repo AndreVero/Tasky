@@ -39,7 +39,7 @@ class AgendaRepositoryImplTest {
         title = "",
         description = "",
         remindAt = 1,
-        time =1,
+        time = 1,
         isDone = false
     )
 
@@ -158,6 +158,9 @@ class AgendaRepositoryImplTest {
 
         val events = eventDao.loadEventsForDay(1).toList()
         assertThat(events.size).isEqualTo(1)
+
+        assertThat(events.first().first().attendees).isNotEmpty()
+        assertThat(events.first().first().networkPhotos).isNotEmpty()
 
         val reminders = reminderDao.loadRemindersForDay(1).toList()
         assertThat(reminders.size).isEqualTo(1)

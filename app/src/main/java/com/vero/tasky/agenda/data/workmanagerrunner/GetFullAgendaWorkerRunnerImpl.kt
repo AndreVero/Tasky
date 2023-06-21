@@ -5,7 +5,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.vero.tasky.agenda.domain.worker.GetFullAgendaWorker
+import com.vero.tasky.agenda.data.worker.GetFullAgendaWorker
 import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkerRunner
 
 class GetFullAgendaWorkerRunnerImpl(

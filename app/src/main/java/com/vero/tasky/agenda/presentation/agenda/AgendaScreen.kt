@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
+import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.presentation.agenda.components.*
 import com.vero.tasky.agenda.presentation.components.BaseAgendaScreen
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
@@ -29,9 +30,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AgendaScreen(
     viewModel: AgendaViewModel = hiltViewModel(),
-    openEventScreen: (isEditable: Boolean) -> Unit,
-    openTaskScreen: (isEditable: Boolean) -> Unit,
-    openReminderScreen: (isEditable: Boolean) -> Unit
+    openAgendaItemScreen: (agendaItem: AgendaItem, isEditable: Boolean) -> Unit,
+    openNewAgendaItemScreen: (agendaItemType: AgendaItemType) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -135,20 +135,8 @@ fun AgendaScreen(
                         AgendaComponent(
                             agendaItem = agendaItem,
                             isCurrent = agendaItem == state.currentAgendaItem,
-                            onOpenClick = {
-                                when (agendaItem) {
-                                    is AgendaItem.Task -> openTaskScreen(false)
-                                    is AgendaItem.Reminder -> openReminderScreen(false)
-                                    is AgendaItem.Event -> openEventScreen(false)
-                                }
-                            },
-                            onEditClick = {
-                                when (agendaItem) {
-                                    is AgendaItem.Task -> openTaskScreen(true)
-                                    is AgendaItem.Reminder -> openReminderScreen(true)
-                                    is AgendaItem.Event -> openEventScreen(true)
-                                }
-                            },
+                            onOpenClick = { openAgendaItemScreen(agendaItem, false) },
+                            onEditClick = { openAgendaItemScreen(agendaItem, true) },
                             onDeleteClick = {
                                 viewModel.onEvent(AgendaEvent.DeleteAgendaItem(agendaItem))
                             },
@@ -170,9 +158,9 @@ fun AgendaScreen(
                 if (isActionDropDownVisible) {
                     DefaultDropDownMenu(
                         actions = hashMapOf(
-                            R.string.event to { openEventScreen(true) },
-                            R.string.task to { openTaskScreen(true) },
-                            R.string.reminder to { openReminderScreen(true) }
+                            R.string.event to { openNewAgendaItemScreen(AgendaItemType.EVENT) },
+                            R.string.task to { openNewAgendaItemScreen(AgendaItemType.TASK) },
+                            R.string.reminder to { openNewAgendaItemScreen(AgendaItemType.REMINDER) }
                         ),
                         onDismissRequest = { isActionDropDownVisible = false }
                     )

@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.domain.worker
+package com.vero.tasky.agenda.data.worker
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
