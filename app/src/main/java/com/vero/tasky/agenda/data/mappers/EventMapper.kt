@@ -4,6 +4,7 @@ import com.vero.tasky.agenda.data.local.EventWithPhotosAndAttendees
 import com.vero.tasky.agenda.data.local.entities.EventEntity
 import com.vero.tasky.agenda.data.remote.network.dto.EventDto
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
+import com.vero.tasky.agenda.data.util.LocalDateTimeConverter.localDateTimeToLong
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 
@@ -36,5 +37,18 @@ fun EventWithPhotosAndAttendees.toEvent(): AgendaItem.Event {
         isUserEventCreator = event.isUserEventCreator,
         attendees = this.attendees.map { it.toAttendee() },
         photos = photos
+    )
+}
+
+fun AgendaItem.Event.toEventEntity(): EventEntity {
+    return EventEntity(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        time = localDateTimeToLong(this.time),
+        to = localDateTimeToLong(this.to),
+        remindAt = localDateTimeToLong(this.remindAt),
+        host = this.host,
+        isUserEventCreator = this.isUserEventCreator
     )
 }

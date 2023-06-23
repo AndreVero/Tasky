@@ -5,11 +5,16 @@ import androidx.room.Room
 import androidx.work.WorkManager
 import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
-import com.vero.tasky.agenda.data.remote.network.AgendaApi
+import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
+import com.vero.tasky.agenda.data.remote.network.api.EventApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
+import com.vero.tasky.agenda.data.repository.EventRepositoryImpl
+import com.vero.tasky.agenda.data.util.FileCompressor
+import com.vero.tasky.agenda.data.util.multipart.MultipartParser
 import com.vero.tasky.agenda.data.workmanagerrunner.GetFullAgendaWorkerRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaWorkerRunnerImpl
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
+import com.vero.tasky.agenda.domain.repository.EventRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
@@ -83,6 +88,27 @@ object AgendaModule {
         return AgendaUseCases(
             getAgendaForDayUseCase = GetAgendaForDayUseCase(agendaRepository),
             updateAgendaForDayUseCase = UpdateAgendaForDayUseCase(agendaRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventApi(retrofit: Retrofit) : EventApi {
+        return retrofit.create(EventApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventRepository(
+        api: EventApi,
+        db: AgendaDatabase,
+        @ApplicationContext context: Context
+    ) : EventRepository {
+        return EventRepositoryImpl(
+            api = api,
+            eventDao = db.eventDao(),
+            modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
+            multipartParser = MultipartParser(FileCompressor(context))
         )
     }
 }

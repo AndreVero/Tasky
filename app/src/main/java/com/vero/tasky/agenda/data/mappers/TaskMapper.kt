@@ -27,3 +27,14 @@ fun TaskEntity.toTask(): AgendaItem.Task {
     )
 }
 
+fun AgendaItem.Task.toTaskEntity(): TaskEntity {
+    return TaskEntity(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        remindAt = LocalDateTimeConverter.localDateTimeToLong(this.remindAt),
+        time = LocalDateTimeConverter.localDateTimeToLong(this.time),
+        isDone = this.isDone
+    )
+}
+

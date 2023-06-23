@@ -37,4 +37,8 @@ interface EventDao {
     """)
     fun loadEventsForDay(timestamp: Long) : Flow<List<EventWithPhotosAndAttendees>>
 
+    @Transaction
+    @Query("SELECT * FROM event WHERE id = :id")
+    fun loadEvent(id: String) : Flow<EventWithPhotosAndAttendees>
+
 }

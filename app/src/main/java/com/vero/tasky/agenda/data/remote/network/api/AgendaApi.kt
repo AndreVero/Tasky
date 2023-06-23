@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.data.remote.network
+package com.vero.tasky.agenda.data.remote.network.api
 
 import com.vero.tasky.agenda.data.remote.network.dto.AgendaDto
 import com.vero.tasky.agenda.data.remote.network.request.SyncAgendaRequest

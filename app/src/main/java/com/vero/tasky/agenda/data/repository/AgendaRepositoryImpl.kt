@@ -4,12 +4,12 @@ import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ReminderDao
 import com.vero.tasky.agenda.data.local.dao.TaskDao
 import com.vero.tasky.agenda.data.mappers.*
-import com.vero.tasky.agenda.data.remote.network.AgendaApi
+import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.dto.AgendaDto
 import com.vero.tasky.agenda.data.remote.network.request.SyncAgendaRequest
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
-import com.vero.tasky.core.data.remote.safeApiCall
+import com.vero.tasky.core.data.remote.safeSuspendCall
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -37,7 +37,7 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun updateAgendaForDay(timestamp: Long): Result<Unit> {
-        return safeApiCall {
+        return safeSuspendCall {
             val networkAgendaItems = api.getAgendaForDay(TimeZone.getDefault().id, timestamp)
             saveAgendaItems(networkAgendaItems)
         }
@@ -47,7 +47,7 @@ class AgendaRepositoryImpl(
         deletedEventIds: List<String>,
         deletedTaskIds: List<String>,
         deletedReminderIds: List<String>
-    ): Result<Unit> = safeApiCall {
+    ): Result<Unit> = safeSuspendCall {
         api.syncAgenda(
             SyncAgendaRequest(
                 deletedEventIds = deletedEventIds,
@@ -57,7 +57,7 @@ class AgendaRepositoryImpl(
         )
     }
 
-    override suspend fun getFullAgenda() = safeApiCall {
+    override suspend fun getFullAgenda() = safeSuspendCall {
         val result = api.getFullAgenda()
         saveAgendaItems(result)
     }
@@ -66,6 +66,7 @@ class AgendaRepositoryImpl(
         supervisorScope {
             val jobsList = mutableListOf<Job>()
             agendaDto.events.map { eventDto ->
+                eventDao.insertEvents(eventDto.toEventEntity())
                 eventDto.attendees.forEach {
                     jobsList.add( launch { eventDao.insertAttendees(it.toAttendeeEntity()) })
                 }
@@ -74,7 +75,6 @@ class AgendaRepositoryImpl(
                         launch { eventDao.insertRemotePhotoEntity(it.toPhotoEntity(eventDto.id)) }
                     )
                 }
-                jobsList.add(launch { eventDao.insertEvents(eventDto.toEventEntity()) })
             }
             agendaDto.tasks.map { taskDto ->
                 jobsList.add(launch { taskDao.insertTasks(taskDto.toTaskEntity()) })
