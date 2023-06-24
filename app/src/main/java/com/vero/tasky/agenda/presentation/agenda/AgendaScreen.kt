@@ -30,8 +30,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AgendaScreen(
     viewModel: AgendaViewModel = hiltViewModel(),
-    openAgendaItemScreen: (agendaItem: AgendaItem, isEditable: Boolean) -> Unit,
-    openNewAgendaItemScreen: (agendaItemType: AgendaItemType) -> Unit,
+    onAgendaItemClick: (agendaItem: AgendaItem, isEditable: Boolean) -> Unit,
+    onNewAgendaItemClick: (agendaItemType: AgendaItemType) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -135,8 +135,8 @@ fun AgendaScreen(
                         AgendaComponent(
                             agendaItem = agendaItem,
                             isCurrent = agendaItem == state.currentAgendaItem,
-                            onOpenClick = { openAgendaItemScreen(agendaItem, false) },
-                            onEditClick = { openAgendaItemScreen(agendaItem, true) },
+                            onOpenClick = { onAgendaItemClick(agendaItem, false) },
+                            onEditClick = { onAgendaItemClick(agendaItem, true) },
                             onDeleteClick = {
                                 viewModel.onEvent(AgendaEvent.DeleteAgendaItem(agendaItem))
                             },
@@ -158,9 +158,9 @@ fun AgendaScreen(
                 if (isActionDropDownVisible) {
                     DefaultDropDownMenu(
                         actions = hashMapOf(
-                            R.string.event to { openNewAgendaItemScreen(AgendaItemType.EVENT) },
-                            R.string.task to { openNewAgendaItemScreen(AgendaItemType.TASK) },
-                            R.string.reminder to { openNewAgendaItemScreen(AgendaItemType.REMINDER) }
+                            R.string.event to { onNewAgendaItemClick(AgendaItemType.EVENT) },
+                            R.string.task to { onNewAgendaItemClick(AgendaItemType.TASK) },
+                            R.string.reminder to { onNewAgendaItemClick(AgendaItemType.REMINDER) }
                         ),
                         onDismissRequest = { isActionDropDownVisible = false }
                     )

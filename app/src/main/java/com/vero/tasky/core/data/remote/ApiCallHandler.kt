@@ -2,7 +2,7 @@ package com.vero.tasky.core.data.remote
 
 import java.util.concurrent.CancellationException
 
-suspend fun <T> safeApiCall(call: suspend () -> T): Result<T> {
+suspend fun <T> safeSuspendCall(call: suspend () -> T): Result<T> {
     return try {
         Result.success(call.invoke())
     } catch (e: CancellationException) {

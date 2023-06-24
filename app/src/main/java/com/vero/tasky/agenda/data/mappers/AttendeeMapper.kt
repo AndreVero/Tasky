@@ -24,3 +24,14 @@ fun AttendeeEntity.toAttendee() : Attendee {
         userId = this.userId
     )
 }
+
+fun Attendee.toAttendeeEntity() : AttendeeEntity {
+    return AttendeeEntity(
+        email = this.email,
+        fullName = this.fullName,
+        eventId = this.eventId,
+        isGoing = this.isGoing,
+        remindAt = this.remindAt,
+        userId = this.userId
+    )
+}

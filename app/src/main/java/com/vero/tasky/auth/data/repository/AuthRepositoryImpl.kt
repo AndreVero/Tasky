@@ -5,7 +5,7 @@ import com.vero.tasky.auth.data.remote.AuthApi
 import com.vero.tasky.auth.data.remote.request.LoginRequest
 import com.vero.tasky.auth.data.remote.request.RegisterRequest
 import com.vero.tasky.auth.domain.repository.AuthRepository
-import com.vero.tasky.core.data.remote.safeApiCall
+import com.vero.tasky.core.data.remote.safeSuspendCall
 import com.vero.tasky.core.domain.model.User
 
 class AuthRepositoryImpl(
@@ -17,7 +17,7 @@ class AuthRepositoryImpl(
         password: String,
         fullName: String
     ): Result<Unit> {
-        return safeApiCall { api.register(
+        return safeSuspendCall { api.register(
             RegisterRequest(
                 fullName = fullName,
                 password = password,
@@ -27,7 +27,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun login(email: String, password: String): Result<User> {
-        return safeApiCall {
+        return safeSuspendCall {
             api.login(
                 LoginRequest(
                     email = email,
@@ -38,12 +38,12 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun authenticate(): Result<Unit> {
-        return safeApiCall {
+        return safeSuspendCall {
             api.authenticate()
         }
     }
 
-    override suspend fun logOut() = safeApiCall {
+    override suspend fun logOut() = safeSuspendCall {
         api.logOut()
     }
 

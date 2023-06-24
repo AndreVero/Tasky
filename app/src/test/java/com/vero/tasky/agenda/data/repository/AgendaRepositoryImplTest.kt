@@ -8,7 +8,7 @@ import com.vero.tasky.agenda.data.local.entities.EventEntity
 import com.vero.tasky.agenda.data.local.entities.ReminderEntity
 import com.vero.tasky.agenda.data.local.entities.TaskEntity
 import com.vero.tasky.agenda.data.remote.malformedAgendaResponse
-import com.vero.tasky.agenda.data.remote.network.AgendaApi
+import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.validAgendaResponse
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
