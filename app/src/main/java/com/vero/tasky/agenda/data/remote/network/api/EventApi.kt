@@ -16,28 +16,14 @@ interface EventApi {
     @Multipart
     @POST("event")
     suspend fun createEvent(
-        @Part id: MultipartBody.Part,
-        @Part title: MultipartBody.Part,
-        @Part description: MultipartBody.Part,
-        @Part from: MultipartBody.Part,
-        @Part to: MultipartBody.Part,
-        @Part remindAt: MultipartBody.Part,
-        @Part attendeeIds: List<MultipartBody.Part>,
+        @Part createEventRequest: MultipartBody.Part,
         @Part photos: List<MultipartBody.Part>
     ) : EventDto
 
     @Multipart
     @PUT("event")
     suspend fun updateEvent(
-        @Part id: MultipartBody.Part,
-        @Part title: MultipartBody.Part,
-        @Part description: MultipartBody.Part,
-        @Part from: MultipartBody.Part,
-        @Part to: MultipartBody.Part,
-        @Part remindAt: MultipartBody.Part,
-        @Part isGoing: MultipartBody.Part,
-        @Part attendeeIds: List<MultipartBody.Part>,
-        @Part deletedPhotoKeys: List<MultipartBody.Part>,
+        @Part updateEventRequest: MultipartBody.Part,
         @Part photos: List<MultipartBody.Part>
     ) : EventDto
 

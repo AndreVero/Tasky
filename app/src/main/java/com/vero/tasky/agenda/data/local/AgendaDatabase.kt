@@ -8,7 +8,7 @@ import com.vero.tasky.agenda.data.local.entities.*
 
 @Database(entities = [AttendeeEntity::class, ModifiedAgendaItemEntity::class,
     LocalPhotoEntity::class, EventEntity::class, ReminderEntity::class,
-    RemotePhotoEntity::class, TaskEntity::class], version = 1)
+    RemotePhotoEntity::class, TaskEntity::class, DeletedPhotoEntity::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AgendaDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao

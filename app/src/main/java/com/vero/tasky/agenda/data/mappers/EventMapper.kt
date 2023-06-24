@@ -1,8 +1,11 @@
 package com.vero.tasky.agenda.data.mappers
 
 import com.vero.tasky.agenda.data.local.EventWithPhotosAndAttendees
+import com.vero.tasky.agenda.data.local.entities.AttendeeEntity
 import com.vero.tasky.agenda.data.local.entities.EventEntity
 import com.vero.tasky.agenda.data.remote.network.dto.EventDto
+import com.vero.tasky.agenda.data.remote.network.request.CreateEventRequest
+import com.vero.tasky.agenda.data.remote.network.request.UpdateEventRequest
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter.localDateTimeToLong
 import com.vero.tasky.agenda.domain.model.AgendaItem
@@ -50,5 +53,35 @@ fun AgendaItem.Event.toEventEntity(): EventEntity {
         remindAt = localDateTimeToLong(this.remindAt),
         host = this.host,
         isUserEventCreator = this.isUserEventCreator
+    )
+}
+
+fun EventEntity.toCreateEventRequest(attendeesEntity: List<AttendeeEntity>) : CreateEventRequest {
+    return CreateEventRequest(
+        id = this.id,
+        title = this.title,
+        description = this.description ?: "",
+        from = this.time,
+        to = this.to,
+        remindAt = this.remindAt,
+        attendeesIds = attendeesEntity.map { it.userId }
+    )
+}
+
+fun EventEntity.toUpdateEventRequest(
+    isGoing: Boolean,
+    deletedPhotoKeys: List<String>,
+    attendeesEntity: List<AttendeeEntity>
+) : UpdateEventRequest {
+    return UpdateEventRequest(
+        id = this.id,
+        title = this.title,
+        description = this.description ?: "",
+        from = this.time,
+        to = this.to,
+        remindAt = this.remindAt,
+        attendeesIds = attendeesEntity.map { it.userId },
+        isGoing = isGoing,
+        deletedPhotoKeys = deletedPhotoKeys
     )
 }

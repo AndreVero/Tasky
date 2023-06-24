@@ -2,6 +2,7 @@ package com.vero.tasky.agenda.data.repository
 
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
+import com.vero.tasky.agenda.data.local.entities.DeletedPhotoEntity
 import com.vero.tasky.agenda.data.local.entities.ModifiedAgendaItemEntity
 import com.vero.tasky.agenda.data.mappers.*
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
@@ -9,6 +10,8 @@ import com.vero.tasky.agenda.data.remote.network.dto.toAttendeeBaseInfo
 import com.vero.tasky.agenda.data.util.multipart.MultipartParser
 import com.vero.tasky.agenda.domain.model.*
 import com.vero.tasky.agenda.domain.repository.EventRepository
+import com.vero.tasky.agenda.domain.workmanagerrunner.CreateEventWorkerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateEventWorkerRunner
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +21,9 @@ class EventRepositoryImpl(
     private val api: EventApi,
     private val eventDao: EventDao,
     private val modifiedAgendaItemDao: ModifiedAgendaItemDao,
-    private val multipartParser: MultipartParser
+    private val multipartParser: MultipartParser,
+    private val createEventWorkerRunner: CreateEventWorkerRunner,
+    private val updateEventWorkerRunner: UpdateEventWorkerRunner
 ) : EventRepository {
 
     override suspend fun createEvent(
@@ -26,40 +31,20 @@ class EventRepositoryImpl(
     ): Result<AgendaItemUploadResult> {
         val localPhotos = event.photos.filterIsInstance<AgendaPhoto.LocalPhoto>()
 
-        saveEvent(event = event, localPhotos = localPhotos)
+        saveEvent(event = event, localPhotos = localPhotos, deletedPhotoKeys = emptyList())
 
-        var skippedPhoto = 0
+        val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
+        val skippedPhoto = localPhotos.size - multipartPhotos.size
 
-        safeSuspendCall {
-            withContext(Dispatchers.IO) {
-                val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
-                skippedPhoto = localPhotos.size - multipartPhotos.size
-                api.createEvent(
-                    id = multipartParser.getMultipartId(event.id),
-                    title = multipartParser.getMultipartTitle(event.title),
-                    description = multipartParser.getMultipartDescription(event.description),
-                    from = multipartParser.getMultipartFrom(event.time),
-                    to = multipartParser.getMultipartTo(event.to),
-                    remindAt = multipartParser.getMultipartRemindAt(event.remindAt),
-                    attendeeIds = multipartParser.getMultipartAttendeesIds(event.attendees),
-                    photos = multipartPhotos
-                )
-            }
-        }.onFailure {
-            modifiedAgendaItemDao.insertAgendaItem(
-                ModifiedAgendaItemEntity(
-                    id = event.id,
-                    agendaItemType = AgendaItemType.EVENT,
-                    modificationType = ModificationType.CREATED
-                )
-            )
-        }
+        createEventWorkerRunner.run()
+
         return Result.success(AgendaItemUploadResult(skippedPhoto))
     }
 
     private suspend fun saveEvent(
         event: AgendaItem.Event,
-        localPhotos: List<AgendaPhoto.LocalPhoto>
+        localPhotos: List<AgendaPhoto.LocalPhoto>,
+        deletedPhotoKeys: List<String>
     ) {
         safeSuspendCall {
             coroutineScope {
@@ -70,13 +55,23 @@ class EventRepositoryImpl(
                 val photoJobs = localPhotos.map {
                     launch { eventDao.insertLocalPhotoEntity(it.toLocalPhotoEntity(event.id)) }
                 }
-                (attendeeJobs + photoJobs).joinAll()
+                val deletedPhotoJobs = deletedPhotoKeys.map { key ->
+                    launch {
+                        eventDao.insertDeletedPhotoEntity(
+                            DeletedPhotoEntity(
+                                eventId = event.id,
+                                key = key
+                            )
+                        )
+                    }
+                }
+                (attendeeJobs + photoJobs + deletedPhotoJobs).joinAll()
             }
         }
     }
 
     override fun getEvent(id: String): Flow<AgendaItem.Event> {
-        return eventDao.loadEvent(id).map { it.toEvent() }
+        return eventDao.loadEventFlow(id).map { it.toEvent() }
     }
 
 
@@ -84,39 +79,24 @@ class EventRepositoryImpl(
         event: AgendaItem.Event,
         deletedPhotoKeys: List<String>,
         isGoing: Boolean
-    ) : Result<AgendaItemUploadResult>{
+    ): Result<AgendaItemUploadResult> {
         val localPhotos = event.photos.filterIsInstance<AgendaPhoto.LocalPhoto>()
 
-        saveEvent(event = event, localPhotos = localPhotos)
+        saveEvent(event = event, localPhotos = localPhotos, deletedPhotoKeys = deletedPhotoKeys)
 
-        var skippedPhoto = 0
+        val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
+        val skippedPhoto = localPhotos.size - multipartPhotos.size
 
-        safeSuspendCall {
-            withContext(Dispatchers.IO) {
-                val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
-                skippedPhoto = localPhotos.size - multipartPhotos.size
-                api.updateEvent(
-                    id = multipartParser.getMultipartId(event.id),
-                    title = multipartParser.getMultipartTitle(event.title),
-                    description = multipartParser.getMultipartDescription(event.description),
-                    from = multipartParser.getMultipartFrom(event.time),
-                    to = multipartParser.getMultipartTo(event.to),
-                    remindAt = multipartParser.getMultipartRemindAt(event.remindAt),
-                    attendeeIds = multipartParser.getMultipartAttendeesIds(event.attendees),
-                    photos = multipartPhotos,
-                    isGoing = multipartParser.getMultipartIsGoing(isGoing),
-                    deletedPhotoKeys = multipartParser.getMultipartDeletedPhotosKeys(deletedPhotoKeys)
-                )
-            }
-        }.onFailure {
-            modifiedAgendaItemDao.insertAgendaItem(
-                ModifiedAgendaItemEntity(
-                    id = event.id,
-                    agendaItemType = AgendaItemType.EVENT,
-                    modificationType = ModificationType.UPDATED
-                )
+        modifiedAgendaItemDao.insertAgendaItem(
+            ModifiedAgendaItemEntity(
+                id = event.id,
+                agendaItemType = AgendaItemType.EVENT,
+                modificationType = ModificationType.UPDATED
             )
-        }
+        )
+
+        updateEventWorkerRunner.run(isGoing)
+
         return Result.success(AgendaItemUploadResult(skippedPhoto))
     }
 
@@ -127,7 +107,7 @@ class EventRepositoryImpl(
         }
     }
 
-    override suspend fun deleteEvent(event: AgendaItem.Event){
+    override suspend fun deleteEvent(event: AgendaItem.Event) {
         eventDao.deleteEvents(event.toEventEntity())
 
         safeSuspendCall {
