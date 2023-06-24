@@ -36,7 +36,7 @@ class EventRepositoryImpl(
         val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
         val skippedPhoto = localPhotos.size - multipartPhotos.size
 
-        createEventWorkerRunner.run()
+        createEventWorkerRunner.run(event.id)
 
         return Result.success(AgendaItemUploadResult(skippedPhoto))
     }
@@ -95,7 +95,7 @@ class EventRepositoryImpl(
             )
         )
 
-        updateEventWorkerRunner.run(isGoing)
+        updateEventWorkerRunner.run(isGoing, event.id)
 
         return Result.success(AgendaItemUploadResult(skippedPhoto))
     }

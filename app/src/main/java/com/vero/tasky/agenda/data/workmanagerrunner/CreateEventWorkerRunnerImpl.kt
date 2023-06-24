@@ -1,20 +1,18 @@
 package com.vero.tasky.agenda.data.workmanagerrunner
 
-import androidx.work.Constraints
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.vero.tasky.agenda.data.worker.CreateEventWorker
 import com.vero.tasky.agenda.domain.workmanagerrunner.CreateEventWorkerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.CreateEventWorkerRunner.Companion.EVENT_ID
 
 class CreateEventWorkerRunnerImpl(
     private val workManager: WorkManager
 ) : CreateEventWorkerRunner {
 
-    override fun run()  {
+    override fun run(eventId: String)  {
         val workRequest = OneTimeWorkRequestBuilder<CreateEventWorker>()
             .setConstraints(createConstraints())
+            .setInputData(Data.Builder().putString(EVENT_ID, eventId).build())
             .build()
 
         workManager.beginUniqueWork(

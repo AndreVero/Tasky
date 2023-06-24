@@ -7,16 +7,18 @@ import androidx.work.WorkerParameters
 import com.squareup.moshi.Moshi
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
+import com.vero.tasky.agenda.data.local.entities.ModifiedAgendaItemEntity
 import com.vero.tasky.agenda.data.mappers.toCreateEventRequest
 import com.vero.tasky.agenda.data.mappers.toLocalPhoto
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
 import com.vero.tasky.agenda.data.remote.network.request.CreateEventRequest
 import com.vero.tasky.agenda.data.util.multipart.MultipartParser
+import com.vero.tasky.agenda.domain.model.AgendaItemType
+import com.vero.tasky.agenda.domain.model.ModificationType
+import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateEventWorkerRunner
+import com.vero.tasky.core.data.remote.safeSuspendCall
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
 @HiltWorker
@@ -31,32 +33,39 @@ class CreateEventWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
-        if (runAttemptCount >= 3)
-            return Result.failure()
-        val modifiedEvents = modifiedAgendaItemDao.loadCreatedEvents()
-        coroutineScope {
-            modifiedEvents.map { modifiedItem ->
-                launch {
-                    val agendaItem = eventDao.loadEvent(modifiedItem.id)
+        val eventId = inputData.getString(UpdateEventWorkerRunner.EVENT_ID) ?: ""
 
-                    val adapter = moshi.adapter(CreateEventRequest::class.java)
-                    val createEventRequest = adapter.toJson(
-                        agendaItem.event.toCreateEventRequest(agendaItem.attendees)
-                    )
-                    val multipartPhotos = multipartParser.getMultipartPhotos(
-                        agendaItem.localPhotos.map { it.toLocalPhoto() }
-                    )
-                    api.createEvent(
-                        createEventRequest = MultipartBody.Part.createFormData(
-                            "create_event_request",
-                            createEventRequest
-                        ),
-                        photos = multipartPhotos
-                    )
-                    modifiedAgendaItemDao.deleteAgendaItem(modifiedItem)
-                }
-            }.joinAll()
+        if (runAttemptCount >= 3) {
+            modifiedAgendaItemDao.insertAgendaItem(
+                ModifiedAgendaItemEntity(
+                    id = eventId,
+                    modificationType = ModificationType.UPDATED,
+                    agendaItemType = AgendaItemType.EVENT
+                )
+            )
+            return Result.failure()
         }
-        return Result.success()
+        val result = safeSuspendCall {
+            val agendaItem = eventDao.loadEvent(eventId)
+
+            val adapter = moshi.adapter(CreateEventRequest::class.java)
+            val createEventRequest = adapter.toJson(
+                agendaItem.event.toCreateEventRequest(agendaItem.attendees)
+            )
+            val multipartPhotos = multipartParser.getMultipartPhotos(
+                agendaItem.localPhotos.map { it.toLocalPhoto() }
+            )
+            api.createEvent(
+                createEventRequest = MultipartBody.Part.createFormData(
+                    "create_event_request",
+                    createEventRequest
+                ),
+                photos = multipartPhotos
+            )
+        }
+        return if (result.isSuccess)
+             Result.success()
+        else
+            Result.retry()
     }
 }
