@@ -7,6 +7,7 @@ import com.squareup.moshi.Moshi
 import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
+import com.vero.tasky.agenda.data.remindermanager.ReminderManagerImpl
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
@@ -17,6 +18,7 @@ import com.vero.tasky.agenda.data.workmanagerrunner.CreateEventWorkerRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.GetFullAgendaWorkerRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaWorkerRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.UpdateEventWorkerRunnerImpl
+import com.vero.tasky.agenda.domain.remindermanager.ReminderManager
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
@@ -173,5 +175,13 @@ object AgendaModule {
             getEvent = GetEventInfoUseCase(eventRepository),
             updateEvent = UpdateEventUseCase(eventRepository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderManager(
+        @ApplicationContext context: Context
+    ) : ReminderManager {
+        return ReminderManagerImpl(context)
     }
 }
