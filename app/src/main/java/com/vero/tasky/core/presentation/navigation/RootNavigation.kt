@@ -13,6 +13,8 @@ import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.presentation.agenda.AgendaScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.auth.presentation.registration.RegistrationScreen
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.IS_EDITABLE
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
 
 @Composable
 fun RootNavigation(
@@ -21,13 +23,13 @@ fun RootNavigation(
     modifier: Modifier = Modifier,
 ) {
 
-    val agendaItemScreenParameters = "?itemId={itemId}&isEditable={isEditable}"
+    val agendaItemScreenParameters = "?$ITEM_ID={itemId}&$IS_EDITABLE={isEditable}"
     val agendaItemArgumentTypes = listOf(
-        navArgument("itemId") {
+        navArgument(ITEM_ID) {
             type = NavType.StringType
             nullable = true
         },
-        navArgument("isEditable") {
+        navArgument(IS_EDITABLE) {
             type = NavType.BoolType
             defaultValue = true
         }
@@ -46,7 +48,7 @@ fun RootNavigation(
                         is AgendaItem.Reminder -> Screens.Reminder.route
                         is AgendaItem.Task -> Screens.Task.route
                     }
-                    val parameters = "?itemId=${agendaItem.id}&isEditable=$isEditable"
+                    val parameters = "?$ITEM_ID=${agendaItem.id}&$IS_EDITABLE=$isEditable"
                     navController.navigate("$route$parameters")
                 },
                 onNewAgendaItemClick = { agendaItemType ->
