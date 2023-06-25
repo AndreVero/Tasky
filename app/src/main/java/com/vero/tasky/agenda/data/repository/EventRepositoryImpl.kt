@@ -87,21 +87,13 @@ class EventRepositoryImpl(
         val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
         val skippedPhoto = localPhotos.size - multipartPhotos.size
 
-        modifiedAgendaItemDao.insertAgendaItem(
-            ModifiedAgendaItemEntity(
-                id = event.id,
-                agendaItemType = AgendaItemType.EVENT,
-                modificationType = ModificationType.UPDATED
-            )
-        )
-
         updateEventWorkerRunner.run(isGoing, event.id)
 
         return Result.success(AgendaItemUploadResult(skippedPhoto))
     }
 
-    override suspend fun fetchEvent(eventId: String): Result<Unit> {
-        return safeSuspendCall {
+    override suspend fun fetchEvent(eventId: String){
+        safeSuspendCall {
             val result = api.fetchEvent(eventId = eventId)
             eventDao.insertEvents(result.toEventEntity())
         }
