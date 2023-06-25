@@ -2,10 +2,7 @@ package com.vero.tasky.agenda.data.local.dao
 
 import androidx.room.*
 import com.vero.tasky.agenda.data.local.EventWithPhotosAndAttendees
-import com.vero.tasky.agenda.data.local.entities.AttendeeEntity
-import com.vero.tasky.agenda.data.local.entities.EventEntity
-import com.vero.tasky.agenda.data.local.entities.LocalPhotoEntity
-import com.vero.tasky.agenda.data.local.entities.RemotePhotoEntity
+import com.vero.tasky.agenda.data.local.entities.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -23,6 +20,9 @@ interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocalPhotoEntity(vararg photos: LocalPhotoEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDeletedPhotoEntity(vararg photos: DeletedPhotoEntity)
+
     @Update
     suspend fun updateEvents(vararg events: EventEntity)
 
@@ -39,6 +39,10 @@ interface EventDao {
 
     @Transaction
     @Query("SELECT * FROM event WHERE id = :id")
-    fun loadEvent(id: String) : Flow<EventWithPhotosAndAttendees>
+    fun loadEventFlow(id: String) : Flow<EventWithPhotosAndAttendees>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE id = :id")
+    suspend fun loadEvent(id: String) : EventWithPhotosAndAttendees
 
 }

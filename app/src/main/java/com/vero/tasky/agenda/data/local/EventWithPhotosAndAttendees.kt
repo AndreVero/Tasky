@@ -20,5 +20,10 @@ data class EventWithPhotosAndAttendees(
         parentColumn = "id",
         entityColumn = "eventId"
     )
+    val deletedPhoto: List<DeletedPhotoEntity>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "eventId"
+    )
     val attendees: List<AttendeeEntity>
 )
