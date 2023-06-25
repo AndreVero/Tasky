@@ -22,6 +22,7 @@ import com.vero.tasky.agenda.domain.repository.EventRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
+import com.vero.tasky.agenda.domain.usecase.event.*
 import com.vero.tasky.agenda.domain.workmanagerrunner.CreateEventWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
@@ -155,6 +156,22 @@ object AgendaModule {
             multipartParser = multipartParser,
             createEventWorkerRunner = createEventWorkerRunner,
             updateEventWorkerRunner = updateEventWorkerRunner,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventUseCases(
+        eventRepository: EventRepository
+    ) : EventUseCases {
+        return EventUseCases(
+            checkAttendee = CheckAttendeeUseCase(eventRepository),
+            createEvent = CreateEventUseCase(eventRepository),
+            deleteAttendee = DeleteAttendeeUseCase(eventRepository),
+            deleteEvent = DeleteEventUseCase(eventRepository),
+            fetchEvent = FetchEventUseCase(eventRepository),
+            getEvent = GetEventInfoUseCase(eventRepository),
+            updateEvent = UpdateEventUseCase(eventRepository)
         )
     }
 }

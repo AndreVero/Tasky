@@ -17,7 +17,7 @@ interface EventRepository {
         isGoing: Boolean
     ) : Result<AgendaItemUploadResult>
 
-    suspend fun fetchEvent(eventId: String) : Result<Unit>
+    suspend fun fetchEvent(eventId: String)
 
     suspend fun deleteEvent(event: AgendaItem.Event)
 
