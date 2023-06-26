@@ -1,9 +1,9 @@
 package com.vero.tasky.agenda.domain.remindermanager
 
-interface ReminderManager {
+interface AlarmHandler {
 
-    fun setReminder(data: ReminderData)
-    fun cancelReminder(id: String)
+    fun setAlarm(data: AlarmData)
+    fun cancelAlarm(id: String)
 
     companion object {
         const val CHANNEL_ID = "reminders_channel"

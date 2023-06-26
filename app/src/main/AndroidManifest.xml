@@ -38,7 +38,7 @@
                 tools:node="remove" />
         </provider>
 
-        <receiver android:name=".agenda.data.broadcastreceiver.ReminderReceiver"/>
+        <receiver android:name=".agenda.data.broadcastreceiver.AlarmReceiver"/>
     </application>
 
 </manifest>

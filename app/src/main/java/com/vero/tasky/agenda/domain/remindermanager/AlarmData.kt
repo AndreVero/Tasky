@@ -2,7 +2,7 @@ package com.vero.tasky.agenda.domain.remindermanager
 
 import java.time.LocalDateTime
 
-data class ReminderData(
+data class AlarmData(
     val time: LocalDateTime,
     val itemId: String,
     val title: String,

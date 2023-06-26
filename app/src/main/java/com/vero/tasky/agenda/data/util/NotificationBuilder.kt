@@ -7,11 +7,11 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.vero.tasky.MainActivity
 import com.vero.tasky.R
-import com.vero.tasky.agenda.domain.remindermanager.ReminderManager
+import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 
 object NotificationBuilder {
 
-    fun buildReminderNotification(
+    fun buildAlarmNotification(
         context: Context,
         title: String,
         description: String?,
@@ -19,7 +19,7 @@ object NotificationBuilder {
     ) : Notification {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra(ReminderManager.ITEM_ID, itemId)
+            putExtra(AlarmHandler.ITEM_ID, itemId)
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             context,
@@ -27,7 +27,7 @@ object NotificationBuilder {
             intent,
             PendingIntent.FLAG_IMMUTABLE)
 
-        return NotificationCompat.Builder(context, ReminderManager.CHANNEL_ID)
+        return NotificationCompat.Builder(context, AlarmHandler.CHANNEL_ID)
             .setSmallIcon(R.drawable.tasky_logo)
             .setContentTitle(title)
             .setContentText(description)
