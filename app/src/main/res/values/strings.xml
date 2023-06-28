@@ -38,7 +38,19 @@
     <string name="visibility">Visibility</string>
     <string name="visibility_off">Visibility off</string>
     <string name="month_drop_down">Month drop-down</string>
-    <string name="channel_name">Reminders</string>
+    <string name="channel_name">Alarm</string>
     <string name="default_event_details_error">Something went wrong, please try again later</string>
     <string name="wrong_email">User doesn\'t exist</string>
+    <string name="close">Close</string>
+    <string name="save">Save</string>
+    <string name="add">Add</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="photos">Photos</string>
+    <string name="photo">Photo</string>
+    <string name="add_photo_button">Add photo button</string>
+    <string name="visitors">Visitors</string>
+    <string name="add_visitor">Add visitor</string>
+    <string name="all">All</string>
+    <string name="going">Going</string>
+    <string name="not_going">Not going</string>
 </resources>

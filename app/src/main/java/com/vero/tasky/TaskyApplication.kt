@@ -6,7 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.vero.tasky.agenda.domain.remindermanager.ReminderManager
+import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class TaskyApplication : Application(), Configuration.Provider {
 
     private fun createNotificationChannel() {
             val channel = NotificationChannel(
-                ReminderManager.CHANNEL_ID,
+                AlarmHandler.CHANNEL_ID,
                 getString(R.string.channel_name),
                 NotificationManager.IMPORTANCE_HIGH
             )

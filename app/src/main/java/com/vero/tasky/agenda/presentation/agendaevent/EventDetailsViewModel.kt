@@ -8,11 +8,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
-import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
+import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.event.EventUseCases
-import com.vero.tasky.agenda.presentation.agendaevent.model.ReminderRange
+import com.vero.tasky.agenda.presentation.model.ReminderRange
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.presentation.navigation.NavigationConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +31,7 @@ class EventDetailsViewModel @Inject constructor(
     userPreferences: UserPreferences
 ) : ViewModel() {
 
-    private val userId = userPreferences.getUser()?.userId ?: ""
+    private val userId = userPreferences.getUser()!!.userId
     private val itemId = savedStateHandle.get<String?>(NavigationConstants.ITEM_ID)
 
     var state by mutableStateOf(
@@ -66,51 +66,42 @@ class EventDetailsViewModel @Inject constructor(
         when (event) {
             is EventDetailsEvent.AddAttendee -> addAttendee(event.email)
             is EventDetailsEvent.AddPhoto -> addPhoto(event.uri)
-            EventDetailsEvent.ChangeIsGoingState -> changeIsGoingState()
+            EventDetailsEvent.ChangeIsGoingState -> saveAgendaItem(
+                isGoing = !state.isGoing,
+                modificationType = ModificationType.UPDATED
+            )
             EventDetailsEvent.ChangeMode -> changeMode()
-            EventDetailsEvent.CreateEvent -> createEvent()
             EventDetailsEvent.DeleteEvent -> deleteEvent()
             is EventDetailsEvent.FromDateTimeChanged -> changeFromDateTime(event.time)
             is EventDetailsEvent.ReminderChanged -> changeReminder(event.reminderRange)
             is EventDetailsEvent.ToDateTimeChanged -> changeToDateTime(event.time)
-            EventDetailsEvent.UpdateEvent -> updateAgendaItemEvent()
+            EventDetailsEvent.SaveEvent -> saveAgendaItem(
+                isGoing = true,
+                modificationType = if (itemId != null)
+                    ModificationType.UPDATED
+                else ModificationType.CREATED
+            )
             is EventDetailsEvent.DeletePhoto -> deletePhoto(event.key)
         }
     }
 
     private fun deletePhoto(key: String) {
-        val deletedPhotoKeys = mutableListOf<String>()
-        deletedPhotoKeys.addAll(state.deletedPhotoKeys)
-        deletedPhotoKeys.add(key)
-        updateState(state.copy(deletedPhotoKeys = deletedPhotoKeys))
+        updateState(state.copy(deletedPhotoKeys = state.deletedPhotoKeys + key))
     }
 
-    private fun updateAgendaItemEvent() {
+    private fun saveAgendaItem(
+        isGoing: Boolean,
+        modificationType: ModificationType
+    ) {
         viewModelScope.launch {
-            eventUseCases.updateEvent(
+            eventUseCases.saveEvent(
                 event = state.agendaItem,
                 deletedPhotoKeys = state.deletedPhotoKeys,
-                isGoing = state.isGoing
+                isGoing = isGoing,
+                modificationType = modificationType
             ).onSuccess {
                 channel.send(UiEventDetailsEvent.ShowInfoToast(it.countOfSkippedMessages.toString()))
                 channel.send(UiEventDetailsEvent.OnBackClick)
-            }.onFailure {
-                channel.send(UiEventDetailsEvent.ShowErrorMessage(R.string.default_event_details_error))
-            }
-        }
-    }
-
-    private fun changeIsGoingState() {
-        viewModelScope.launch {
-            eventUseCases.updateEvent(
-                event = state.agendaItem,
-                deletedPhotoKeys = state.deletedPhotoKeys,
-                isGoing = !state.isGoing
-            ).onSuccess {
-                channel.send(UiEventDetailsEvent.ShowInfoToast(it.countOfSkippedMessages.toString()))
-                channel.send(UiEventDetailsEvent.OnBackClick)
-            }.onFailure {
-                channel.send(UiEventDetailsEvent.ShowErrorMessage(R.string.default_event_details_error))
             }
         }
     }
@@ -119,39 +110,27 @@ class EventDetailsViewModel @Inject constructor(
         updateState(state.copy(reminderRange = reminderRange))
         val agendaItem = state.agendaItem
         val newRemindAt = agendaItem.time.minusMinutes(reminderRange.minutes)
-        updateEvent(
-            agendaItem.copy(
-                remindAt = newRemindAt,
+        updateState(
+            state.copy(
+                agendaItem = agendaItem.copy(
+                    remindAt = newRemindAt,
+                )
             )
         )
     }
 
     private fun changeFromDateTime(time: LocalDateTime) {
-        updateEvent(state.agendaItem.copy(time = time))
+        updateState(state.copy(agendaItem = state.agendaItem.copy(time = time)))
         changeReminder(state.reminderRange)
     }
 
     private fun changeToDateTime(time: LocalDateTime) {
-        updateEvent(state.agendaItem.copy(to = time))
-    }
-
-    private fun createEvent() {
-        viewModelScope.launch {
-            eventUseCases.createEvent(state.agendaItem)
-                .onSuccess {
-                    channel.send(UiEventDetailsEvent.ShowInfoToast(it.countOfSkippedMessages.toString()))
-                    channel.send(UiEventDetailsEvent.OnBackClick)
-                }
-                .onFailure {
-                    channel.send(UiEventDetailsEvent.ShowErrorMessage(R.string.default_event_details_error))
-                }
-            channel.send(UiEventDetailsEvent.OnBackClick)
-        }
+        updateState(state.copy(agendaItem = state.agendaItem.copy(to = time)))
     }
 
     private fun deleteEvent() {
         viewModelScope.launch {
-            eventUseCases.deleteEvent(state.agendaItem.id)
+            eventUseCases.deleteEvent(state.agendaItem)
             channel.send(UiEventDetailsEvent.OnBackClick)
         }
     }
@@ -161,10 +140,17 @@ class EventDetailsViewModel @Inject constructor(
     }
 
     private fun addPhoto(uri: Uri) {
-        val photos = mutableListOf<AgendaPhoto>()
-        photos.addAll(state.agendaItem.photos)
-        photos.add(AgendaPhoto.LocalPhoto(uri.toString()))
-        updateEvent(event = state.agendaItem.copy(photos = photos))
+        val agendaItem = state.agendaItem
+        val newPhoto = AgendaPhoto.LocalPhoto(uri.toString())
+
+        updateState(
+            state.copy(
+                agendaItem = agendaItem.copy(
+                    photos = agendaItem.photos + newPhoto
+                )
+            )
+        )
+
     }
 
     private fun addAttendee(email: String) {
@@ -173,21 +159,23 @@ class EventDetailsViewModel @Inject constructor(
             eventUseCases.checkAttendee(email)
                 .onSuccess { attendee ->
                     if (attendee != null) {
-                        val attendees = mutableListOf<Attendee>().apply {
-                            addAll(state.agendaItem.attendees)
-                            add(
-                                Attendee(
-                                    email = attendee.email,
-                                    fullName = attendee.fullName,
-                                    userId = attendee.userId,
-                                    eventId = state.agendaItem.id,
-                                    isGoing = true,
-                                    remindAt = 0L
-                                )
+                        val newAttendee = Attendee(
+                            email = attendee.email,
+                            fullName = attendee.fullName,
+                            userId = attendee.userId,
+                            eventId = state.agendaItem.id,
+                            isGoing = true,
+                            remindAt = 0L
+                        )
+                        val agendaItem = state.agendaItem
+                        updateState(
+                            state.copy(
+                                agendaItem = agendaItem.copy(
+                                    attendees = agendaItem.attendees + newAttendee
+                                ),
+                                isLoading = false
                             )
-                        }
-                        updateEvent(event = state.agendaItem.copy(attendees = attendees))
-                        updateState(state.copy(isLoading = false))
+                        )
                     } else {
                         updateState(
                             state.copy(
@@ -208,10 +196,6 @@ class EventDetailsViewModel @Inject constructor(
                     )
                 }
         }
-    }
-
-    private fun updateEvent(event: AgendaItem.Event) {
-        updateState(state.copy(agendaItem = event))
     }
 
     private fun updateState(newState: EventDetailsState) {

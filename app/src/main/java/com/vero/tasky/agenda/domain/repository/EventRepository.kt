@@ -5,17 +5,14 @@ import kotlinx.coroutines.flow.Flow
 
 interface EventRepository {
 
-    suspend fun createEvent(
-        event: AgendaItem.Event
+    suspend fun saveEvent(
+        event: AgendaItem.Event,
+        isGoing: Boolean,
+        deletedPhotoKeys: List<String>,
+        modificationType: ModificationType
     ) : Result<AgendaItemUploadResult>
 
     fun getEvent(id: String): Flow<AgendaItem.Event>
-
-    suspend fun updateEvent(
-        event: AgendaItem.Event,
-        deletedPhotoKeys: List<String>,
-        isGoing: Boolean
-    ) : Result<AgendaItemUploadResult>
 
     suspend fun fetchEvent(eventId: String)
 

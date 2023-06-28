@@ -7,28 +7,26 @@ import com.squareup.moshi.Moshi
 import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
-import com.vero.tasky.agenda.data.remindermanager.ReminderManagerImpl
+import com.vero.tasky.agenda.data.remindermanager.AlarmHandlerImpl
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
 import com.vero.tasky.agenda.data.repository.EventRepositoryImpl
 import com.vero.tasky.agenda.data.util.FileCompressor
 import com.vero.tasky.agenda.data.util.multipart.MultipartParser
-import com.vero.tasky.agenda.data.workmanagerrunner.CreateEventWorkerRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.GetFullAgendaWorkerRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaWorkerRunnerImpl
-import com.vero.tasky.agenda.data.workmanagerrunner.UpdateEventWorkerRunnerImpl
-import com.vero.tasky.agenda.domain.remindermanager.ReminderManager
+import com.vero.tasky.agenda.data.workmanagerrunner.SaveEventWorkerRunnerImpl
+import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.event.*
-import com.vero.tasky.agenda.domain.workmanagerrunner.CreateEventWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
-import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateEventWorkerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,37 +72,34 @@ object AgendaModule {
 
     @Provides
     @Singleton
-    fun provideGetFullAgendaWorkerRunner(@ApplicationContext context: Context)
+    fun provideWorkManager(@ApplicationContext context: Context) : WorkManager {
+        return WorkManager.getInstance(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetFullAgendaWorkerRunner(workManager: WorkManager)
         : GetFullAgendaWorkerRunner {
         return GetFullAgendaWorkerRunnerImpl(
-            workManager = WorkManager.getInstance(context)
+            workManager = workManager
         )
     }
 
     @Provides
     @Singleton
-    fun provideSyncAgendaWorkerRunner(@ApplicationContext context: Context)
+    fun provideSyncAgendaWorkerRunner(workManager: WorkManager)
         : SyncAgendaWorkerRunner {
         return SyncAgendaWorkerRunnerImpl(
-            workManager = WorkManager.getInstance(context)
+            workManager = workManager
         )
     }
 
     @Provides
     @Singleton
-    fun provideCreateEventWorkerRunner(@ApplicationContext context: Context)
-            : CreateEventWorkerRunner {
-        return CreateEventWorkerRunnerImpl(
-            workManager = WorkManager.getInstance(context)
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideUpdateEventWorkerRunner(@ApplicationContext context: Context)
-            : UpdateEventWorkerRunner {
-        return UpdateEventWorkerRunnerImpl(
-            workManager = WorkManager.getInstance(context)
+    fun provideUpdateEventWorkerRunner(workManager: WorkManager)
+            : SaveEventWorkerRunner {
+        return SaveEventWorkerRunnerImpl(
+            workManager = workManager
         )
     }
 
@@ -148,16 +143,16 @@ object AgendaModule {
         api: EventApi,
         db: AgendaDatabase,
         multipartParser: MultipartParser,
-        createEventWorkerRunner: CreateEventWorkerRunner,
-        updateEventWorkerRunner: UpdateEventWorkerRunner
+        saveEventWorkerRunner: SaveEventWorkerRunner,
+        alarmHandler: AlarmHandler
     ) : EventRepository {
         return EventRepositoryImpl(
             api = api,
             eventDao = db.eventDao(),
             modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
             multipartParser = multipartParser,
-            createEventWorkerRunner = createEventWorkerRunner,
-            updateEventWorkerRunner = updateEventWorkerRunner,
+            saveEventWorkerRunner = saveEventWorkerRunner,
+            alarmHandler = alarmHandler
         )
     }
 
@@ -168,12 +163,11 @@ object AgendaModule {
     ) : EventUseCases {
         return EventUseCases(
             checkAttendee = CheckAttendeeUseCase(eventRepository),
-            createEvent = CreateEventUseCase(eventRepository),
+            saveEvent = SaveEventUseCase(eventRepository),
             deleteAttendee = DeleteAttendeeUseCase(eventRepository),
             deleteEvent = DeleteEventUseCase(eventRepository),
             fetchEvent = FetchEventUseCase(eventRepository),
-            getEvent = GetEventInfoUseCase(eventRepository),
-            updateEvent = UpdateEventUseCase(eventRepository)
+            getEvent = GetEventInfoUseCase(eventRepository)
         )
     }
 
@@ -181,7 +175,7 @@ object AgendaModule {
     @Singleton
     fun provideReminderManager(
         @ApplicationContext context: Context
-    ) : ReminderManager {
-        return ReminderManagerImpl(context)
+    ) : AlarmHandler {
+        return AlarmHandlerImpl(context)
     }
 }

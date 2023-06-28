@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent.model
+package com.vero.tasky.agenda.presentation.model
 
 enum class ReminderRange(val minutes: Long) {
     MINUTES_10(10),

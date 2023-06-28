@@ -3,7 +3,7 @@ package com.vero.tasky.agenda.presentation.agendaevent
 import androidx.annotation.StringRes
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
-import com.vero.tasky.agenda.presentation.agendaevent.model.ReminderRange
+import com.vero.tasky.agenda.presentation.model.ReminderRange
 import java.time.LocalDateTime
 import java.util.*
 

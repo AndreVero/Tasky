@@ -4,22 +4,22 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.vero.tasky.agenda.data.broadcastreceiver.ReminderReceiver
+import com.vero.tasky.agenda.data.broadcastreceiver.AlarmReceiver
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
-import com.vero.tasky.agenda.domain.remindermanager.ReminderData
-import com.vero.tasky.agenda.domain.remindermanager.ReminderManager
+import com.vero.tasky.agenda.domain.remindermanager.AlarmData
+import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 
-class ReminderManagerImpl(
+class AlarmHandlerImpl(
     private val context : Context
-) : ReminderManager {
+) : AlarmHandler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    override fun setReminder(data: ReminderData) {
-        val intent = Intent(context, ReminderReceiver::class.java).apply {
-            putExtra(ReminderManager.ITEM_ID, data.itemId)
-            putExtra(ReminderManager.DESCRIPTION, data.description)
-            putExtra(ReminderManager.TITLE, data.title)
+    override fun setAlarm(data: AlarmData) {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra(AlarmHandler.ITEM_ID, data.itemId)
+            putExtra(AlarmHandler.DESCRIPTION, data.description)
+            putExtra(AlarmHandler.TITLE, data.title)
         }
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -33,12 +33,12 @@ class ReminderManagerImpl(
         )
     }
 
-    override fun cancelReminder(id: String) {
+    override fun cancelAlarm(id: String) {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
                 id.hashCode(),
-                Intent(context, ReminderReceiver::class.java),
+                Intent(context, AlarmReceiver::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
