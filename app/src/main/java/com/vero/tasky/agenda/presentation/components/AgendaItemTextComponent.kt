@@ -24,21 +24,21 @@ fun AgendaItemTextComponent(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             text = text,
             style = textStyle,
             color = MaterialTheme.colors.primary,
             modifier = Modifier
-                .fillMaxWidth()
                 .clickable(enabled = isEditable) { onEditClick() }
         )
         if (isEditable) {
             Icon(
                 imageVector = Icons.Default.ArrowRight,
-                contentDescription = stringResource(id = R.string.edit)
+                contentDescription = stringResource(id = R.string.edit),
+                tint = MaterialTheme.colors.primary
             )
         }
     }

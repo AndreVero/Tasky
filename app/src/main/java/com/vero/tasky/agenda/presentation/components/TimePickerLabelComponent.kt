@@ -26,7 +26,7 @@ fun TimePickerLabelComponent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier
-        .width(240.dp)
+        .width(160.dp)
         .clickable(enabled = isEditable) { onEditClick() }) {
         Text(
             text = stringResource(id = label),
@@ -44,7 +44,8 @@ fun TimePickerLabelComponent(
             Icon(
                 imageVector = Icons.Default.ArrowRight,
                 contentDescription = stringResource(id = R.string.edit),
-                modifier = modifier.align(Alignment.CenterEnd)
+                modifier = modifier.align(Alignment.CenterEnd),
+                tint = MaterialTheme.colors.primary
             )
         }
     }

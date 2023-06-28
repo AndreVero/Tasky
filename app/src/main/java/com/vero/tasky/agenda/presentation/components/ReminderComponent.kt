@@ -8,6 +8,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,28 +29,38 @@ fun ReminderComponent(
     isEditable: Boolean,
     onReminderClick: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(modifier = modifier
-            .clip(RoundedCornerShape(5.dp))
-            .width(35.dp)
-            .height(35.dp)
-            .background(reminderBackgroundColor)
-            .clickable(enabled = isEditable) { onReminderClick() }
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Notifications,
-                contentDescription = stringResource(id = R.string.add_visitor),
-                tint = MaterialTheme.colors.onTextFieldIcon,
-                modifier = Modifier.align(Alignment.Center)
+            Box(modifier = modifier
+                .clip(RoundedCornerShape(5.dp))
+                .width(35.dp)
+                .height(35.dp)
+                .background(reminderBackgroundColor)
+                .clickable(enabled = isEditable) { onReminderClick() }) {
+                Icon(
+                    imageVector = Icons.Outlined.Notifications,
+                    contentDescription = stringResource(id = R.string.add_visitor),
+                    tint = MaterialTheme.colors.onTextFieldIcon,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = stringResource(id = reminderRange.label),
+                style = MaterialTheme.typography.Inter400Size16,
+                color = MaterialTheme.colors.primary
             )
         }
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = stringResource(id = reminderRange.label),
-            style = MaterialTheme.typography.Inter400Size16,
-            color = MaterialTheme.colors.primary
-        )
+        if (isEditable) {
+            Icon(
+                imageVector = Icons.Default.ArrowRight,
+                contentDescription = stringResource(id = R.string.edit),
+                tint = MaterialTheme.colors.primary,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
     }
 }

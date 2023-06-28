@@ -31,7 +31,7 @@ fun DateTimeLineComponent(
             text = LocalDateParser.getShortDayLabel(localDateTime),
             isEditable = isEditable,
             onEditClick = { },
-            modifier = Modifier.width(240.dp),
+            modifier = Modifier.width(160.dp),
             textStyle = MaterialTheme.typography.Inter400Size16
         )
     }
