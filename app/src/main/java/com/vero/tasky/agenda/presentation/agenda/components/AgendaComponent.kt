@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
+import com.vero.tasky.agenda.presentation.components.CircleCheckBox
 import com.vero.tasky.agenda.presentation.util.AgendaTimeParser
 import com.vero.tasky.ui.theme.*
 
