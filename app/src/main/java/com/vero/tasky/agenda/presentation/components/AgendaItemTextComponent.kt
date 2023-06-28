@@ -33,7 +33,7 @@ fun AgendaItemTextComponent(
             color = MaterialTheme.colors.primary,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { if (isEditable) onEditClick() }
+                .clickable(enabled = isEditable) { onEditClick() }
         )
         if (isEditable) {
             Icon(

@@ -20,6 +20,7 @@ data class EventDetailsState(
         photos = emptyList(),
         host = ""
     ),
+    val userId : String = "",
     val isGoing : Boolean = true,
     val deletedPhotoKeys: List<String> = emptyList(),
     val isEditable: Boolean = false,

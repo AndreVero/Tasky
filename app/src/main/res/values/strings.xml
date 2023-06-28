@@ -53,4 +53,14 @@
     <string name="all">All</string>
     <string name="going">Going</string>
     <string name="not_going">Not going</string>
+    <string name="creator">creator</string>
+    <string name="delete_attendee">Delete attendee</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="minutes_before_10">10 minutes before</string>
+    <string name="minutes_before_30">30 minutes before</string>
+    <string name="hour_before">Hour before</string>
+    <string name="hours_before_6">6 hours before</string>
+    <string name="day_before">Day before</string>
+    <string name="delete_event">Delete event</string>
 </resources>

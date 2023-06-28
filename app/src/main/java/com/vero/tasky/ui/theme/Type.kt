@@ -95,6 +95,18 @@ val Typography.Inter600Size20: TextStyle
     get() = TextStyle(
         fontFamily = Inter,
         fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp
+    )
+
+val Typography.Inter500Size14: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp
+    )
+
+val Typography.Inter500Size16: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Medium,
         fontSize = 16.sp
     )
 

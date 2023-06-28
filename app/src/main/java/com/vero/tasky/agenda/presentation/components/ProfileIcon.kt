@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agenda.components
+package com.vero.tasky.agenda.presentation.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -8,13 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.vero.tasky.ui.theme.profileIcon
 import com.vero.tasky.ui.theme.profileText
 
 @Composable
 fun ProfileIcon(
     text: String,
-    color: Color,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.profileIcon,
 ) {
     Text(
         modifier = modifier

@@ -36,7 +36,7 @@ fun AgendaItemTypeComponent(
             .clip(RoundedCornerShape(2.dp))
             .background(color)
         )
-        Spacer(modifier = modifier.width(4.dp))
+        Spacer(modifier = modifier.width(12.dp))
         Text(
             text = stringResource(id = type),
             style = MaterialTheme.typography.Inter600Size16,

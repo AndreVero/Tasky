@@ -32,6 +32,7 @@ fun PhotoList(
             horizontalArrangement = Arrangement.Center,
             modifier = modifier
                 .height(110.dp)
+                .fillMaxWidth()
                 .background(reminderBackgroundColor)
         ) {
             Icon(

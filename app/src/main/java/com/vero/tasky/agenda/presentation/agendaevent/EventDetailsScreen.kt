@@ -2,27 +2,30 @@ package com.vero.tasky.agenda.presentation.agendaevent
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vero.tasky.R
-import com.vero.tasky.agenda.presentation.components.BaseAgendaScreen
+import com.vero.tasky.agenda.presentation.agendaevent.components.*
+import com.vero.tasky.agenda.presentation.components.*
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
 import com.vero.tasky.core.presentation.components.ProgressBarText
-import com.vero.tasky.ui.theme.Inter600Size16
-import com.vero.tasky.ui.theme.headerText
+import com.vero.tasky.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -74,7 +77,9 @@ fun EventDetailsScreen(
                     isLoading = state.isLoading,
                     textRes = R.string.save,
                     textStyle = MaterialTheme.typography.Inter600Size16,
-                    modifier = Modifier.clickable { viewModel.onEvent(EventDetailsEvent.SaveEvent) }
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .clickable { viewModel.onEvent(EventDetailsEvent.SaveEvent) }
                 )
             } else {
                 Icon(
@@ -88,7 +93,89 @@ fun EventDetailsScreen(
             }
         },
         bodyContent = {
-
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scrollable(rememberScrollState(), Orientation.Vertical)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                AgendaItemTypeComponent(
+                    color = eventBackgroundColor,
+                    type = R.string.event
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                AgendaItemTextComponent(
+                    text = state.agendaItem.title,
+                    isEditable = state.isEditable,
+                    onEditClick = { },
+                    textStyle = MaterialTheme.typography.Inter700Size26
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                BaseLine()
+                Spacer(modifier = Modifier.height(16.dp))
+                AgendaItemTextComponent(
+                    text = state.agendaItem.description ?: "",
+                    isEditable = state.isEditable,
+                    onEditClick = {  },
+                    textStyle = MaterialTheme.typography.Inter400Size16
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                PhotoList(
+                    photos = state.agendaItem.photos,
+                    onPhotoClick = { },
+                    onAddPhotoClick = { },
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                BaseLine()
+                Spacer(modifier = Modifier.height(16.dp))
+                DateTimeLineComponent(
+                    isEditable = state.isEditable,
+                    localDateTime = state.agendaItem.time,
+                    label = R.string.from
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                BaseLine()
+                Spacer(modifier = Modifier.height(16.dp))
+                DateTimeLineComponent(
+                    isEditable = state.isEditable,
+                    localDateTime = state.agendaItem.to,
+                    label = R.string.to
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                BaseLine()
+                Spacer(modifier = Modifier.height(16.dp))
+                ReminderComponent(
+                    reminderRange = state.reminderRange,
+                    onReminderClick = { },
+                    isEditable = state.isEditable
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                BaseLine()
+                Spacer(modifier = Modifier.height(16.dp))
+                VisitorsLabelComponent(
+                    onAddVisitorClick = { },
+                    isEditable = state.isEditable
+                )
+                if (state.agendaItem.attendees.isNotEmpty()) {
+                    AttendeesComponent(
+                        attendees = state.agendaItem.attendees,
+                        isEditable = state.isEditable,
+                        userId = state.userId
+                    )
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.delete_event).uppercase(),
+                        style = MaterialTheme.typography.Inter600Size16,
+                        color = MaterialTheme.colors.onTextFieldIcon,
+                        modifier = Modifier.clickable {  }
+                    )
+                }
+            }
         }
     )
 }

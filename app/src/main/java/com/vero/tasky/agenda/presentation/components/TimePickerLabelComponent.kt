@@ -1,5 +1,6 @@
 package com.vero.tasky.agenda.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
@@ -18,15 +19,17 @@ import com.vero.tasky.ui.theme.Inter400Size16
 
 @Composable
 fun TimePickerLabelComponent(
-    label: String,
+    @StringRes label: Int,
     value: String,
     isEditable: Boolean,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.width(120.dp).clickable { if (isEditable) onEditClick() }) {
+    Box(modifier = modifier
+        .width(240.dp)
+        .clickable(enabled = isEditable) { onEditClick() }) {
         Text(
-            text = label,
+            text = stringResource(id = label),
             style = MaterialTheme.typography.Inter400Size16,
             color = MaterialTheme.colors.primary,
             modifier = modifier.align(Alignment.CenterStart)
