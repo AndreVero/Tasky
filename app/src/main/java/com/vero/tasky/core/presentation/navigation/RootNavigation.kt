@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.presentation.agenda.AgendaScreen
+import com.vero.tasky.agenda.presentation.agendaevent.EventDetailsScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.auth.presentation.registration.RegistrationScreen
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.IS_EDITABLE
@@ -64,10 +65,10 @@ fun RootNavigation(
         composable(
             route = Screens.Event.route + agendaItemScreenParameters,
             arguments = agendaItemArgumentTypes
-        ) { backStackEntry ->
-            Text("Event :" +
-                    " ${backStackEntry.arguments?.getString("itemId")} " +
-                    "isEditable :  ${backStackEntry.arguments?.getBoolean("isEditable")}")
+        ) {
+            EventDetailsScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(
             route = Screens.Task.route + agendaItemScreenParameters,

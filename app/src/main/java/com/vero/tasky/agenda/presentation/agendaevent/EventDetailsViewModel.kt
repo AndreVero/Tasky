@@ -31,7 +31,6 @@ class EventDetailsViewModel @Inject constructor(
     userPreferences: UserPreferences
 ) : ViewModel() {
 
-    private val userId = userPreferences.getUser()!!.userId
     private val itemId = savedStateHandle.get<String?>(NavigationConstants.ITEM_ID)
 
     var state by mutableStateOf(
@@ -39,7 +38,8 @@ class EventDetailsViewModel @Inject constructor(
             isLoading = false
         ) ?: EventDetailsState(
             isEditable = savedStateHandle[NavigationConstants.IS_EDITABLE] ?: false,
-            isNewEvent = itemId != null
+            isNewEvent = itemId != null,
+            userId = userPreferences.getUser()!!.userId
         )
     )
         private set
@@ -55,7 +55,7 @@ class EventDetailsViewModel @Inject constructor(
                     state.copy(
                         agendaItem = agendaItem,
                         isGoing = if (agendaItem.isUserEventCreator) true
-                        else agendaItem.attendees.find { userId == it.userId }?.isGoing ?: false,
+                        else agendaItem.attendees.find { state.userId == it.userId }?.isGoing ?: false,
                     )
                 )
             }.launchIn(viewModelScope)

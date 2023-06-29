@@ -2,6 +2,7 @@ package com.vero.tasky.agenda.presentation.util
 
 import com.vero.tasky.agenda.presentation.agenda.model.Day
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.*
 
@@ -20,5 +21,14 @@ object LocalDateParser {
     fun getDayLabel(date: LocalDate): String {
         val parsedMonth = date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
         return String.format("%02d $parsedMonth ${date.year}", date.dayOfMonth)
+    }
+
+    fun getTimeLabel(date: LocalDateTime): String {
+        return String.format("%02d:%02d", date.hour, date.minute)
+    }
+
+    fun getShortDayLabel(date: LocalDateTime): String {
+        val parsedMonth = date.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+        return String.format("$parsedMonth %02d ${date.year}", date.dayOfMonth)
     }
 }
