@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
+import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
 import com.vero.tasky.agenda.domain.model.ModificationType
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,14 +34,27 @@ class EventDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val itemId = savedStateHandle.get<String?>(NavigationConstants.ITEM_ID)
+    private val isEditable = savedStateHandle[NavigationConstants.IS_EDITABLE] ?: false
+    private val userId = userPreferences.getUser()!!.userId
 
     var state by mutableStateOf(
         (savedStateHandle.get(STATE_KEY) as? EventDetailsState)?.copy(
-            isLoading = false
+            isLoading = false,
         ) ?: EventDetailsState(
-            isEditable = savedStateHandle[NavigationConstants.IS_EDITABLE] ?: false,
-            isNewEvent = itemId != null,
-            userId = userPreferences.getUser()!!.userId
+            agendaItem = AgendaItem.Event(
+                id = UUID.randomUUID().toString(),
+                title = "New event",
+                description = "New event description",
+                time = LocalDateTime.now().plusMinutes(30),
+                to = LocalDateTime.now().plusMinutes(40),
+                remindAt = LocalDateTime.now().minusMinutes(10),
+                isUserEventCreator = true,
+                attendees = emptyList(),
+                photos = emptyList(),
+                host = userId
+            ),
+            isEditableForCreator = isEditable && itemId == null,
+            isEditableForAttendee = isEditable,
         )
     )
         private set
@@ -55,7 +70,11 @@ class EventDetailsViewModel @Inject constructor(
                     state.copy(
                         agendaItem = agendaItem,
                         isGoing = if (agendaItem.isUserEventCreator) true
-                        else agendaItem.attendees.find { state.userId == it.userId }?.isGoing ?: false,
+                        else agendaItem.attendees.find { userId == it.userId }?.isGoing ?: false,
+                        isEditableForCreator = agendaItem.host == userId && isEditable,
+                        isEditableForAttendee = isEditable,
+                        isNotGoingAttendees = agendaItem.attendees.filter { !it.isGoing },
+                        isGoingAttendees = agendaItem.attendees.filter { it.isGoing }
                     )
                 )
             }.launchIn(viewModelScope)
@@ -82,6 +101,14 @@ class EventDetailsViewModel @Inject constructor(
                 else ModificationType.CREATED
             )
             is EventDetailsEvent.DeletePhoto -> deletePhoto(event.key)
+            is EventDetailsEvent.CheckTitleAndDescription -> {
+                updateState(state.copy(
+                    agendaItem = state.agendaItem.copy(
+                        title = event.title ?: state.agendaItem.title,
+                        description = event.description ?: state.agendaItem.description,
+                    ),
+                ))
+            }
         }
     }
 
@@ -136,7 +163,13 @@ class EventDetailsViewModel @Inject constructor(
     }
 
     private fun changeMode() {
-        updateState(state.copy(isEditable = !state.isEditable))
+        updateState(
+            state.copy(
+                isEditableForAttendee = !state.isEditableForAttendee,
+                isEditableForCreator = if (state.agendaItem.host == userId) !state.isEditableForCreator
+                else false
+            )
+        )
     }
 
     private fun addPhoto(uri: Uri) {
@@ -168,11 +201,14 @@ class EventDetailsViewModel @Inject constructor(
                             remindAt = 0L
                         )
                         val agendaItem = state.agendaItem
+                        val attendees = agendaItem.attendees + newAttendee
                         updateState(
                             state.copy(
                                 agendaItem = agendaItem.copy(
-                                    attendees = agendaItem.attendees + newAttendee
+                                    attendees = attendees
                                 ),
+                                isGoingAttendees = attendees.filter { it.isGoing },
+                                isNotGoingAttendees = attendees.filter { !it.isGoing },
                                 isLoading = false
                             )
                         )

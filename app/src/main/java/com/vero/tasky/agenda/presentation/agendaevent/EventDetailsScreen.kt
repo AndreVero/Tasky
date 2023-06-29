@@ -31,7 +31,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun EventDetailsScreen(
     viewModel: EventDetailsViewModel = hiltViewModel(),
-    navigateBack: () -> Unit
+    onEditTitle: (String) -> Unit,
+    onEditDescription: (String) -> Unit,
+    navigateBack: () -> Unit,
+    title: String? = null,
+    description: String? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -40,6 +44,7 @@ fun EventDetailsScreen(
     val state = viewModel.state
 
     LaunchedEffect(key1 = true) {
+        viewModel.onEvent(EventDetailsEvent.CheckTitleAndDescription(title, description))
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEventDetailsEvent.ShowErrorMessage -> {
@@ -72,7 +77,7 @@ fun EventDetailsScreen(
                 style = MaterialTheme.typography.Inter600Size16,
                 modifier = Modifier.align(Alignment.Center)
             )
-            if (state.isEditable) {
+            if (state.isEditableForAttendee) {
                 ProgressBarText(
                     isLoading = state.isLoading,
                     textRes = R.string.save,
@@ -101,13 +106,13 @@ fun EventDetailsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 AgendaItemTypeComponent(
                     color = eventBackgroundColor,
-                    type = R.string.event
+                    type = R.string.event,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 AgendaItemTextComponent(
                     text = state.agendaItem.title,
-                    isEditable = state.isEditable,
-                    onEditClick = { },
+                    isEditable = state.isEditableForCreator,
+                    onEditClick = { onEditTitle(state.agendaItem.title) },
                     textStyle = MaterialTheme.typography.Inter700Size26
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -115,8 +120,8 @@ fun EventDetailsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 AgendaItemTextComponent(
                     text = state.agendaItem.description ?: "",
-                    isEditable = state.isEditable,
-                    onEditClick = {  },
+                    isEditable = state.isEditableForCreator,
+                    onEditClick = { onEditDescription(state.agendaItem.description ?: "") },
                     textStyle = MaterialTheme.typography.Inter400Size16
                 )
                 Spacer(modifier = Modifier.height(20.dp))
@@ -129,7 +134,7 @@ fun EventDetailsScreen(
                 BaseLine()
                 Spacer(modifier = Modifier.height(16.dp))
                 DateTimeLineComponent(
-                    isEditable = state.isEditable,
+                    isEditable = state.isEditableForCreator,
                     localDateTime = state.agendaItem.time,
                     label = R.string.from
                 )
@@ -137,7 +142,7 @@ fun EventDetailsScreen(
                 BaseLine()
                 Spacer(modifier = Modifier.height(16.dp))
                 DateTimeLineComponent(
-                    isEditable = state.isEditable,
+                    isEditable = state.isEditableForCreator,
                     localDateTime = state.agendaItem.to,
                     label = R.string.to
                 )
@@ -147,20 +152,21 @@ fun EventDetailsScreen(
                 ReminderComponent(
                     reminderRange = state.reminderRange,
                     onReminderClick = { },
-                    isEditable = state.isEditable
+                    isEditable = state.isEditableForAttendee
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 BaseLine()
                 Spacer(modifier = Modifier.height(16.dp))
                 VisitorsLabelComponent(
                     onAddVisitorClick = { },
-                    isEditable = state.isEditable
+                    isEditable = state.isEditableForCreator
                 )
                 if (state.agendaItem.attendees.isNotEmpty()) {
                     AttendeesComponent(
-                        attendees = state.agendaItem.attendees,
-                        isEditable = state.isEditable,
-                        userId = state.userId
+                        isGoingAttendees = state.isGoingAttendees,
+                        isNotGoingAttendees = state.isNotGoingAttendees,
+                        isEditable = state.isEditableForCreator,
+                        userId = state.agendaItem.host
                     )
                 }
                 Spacer(modifier = Modifier.height(32.dp))

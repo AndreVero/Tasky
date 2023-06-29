@@ -24,17 +24,17 @@ import com.vero.tasky.ui.theme.reminderBackgroundColor
 
 @Composable
 fun ReminderComponent(
-    modifier: Modifier = Modifier,
     reminderRange: ReminderRange,
     isEditable: Boolean,
-    onReminderClick: () -> Unit
+    onReminderClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Box(modifier = modifier
+            Box(modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
                 .width(35.dp)
                 .height(35.dp)

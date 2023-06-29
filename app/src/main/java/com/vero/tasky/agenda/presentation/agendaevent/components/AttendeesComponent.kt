@@ -11,7 +11,8 @@ import com.vero.tasky.agenda.presentation.agendaevent.model.Filter
 
 @Composable
 fun AttendeesComponent(
-    attendees: List<Attendee>,
+    isGoingAttendees: List<Attendee>,
+    isNotGoingAttendees: List<Attendee>,
     isEditable: Boolean,
     userId: String,
     modifier: Modifier = Modifier
@@ -32,21 +33,21 @@ fun AttendeesComponent(
         }
     }
     Spacer(modifier = Modifier.height(16.dp))
-    if (attendees.any { it.isGoing } &&
+    if (isGoingAttendees.isNotEmpty() &&
         (currentFilter == Filter.ALL || currentFilter == Filter.GOING)) {
         AttendeesList(
             label = R.string.going,
-            attendees = attendees.filter { it.isGoing },
+            attendees = isGoingAttendees,
             currentUserId = userId,
             isEditable = isEditable
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
-    if (attendees.any { !it.isGoing } &&
+    if (isNotGoingAttendees.isNotEmpty() &&
         (currentFilter == Filter.ALL || currentFilter == Filter.NOT_GOING)) {
         AttendeesList(
             label = R.string.not_going,
-            attendees = attendees.filter { !it.isGoing },
+            attendees = isNotGoingAttendees,
             currentUserId = userId,
             isEditable = isEditable
         )
