@@ -70,4 +70,5 @@
     <string name="choose_reminder">Choose reminder</string>
     <string name="leave_event">Leave event</string>
     <string name="join_event">Join event</string>
+    <string name="are_you_sure">Are you sure?</string>
 </resources>

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vero.tasky.R
+import com.vero.tasky.agenda.presentation.agenda.components.DefaultConfirmationDialog
 import com.vero.tasky.agenda.presentation.agendaevent.components.*
 import com.vero.tasky.agenda.presentation.components.*
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
@@ -50,6 +51,7 @@ fun EventDetailsScreen(
     val timeFromDialog = rememberMaterialDialogState()
     val dateToDialog = rememberMaterialDialogState()
     val timeToDialog = rememberMaterialDialogState()
+    var presenceDialogVisible by remember { mutableStateOf(false) }
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -107,6 +109,15 @@ fun EventDetailsScreen(
             isEmailValid = state.isEmailValid,
             isErrorEmail = state.isErrorEmail,
             emailLabel = state.emailLabel
+        )
+    }
+
+    if (presenceDialogVisible) {
+        DefaultConfirmationDialog(
+            onDismissRequest = { presenceDialogVisible = false },
+            onYesClick = { viewModel.onEvent(EventDetailsEvent.ChangePresenceState) },
+            onNoClick = { presenceDialogVisible = false },
+            label = R.string.are_you_sure
         )
     }
 
@@ -241,9 +252,7 @@ fun EventDetailsScreen(
                             text = stringResource(id = state.presenceEvent.label).uppercase(),
                             style = MaterialTheme.typography.Inter600Size16,
                             color = MaterialTheme.colors.onTextFieldIcon,
-                            modifier = Modifier.clickable {
-                                viewModel.onEvent(EventDetailsEvent.ChangePresenceState)
-                            }
+                            modifier = Modifier.clickable { presenceDialogVisible = true }
                         )
                     }
                 }
