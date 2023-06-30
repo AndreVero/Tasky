@@ -23,6 +23,7 @@ import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.presentation.agenda.components.*
 import com.vero.tasky.agenda.presentation.components.BaseAgendaScreen
+import com.vero.tasky.agenda.presentation.components.DateDialog
 import com.vero.tasky.agenda.presentation.components.ProfileIcon
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
 import com.vero.tasky.ui.theme.*
@@ -62,12 +63,10 @@ fun AgendaScreen(
         }
     }
 
-    CalendarDialog(
+    DateDialog(
         onDayPicked = { date -> viewModel.onEvent(AgendaEvent.OnDayClick(date)) },
         dialogState = dialogState
     )
-
-
 
     BaseAgendaScreen(
         headerContent = {

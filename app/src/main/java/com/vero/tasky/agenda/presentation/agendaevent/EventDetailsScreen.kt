@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vero.tasky.R
 import com.vero.tasky.agenda.presentation.agendaevent.components.*
 import com.vero.tasky.agenda.presentation.components.*
@@ -45,6 +46,11 @@ fun EventDetailsScreen(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val snackbarHostState = LocalSnackbarHostState.current
+
+    val dateFromDialog = rememberMaterialDialogState()
+    val timeFromDialog = rememberMaterialDialogState()
+    val dateToDialog = rememberMaterialDialogState()
+    val timeToDialog = rememberMaterialDialogState()
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -78,6 +84,19 @@ fun EventDetailsScreen(
             }
         }
     }
+
+    DateDialog(dialogState = dateFromDialog, onDayPicked = {
+        viewModel.onEvent(EventDetailsEvent.FromDateChanged(it))
+    })
+    TimeDialog(dialogState = timeFromDialog, onTimePicked = {
+        viewModel.onEvent(EventDetailsEvent.FromTimeChanged(it))
+    })
+    DateDialog(dialogState = dateToDialog, onDayPicked = {
+        viewModel.onEvent(EventDetailsEvent.ToDateChanged(it))
+    })
+    TimeDialog(dialogState = timeToDialog, onTimePicked = {
+        viewModel.onEvent(EventDetailsEvent.ToTimeChanged(it))
+    })
 
     BaseAgendaScreen(
         headerContent = {
@@ -157,7 +176,9 @@ fun EventDetailsScreen(
                 DateTimeLineComponent(
                     isEditable = state.isEditableForCreator,
                     localDateTime = state.agendaItem.time,
-                    label = R.string.from
+                    label = R.string.from,
+                    onEditDateClick = { dateFromDialog.show() },
+                    onEditTimeClick = { timeFromDialog.show() }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 BaseLine()
@@ -165,7 +186,9 @@ fun EventDetailsScreen(
                 DateTimeLineComponent(
                     isEditable = state.isEditableForCreator,
                     localDateTime = state.agendaItem.to,
-                    label = R.string.to
+                    label = R.string.to,
+                    onEditDateClick = { dateToDialog.show() },
+                    onEditTimeClick = { timeToDialog.show() }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 BaseLine()

@@ -14,6 +14,7 @@ import com.vero.tasky.agenda.domain.model.Attendee
 import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.event.EventUseCases
 import com.vero.tasky.agenda.presentation.model.ReminderRange
+import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.presentation.navigation.NavigationConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 import javax.inject.Inject
 
@@ -90,9 +93,7 @@ class EventDetailsViewModel @Inject constructor(
             )
             EventDetailsEvent.ChangeMode -> changeMode()
             EventDetailsEvent.DeleteEvent -> deleteEvent()
-            is EventDetailsEvent.FromDateTimeChanged -> changeFromDateTime(event.time)
             is EventDetailsEvent.ReminderChanged -> changeReminder(event.reminderRange)
-            is EventDetailsEvent.ToDateTimeChanged -> changeToDateTime(event.time)
             EventDetailsEvent.SaveEvent -> saveAgendaItem(
                 isGoing = true,
                 modificationType = if (itemId != null)
@@ -101,6 +102,10 @@ class EventDetailsViewModel @Inject constructor(
             )
             is EventDetailsEvent.DeletePhoto -> deletePhoto(event.key)
             is EventDetailsEvent.CheckModifiedInfo -> checkModifiedInfo(event)
+            is EventDetailsEvent.FromDateChanged -> changeFromDate(event.date)
+            is EventDetailsEvent.FromTimeChanged -> changeFromTime(event.time)
+            is EventDetailsEvent.ToDateChanged -> changeToDate(event.date)
+            is EventDetailsEvent.ToTimeChanged -> changeToTime(event.time)
         }
     }
 
@@ -174,13 +179,26 @@ class EventDetailsViewModel @Inject constructor(
         )
     }
 
-    private fun changeFromDateTime(time: LocalDateTime) {
-        updateState(state.copy(agendaItem = state.agendaItem.copy(time = time)))
+    private fun changeFromDate(date: LocalDate) {
+        val newDateTime = LocalDateParser.updateLocalDateTime(state.agendaItem.time, date)
+        updateState(state.copy(agendaItem = state.agendaItem.copy(time = newDateTime)))
         changeReminder(state.reminderRange)
     }
 
-    private fun changeToDateTime(time: LocalDateTime) {
-        updateState(state.copy(agendaItem = state.agendaItem.copy(to = time)))
+    private fun changeToDate(date: LocalDate) {
+        val newDateTime = LocalDateParser.updateLocalDateTime(state.agendaItem.to, date)
+        updateState(state.copy(agendaItem = state.agendaItem.copy(to = newDateTime)))
+    }
+
+    private fun changeFromTime(time: LocalTime) {
+        val newDateTime = LocalDateParser.updateLocalDateTime(state.agendaItem.time, time)
+        updateState(state.copy(agendaItem = state.agendaItem.copy(time = newDateTime)))
+        changeReminder(state.reminderRange)
+    }
+
+    private fun changeToTime(time: LocalTime) {
+        val newDateTime = LocalDateParser.updateLocalDateTime(state.agendaItem.to, time)
+        updateState(state.copy(agendaItem = state.agendaItem.copy(to = newDateTime)))
     }
 
     private fun deleteEvent() {

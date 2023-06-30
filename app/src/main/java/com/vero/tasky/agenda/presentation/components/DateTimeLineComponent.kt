@@ -15,6 +15,8 @@ fun DateTimeLineComponent(
     @StringRes label: Int,
     isEditable: Boolean,
     localDateTime: LocalDateTime,
+    onEditTimeClick: () -> Unit,
+    onEditDateClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row (
@@ -25,12 +27,12 @@ fun DateTimeLineComponent(
             label = label,
             value = LocalDateParser.getTimeLabel(localDateTime),
             isEditable = isEditable,
-            onEditClick = { }
+            onEditClick = onEditTimeClick
         )
         AgendaItemTextComponent(
             text = LocalDateParser.getShortDayLabel(localDateTime),
             isEditable = isEditable,
-            onEditClick = { },
+            onEditClick = onEditDateClick,
             modifier = Modifier.width(160.dp),
             textStyle = MaterialTheme.typography.Inter400Size16
         )

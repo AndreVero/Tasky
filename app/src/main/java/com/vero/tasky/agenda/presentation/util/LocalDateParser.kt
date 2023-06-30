@@ -3,6 +3,7 @@ package com.vero.tasky.agenda.presentation.util
 import com.vero.tasky.agenda.presentation.agenda.model.Day
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.*
 
@@ -30,5 +31,13 @@ object LocalDateParser {
     fun getShortDayLabel(date: LocalDateTime): String {
         val parsedMonth = date.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
         return String.format("$parsedMonth %02d ${date.year}", date.dayOfMonth)
+    }
+
+    fun updateLocalDateTime(localDateTime: LocalDateTime, localTime: LocalTime) : LocalDateTime {
+        return localDateTime.withHour(localTime.hour).withMinute(localTime.minute)
+    }
+
+    fun updateLocalDateTime(localDateTime: LocalDateTime, localDate: LocalDate) : LocalDateTime {
+        return localDate.atTime(localDateTime.hour, localDateTime.minute)
     }
 }
