@@ -5,10 +5,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -98,6 +97,19 @@ fun EventDetailsScreen(
         viewModel.onEvent(EventDetailsEvent.ToTimeChanged(it))
     })
 
+    if (state.addAttendeeDialogIsVisible) {
+        AddAttendeeDialog(
+            isLoading = state.isLoading,
+            onDismissClick = { viewModel.onEvent(EventDetailsEvent.HideAddAttendeeDialog) },
+            onAddEmail = { viewModel.onEvent(EventDetailsEvent.AddAttendee) },
+            onEmailChanged = { email -> viewModel.onEvent(EventDetailsEvent.OnEmailUpdated(email)) },
+            email = state.emailAddress,
+            isEmailValid = state.isEmailValid,
+            isErrorEmail = state.isErrorEmail,
+            emailLabel = state.emailLabel
+        )
+    }
+
     BaseAgendaScreen(
         headerContent = {
             Icon(
@@ -137,7 +149,8 @@ fun EventDetailsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .scrollable(rememberScrollState(), Orientation.Vertical)
+                    .padding(bottom = 16.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 AgendaItemTypeComponent(
@@ -195,14 +208,16 @@ fun EventDetailsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 ReminderComponent(
                     reminderRange = state.reminderRange,
-                    onReminderClick = { },
+                    onReminderClick = { reminderRange ->
+                        viewModel.onEvent(EventDetailsEvent.ReminderChanged(reminderRange))
+                    },
                     isEditable = state.isEditableForAttendee
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 BaseLine()
                 Spacer(modifier = Modifier.height(16.dp))
                 VisitorsLabelComponent(
-                    onAddVisitorClick = { },
+                    onAddVisitorClick = { viewModel.onEvent(EventDetailsEvent.ShowAttendeeDialog) },
                     isEditable = state.isEditableForCreator
                 )
                 if (state.agendaItem.attendees.isNotEmpty()) {
@@ -210,7 +225,10 @@ fun EventDetailsScreen(
                         isGoingAttendees = state.isGoingAttendees,
                         isNotGoingAttendees = state.isNotGoingAttendees,
                         isEditable = state.isEditableForCreator,
-                        userId = state.agendaItem.host
+                        userId = state.agendaItem.host,
+                        onDeleteAttendee = { attendee ->
+                            viewModel.onEvent(EventDetailsEvent.DeleteAttendee(attendee))
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(32.dp))

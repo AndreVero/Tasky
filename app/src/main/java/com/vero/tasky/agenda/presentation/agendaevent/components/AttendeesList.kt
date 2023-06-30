@@ -20,6 +20,7 @@ fun AttendeesList(
     currentUserId: String,
     isEditable: Boolean,
     modifier: Modifier = Modifier,
+    onDeleteAttendee: (Attendee) -> Unit
 ) {
     Column(modifier = modifier) {
         Text(
@@ -30,10 +31,12 @@ fun AttendeesList(
         Spacer(modifier = Modifier.height(16.dp))
         attendees.forEach { 
             AttendeeListItemComponent(
-                fullName = it.fullName,
+                attendee = it,
                 isCreator = currentUserId == it.userId,
-                isEditable = isEditable)
-            Spacer(modifier = Modifier.height(8.dp))
+                isEditable = isEditable,
+                onDeleteAttendee = onDeleteAttendee
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 

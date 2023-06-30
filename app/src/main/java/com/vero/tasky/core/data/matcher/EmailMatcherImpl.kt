@@ -1,7 +1,7 @@
-package com.vero.tasky.auth.data.matcher
+package com.vero.tasky.core.data.matcher
 
 import android.util.Patterns
-import com.vero.tasky.auth.domain.matcher.EmailMatcher
+import com.vero.tasky.core.domain.matcher.EmailMatcher
 
 class EmailMatcherImpl : EmailMatcher {
     

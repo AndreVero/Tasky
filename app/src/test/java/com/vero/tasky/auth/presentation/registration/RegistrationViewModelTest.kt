@@ -10,7 +10,7 @@ import com.vero.tasky.auth.data.repository.AuthRepositoryFake
 import com.vero.tasky.auth.domain.repository.AuthRepository
 import com.vero.tasky.auth.domain.usecase.RegisterUseCase
 import com.vero.tasky.auth.domain.usecase.RegistrationUseCases
-import com.vero.tasky.auth.domain.usecase.ValidateEmailUseCase
+import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import com.vero.tasky.auth.domain.usecase.password.PasswordValidationResult
 import io.mockk.every
 import io.mockk.mockk

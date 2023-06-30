@@ -11,7 +11,7 @@ import com.vero.tasky.auth.data.repository.AuthRepositoryFake
 import com.vero.tasky.auth.domain.repository.AuthRepository
 import com.vero.tasky.auth.domain.usecase.LoginUseCase
 import com.vero.tasky.auth.domain.usecase.LoginUseCases
-import com.vero.tasky.auth.domain.usecase.ValidateEmailUseCase
+import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import com.vero.tasky.auth.domain.usecase.password.PasswordValidationResult
 import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
 import com.vero.tasky.core.domain.util.eventbus.AuthEventBusEvent

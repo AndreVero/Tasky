@@ -1,6 +1,6 @@
-package com.vero.tasky.auth.domain.usecase
+package com.vero.tasky.core.domain.usecase
 
-import com.vero.tasky.auth.domain.matcher.EmailMatcher
+import com.vero.tasky.core.domain.matcher.EmailMatcher
 
 class ValidateEmailUseCase (
     private val emailMatcher: EmailMatcher

@@ -27,6 +27,8 @@ import com.vero.tasky.agenda.domain.usecase.event.*
 import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
+import com.vero.tasky.core.domain.matcher.EmailMatcher
+import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -159,7 +161,8 @@ object AgendaModule {
     @Provides
     @Singleton
     fun provideEventUseCases(
-        eventRepository: EventRepository
+        eventRepository: EventRepository,
+        emailMatcher: EmailMatcher
     ) : EventUseCases {
         return EventUseCases(
             checkAttendee = CheckAttendeeUseCase(eventRepository),
@@ -167,7 +170,8 @@ object AgendaModule {
             deleteAttendee = DeleteAttendeeUseCase(eventRepository),
             deleteEvent = DeleteEventUseCase(eventRepository),
             fetchEvent = FetchEventUseCase(eventRepository),
-            getEvent = GetEventInfoUseCase(eventRepository)
+            getEvent = GetEventInfoUseCase(eventRepository),
+            validateEmailUseCase = ValidateEmailUseCase(emailMatcher = emailMatcher)
         )
     }
 

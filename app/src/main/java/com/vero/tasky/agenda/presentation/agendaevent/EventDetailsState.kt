@@ -28,9 +28,12 @@ data class EventDetailsState(
     val isEditableForCreator: Boolean = false,
     val isEditableForAttendee: Boolean = false,
     val isLoading: Boolean = false,
-    val isErrorEmail: Boolean = false,
     val isGoingAttendees: List<Attendee> = emptyList(),
     val isNotGoingAttendees: List<Attendee> = emptyList(),
+    val emailAddress: String = "",
+    val isEmailValid: Boolean = false,
+    val isErrorEmail: Boolean = false,
+    val addAttendeeDialogIsVisible : Boolean = false,
     @StringRes val emailLabel: Int = R.string.email_hint,
     val reminderRange: ReminderRange = ReminderRange.MINUTES_10
 ) : Parcelable
