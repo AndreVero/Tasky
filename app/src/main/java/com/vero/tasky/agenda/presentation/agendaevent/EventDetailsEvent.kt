@@ -6,7 +6,9 @@ import java.time.LocalDateTime
 
 sealed interface EventDetailsEvent {
     object ChangeMode: EventDetailsEvent
-    class CheckTitleAndDescription(val title: String?, val description: String?): EventDetailsEvent
+    class CheckModifiedInfo(val title: String?,
+                            val description: String?,
+                            val deletedPhotoUri: String?): EventDetailsEvent
     class AddPhoto(val uri: Uri) : EventDetailsEvent
     class FromDateTimeChanged(val time: LocalDateTime) : EventDetailsEvent
     class ToDateTimeChanged(val time: LocalDateTime) : EventDetailsEvent

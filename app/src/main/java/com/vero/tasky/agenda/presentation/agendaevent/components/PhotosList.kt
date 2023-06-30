@@ -1,6 +1,7 @@
 package com.vero.tasky.agenda.presentation.agendaevent.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -34,6 +35,7 @@ fun PhotoList(
                 .height(110.dp)
                 .fillMaxWidth()
                 .background(reminderBackgroundColor)
+                .clickable { onAddPhotoClick() }
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -54,14 +56,23 @@ fun PhotoList(
                 color = MaterialTheme.colors.primary,
                 style = MaterialTheme.typography.Inter600Size20
             )
+            Spacer(modifier = Modifier.height(8.dp))
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(60.dp)
+                columns = GridCells.Adaptive(68.dp)
             ) {
                 items(photos) {
-                    PhotoListItem(photo = it, onPhotoClick = onPhotoClick)
+                    Box(modifier = Modifier
+                        .padding(8.dp)
+                        .aspectRatio(1f)) {
+                        PhotoListItem(photo = it, onPhotoClick = onPhotoClick)
+                    }
                 }
                 item {
-                    AddPhotoListItem(onAddPhotoClick = onAddPhotoClick)
+                    Box(modifier = Modifier
+                        .padding(8.dp)
+                        .aspectRatio(1f)) {
+                        AddPhotoListItem(onAddPhotoClick = onAddPhotoClick)
+                    }
                 }
             }
         }

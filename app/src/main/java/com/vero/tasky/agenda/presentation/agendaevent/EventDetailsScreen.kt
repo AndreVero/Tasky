@@ -1,6 +1,9 @@
 package com.vero.tasky.agenda.presentation.agendaevent
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -33,18 +36,32 @@ fun EventDetailsScreen(
     viewModel: EventDetailsViewModel = hiltViewModel(),
     onEditTitle: (String) -> Unit,
     onEditDescription: (String) -> Unit,
+    onEditPhoto: (String) -> Unit,
     navigateBack: () -> Unit,
     title: String? = null,
-    description: String? = null
+    description: String? = null,
+    deletedPhotoUri: String? = null,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val snackbarHostState = LocalSnackbarHostState.current
 
+    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let { viewModel.onEvent(EventDetailsEvent.AddPhoto(uri = it)) }
+        }
+    )
     val state = viewModel.state
 
     LaunchedEffect(key1 = true) {
-        viewModel.onEvent(EventDetailsEvent.CheckTitleAndDescription(title, description))
+        viewModel.onEvent(
+            EventDetailsEvent.CheckModifiedInfo(
+                title = title,
+                description = description,
+                deletedPhotoUri = deletedPhotoUri
+            )
+        )
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEventDetailsEvent.ShowErrorMessage -> {
@@ -127,8 +144,12 @@ fun EventDetailsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 PhotoList(
                     photos = state.agendaItem.photos,
-                    onPhotoClick = { },
-                    onAddPhotoClick = { },
+                    onPhotoClick = { onEditPhoto(it.path) },
+                    onAddPhotoClick = {
+                        singlePhotoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 BaseLine()
@@ -178,7 +199,7 @@ fun EventDetailsScreen(
                         text = stringResource(id = R.string.delete_event).uppercase(),
                         style = MaterialTheme.typography.Inter600Size16,
                         color = MaterialTheme.colors.onTextFieldIcon,
-                        modifier = Modifier.clickable {  }
+                        modifier = Modifier.clickable { }
                     )
                 }
             }

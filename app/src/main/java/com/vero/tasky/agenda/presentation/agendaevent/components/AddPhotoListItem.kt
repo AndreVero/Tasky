@@ -11,11 +11,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vero.tasky.R
-import com.vero.tasky.ui.theme.profileIcon
+import com.vero.tasky.ui.theme.onTextFieldIcon
 
 @Composable
 fun AddPhotoListItem(
@@ -24,15 +25,16 @@ fun AddPhotoListItem(
 ) {
     Box(
         modifier = modifier
-            .height(60.dp)
-            .width(60.dp)
-            .border(2.dp, MaterialTheme.colors.profileIcon, RoundedCornerShape(5.dp))
+            .height(80.dp)
+            .width(80.dp)
+            .border(2.dp, MaterialTheme.colors.onTextFieldIcon, RoundedCornerShape(5.dp))
             .clickable { onAddPhotoClick() }
     ) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = stringResource(id = R.string.add_photo_button),
-            tint = MaterialTheme.colors.profileIcon,
+            tint = MaterialTheme.colors.onTextFieldIcon,
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

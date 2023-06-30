@@ -73,10 +73,9 @@ class EventDetailsViewModel @Inject constructor(
                         else agendaItem.attendees.find { userId == it.userId }?.isGoing ?: false,
                         isEditableForCreator = agendaItem.host == userId && isEditable,
                         isEditableForAttendee = isEditable,
-                        isNotGoingAttendees = agendaItem.attendees.filter { !it.isGoing },
-                        isGoingAttendees = agendaItem.attendees.filter { it.isGoing }
                     )
                 )
+                filterAttendees(agendaItem.attendees)
             }.launchIn(viewModelScope)
         }
     }
@@ -101,13 +100,42 @@ class EventDetailsViewModel @Inject constructor(
                 else ModificationType.CREATED
             )
             is EventDetailsEvent.DeletePhoto -> deletePhoto(event.key)
-            is EventDetailsEvent.CheckTitleAndDescription -> {
-                updateState(state.copy(
-                    agendaItem = state.agendaItem.copy(
-                        title = event.title ?: state.agendaItem.title,
-                        description = event.description ?: state.agendaItem.description,
-                    ),
-                ))
+            is EventDetailsEvent.CheckModifiedInfo -> checkModifiedInfo(event)
+        }
+    }
+
+    private fun checkModifiedInfo(modifiedInfo: EventDetailsEvent.CheckModifiedInfo) {
+        updateState(
+            state.copy(
+                agendaItem = state.agendaItem.copy(
+                    title = modifiedInfo.title ?: state.agendaItem.title,
+                    description = modifiedInfo.description ?: state.agendaItem.description,
+                ),
+            )
+        )
+
+        modifiedInfo.deletedPhotoUri?.let { deletedPhotoUri ->
+            val deletedPhoto = state.agendaItem.photos.find { it.path == deletedPhotoUri } ?: return
+            when (deletedPhoto) {
+                is AgendaPhoto.LocalPhoto -> {
+                    updateState(
+                        state.copy(
+                            agendaItem = state.agendaItem.copy(
+                                photos = state.agendaItem.photos - deletedPhoto
+                            )
+                        )
+                    )
+                }
+                is AgendaPhoto.RemotePhoto -> {
+                    updateState(
+                        state.copy(
+                            agendaItem = state.agendaItem.copy(
+                                photos = state.agendaItem.photos - deletedPhoto
+                            ),
+                            deletedPhotoKeys = state.deletedPhotoKeys + deletedPhoto.key
+                        )
+                    )
+                }
             }
         }
     }
@@ -207,11 +235,10 @@ class EventDetailsViewModel @Inject constructor(
                                 agendaItem = agendaItem.copy(
                                     attendees = attendees
                                 ),
-                                isGoingAttendees = attendees.filter { it.isGoing },
-                                isNotGoingAttendees = attendees.filter { !it.isGoing },
                                 isLoading = false
                             )
                         )
+                        filterAttendees(agendaItem.attendees)
                     } else {
                         updateState(
                             state.copy(
@@ -232,6 +259,14 @@ class EventDetailsViewModel @Inject constructor(
                     )
                 }
         }
+    }
+
+    private fun filterAttendees(attendees: List<Attendee>) {
+        updateState(
+            state.copy(
+                isNotGoingAttendees = attendees.filter { !it.isGoing },
+                isGoingAttendees = attendees.filter { it.isGoing })
+        )
     }
 
     private fun updateState(newState: EventDetailsState) {
