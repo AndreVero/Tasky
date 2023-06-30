@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.Attendee
+import com.vero.tasky.agenda.presentation.agendaevent.model.PresenceEvent
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
@@ -35,5 +36,6 @@ data class EventDetailsState(
     val isErrorEmail: Boolean = false,
     val addAttendeeDialogIsVisible : Boolean = false,
     @StringRes val emailLabel: Int = R.string.email_hint,
+    val presenceEvent: PresenceEvent? = null,
     val reminderRange: ReminderRange = ReminderRange.MINUTES_10
 ) : Parcelable

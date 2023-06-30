@@ -13,6 +13,7 @@ import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
 import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.event.EventUseCases
+import com.vero.tasky.agenda.presentation.agendaevent.model.PresenceEvent
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.domain.local.UserPreferences
@@ -58,6 +59,7 @@ class EventDetailsViewModel @Inject constructor(
             ),
             isEditableForCreator = isEditable && itemId == null,
             isEditableForAttendee = isEditable,
+            presenceEvent = if (itemId != null) PresenceEvent.DELETE else null
         )
     )
         private set
@@ -74,8 +76,9 @@ class EventDetailsViewModel @Inject constructor(
                         agendaItem = agendaItem,
                         isGoing = if (agendaItem.isUserEventCreator) true
                         else agendaItem.attendees.find { userId == it.userId }?.isGoing ?: false,
-                        isEditableForCreator = agendaItem.host == userId && isEditable,
+                        isEditableForCreator = agendaItem.isUserEventCreator && isEditable,
                         isEditableForAttendee = isEditable,
+                        presenceEvent = getCurrentPresenceEvent(agendaItem)
                     )
                 )
                 filterAttendees(agendaItem.attendees)
@@ -92,7 +95,7 @@ class EventDetailsViewModel @Inject constructor(
                 modificationType = ModificationType.UPDATED
             )
             EventDetailsEvent.ChangeMode -> changeMode()
-            EventDetailsEvent.DeleteEvent -> deleteEvent()
+            EventDetailsEvent.ChangePresenceState -> changePresenceState()
             is EventDetailsEvent.ReminderChanged -> changeReminder(event.reminderRange)
             EventDetailsEvent.SaveEvent -> saveAgendaItem(
                 isGoing = true,
@@ -121,7 +124,7 @@ class EventDetailsViewModel @Inject constructor(
                 val attendees = state.agendaItem.attendees - event.attendee
                 updateState(
                     state.copy(
-                        agendaItem =  state.agendaItem.copy(
+                        agendaItem = state.agendaItem.copy(
                             attendees = attendees
                         )
                     )
@@ -129,10 +132,32 @@ class EventDetailsViewModel @Inject constructor(
                 filterAttendees(attendees)
             }
             EventDetailsEvent.HideAddAttendeeDialog -> {
-                updateState(state.copy(addAttendeeDialogIsVisible = false)) }
+                updateState(state.copy(addAttendeeDialogIsVisible = false))
+            }
             EventDetailsEvent.ShowAttendeeDialog -> {
                 updateState(state.copy(addAttendeeDialogIsVisible = true))
             }
+        }
+    }
+
+    private fun changePresenceState() {
+        when (state.presenceEvent) {
+            PresenceEvent.DELETE -> {
+                deleteEvent()
+            }
+            PresenceEvent.LEAVE -> {
+                saveAgendaItem(
+                    isGoing = false,
+                    modificationType = ModificationType.UPDATED
+                )
+            }
+            PresenceEvent.JOIN -> {
+                saveAgendaItem(
+                    isGoing = true,
+                    modificationType = ModificationType.UPDATED
+                )
+            }
+            else -> return
         }
     }
 
@@ -306,6 +331,12 @@ class EventDetailsViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun getCurrentPresenceEvent(agendaItem: AgendaItem.Event) =
+        if (agendaItem.isUserEventCreator) PresenceEvent.DELETE
+        else if (agendaItem.attendees.find { userId == it.userId }?.isGoing == true)
+            PresenceEvent.LEAVE
+        else PresenceEvent.JOIN
 
     private fun filterAttendees(attendees: List<Attendee>) {
         updateState(

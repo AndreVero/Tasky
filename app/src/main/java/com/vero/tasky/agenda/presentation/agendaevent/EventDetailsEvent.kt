@@ -23,7 +23,7 @@ sealed interface EventDetailsEvent {
     object HideAddAttendeeDialog: EventDetailsEvent
     object ShowAttendeeDialog: EventDetailsEvent
     class DeleteAttendee(val attendee: Attendee): EventDetailsEvent
-    object DeleteEvent : EventDetailsEvent
+    object ChangePresenceState : EventDetailsEvent
     object SaveEvent : EventDetailsEvent
     object ChangeIsGoingState : EventDetailsEvent
 }

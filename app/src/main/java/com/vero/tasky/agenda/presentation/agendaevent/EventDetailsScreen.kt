@@ -232,16 +232,20 @@ fun EventDetailsScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(32.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.delete_event).uppercase(),
-                        style = MaterialTheme.typography.Inter600Size16,
-                        color = MaterialTheme.colors.onTextFieldIcon,
-                        modifier = Modifier.clickable { }
-                    )
+                if (state.presenceEvent != null) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(id = state.presenceEvent.label).uppercase(),
+                            style = MaterialTheme.typography.Inter600Size16,
+                            color = MaterialTheme.colors.onTextFieldIcon,
+                            modifier = Modifier.clickable {
+                                viewModel.onEvent(EventDetailsEvent.ChangePresenceState)
+                            }
+                        )
+                    }
                 }
             }
         }
