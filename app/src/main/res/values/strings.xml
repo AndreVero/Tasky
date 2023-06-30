@@ -63,4 +63,6 @@
     <string name="hours_before_6">6 hours before</string>
     <string name="day_before">Day before</string>
     <string name="delete_event">Delete event</string>
+    <string name="edit_description">Edit description</string>
+    <string name="edit_title">Edit title</string>
 </resources>

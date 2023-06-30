@@ -49,32 +49,44 @@ val Typography = Typography(
 
 val Typography.Inter700Size11: TextStyle
     get() = TextStyle(
+        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 11.sp
     )
 
 val Typography.Inter700Size17: TextStyle
     get() = TextStyle(
+        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 17.sp
     )
 
 val Typography.Inter700Size20: TextStyle
     get() = TextStyle(
+        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp
     )
 
 val Typography.Inter700Size26: TextStyle
     get() = TextStyle(
+        fontFamily = Inter,
         fontWeight = FontWeight.Bold,
         fontSize = 26.sp
     )
 
 val Typography.Inter400Size14: TextStyle
     get() = TextStyle(
+        fontFamily = Inter,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp
+    )
+
+val Typography.Inter400Size26: TextStyle
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Normal,
+        fontSize = 26.sp
     )
 
 val Typography.Inter400Size16: TextStyle
@@ -91,6 +103,13 @@ val Typography.Inter600Size16: TextStyle
         fontSize = 16.sp
     )
 
+val Typography.Inter600Size18: TextStyle
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp
+    )
+
 val Typography.Inter600Size20: TextStyle
     get() = TextStyle(
         fontFamily = Inter,
@@ -100,12 +119,14 @@ val Typography.Inter600Size20: TextStyle
 
 val Typography.Inter500Size14: TextStyle
     get() = TextStyle(
+        fontFamily = Inter,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
     )
 
 val Typography.Inter500Size16: TextStyle
     get() = TextStyle(
+        fontFamily = Inter,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp
     )

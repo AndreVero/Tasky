@@ -12,10 +12,10 @@ import java.time.LocalDateTime
 
 @Composable
 fun DateTimeLineComponent(
-    modifier: Modifier = Modifier,
     @StringRes label: Int,
     isEditable: Boolean,
     localDateTime: LocalDateTime,
+    modifier: Modifier = Modifier,
 ) {
     Row (
         modifier = modifier.fillMaxWidth(),
