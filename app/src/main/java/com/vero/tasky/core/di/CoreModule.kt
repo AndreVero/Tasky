@@ -4,7 +4,9 @@ import com.vero.tasky.BuildConfig
 import com.vero.tasky.core.data.interceptors.ApiKeyHeaderInterceptor
 import com.vero.tasky.core.data.interceptors.AuthorizationTokenHeaderInterceptor
 import com.vero.tasky.core.data.interceptors.UnauthorizedInterceptor
+import com.vero.tasky.core.data.matcher.EmailMatcherImpl
 import com.vero.tasky.core.domain.local.UserPreferences
+import com.vero.tasky.core.domain.matcher.EmailMatcher
 import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
 import dagger.Module
 import dagger.Provides
@@ -54,6 +56,12 @@ object CoreModule {
     @Singleton
     fun provideLogOutEventBus() : AuthEventBus {
         return AuthEventBus()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmailMatcher() : EmailMatcher {
+        return EmailMatcherImpl()
     }
 
 }

@@ -1,6 +1,7 @@
 package com.vero.tasky.agenda.presentation.agendaevent
 
 import android.net.Uri
+import com.vero.tasky.agenda.domain.model.Attendee
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import java.time.LocalDate
 import java.time.LocalTime
@@ -17,7 +18,11 @@ sealed interface EventDetailsEvent {
     class ToTimeChanged(val time: LocalTime) : EventDetailsEvent
     class ReminderChanged(val reminderRange: ReminderRange) : EventDetailsEvent
     class DeletePhoto(val key: String) : EventDetailsEvent
-    class AddAttendee(val email: String) : EventDetailsEvent
+    class OnEmailUpdated(val email: String) : EventDetailsEvent
+    object AddAttendee: EventDetailsEvent
+    object HideAddAttendeeDialog: EventDetailsEvent
+    object ShowAttendeeDialog: EventDetailsEvent
+    class DeleteAttendee(val attendee: Attendee): EventDetailsEvent
     object DeleteEvent : EventDetailsEvent
     object SaveEvent : EventDetailsEvent
     object ChangeIsGoingState : EventDetailsEvent

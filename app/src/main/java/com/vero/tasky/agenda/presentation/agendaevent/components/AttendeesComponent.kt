@@ -15,7 +15,8 @@ fun AttendeesComponent(
     isNotGoingAttendees: List<Attendee>,
     isEditable: Boolean,
     userId: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteAttendee: (Attendee) -> Unit
 ) {
     var currentFilter by remember { mutableStateOf(Filter.ALL) }
 
@@ -39,7 +40,8 @@ fun AttendeesComponent(
             label = R.string.going,
             attendees = isGoingAttendees,
             currentUserId = userId,
-            isEditable = isEditable
+            isEditable = isEditable,
+            onDeleteAttendee = onDeleteAttendee
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -49,7 +51,8 @@ fun AttendeesComponent(
             label = R.string.not_going,
             attendees = isNotGoingAttendees,
             currentUserId = userId,
-            isEditable = isEditable
+            isEditable = isEditable,
+            onDeleteAttendee = onDeleteAttendee
         )
     }
 }

@@ -85,7 +85,7 @@ class EventDetailsViewModel @Inject constructor(
 
     fun onEvent(event: EventDetailsEvent) {
         when (event) {
-            is EventDetailsEvent.AddAttendee -> addAttendee(event.email)
+            EventDetailsEvent.AddAttendee -> addAttendee()
             is EventDetailsEvent.AddPhoto -> addPhoto(event.uri)
             EventDetailsEvent.ChangeIsGoingState -> saveAgendaItem(
                 isGoing = !state.isGoing,
@@ -106,6 +106,33 @@ class EventDetailsViewModel @Inject constructor(
             is EventDetailsEvent.FromTimeChanged -> changeFromTime(event.time)
             is EventDetailsEvent.ToDateChanged -> changeToDate(event.date)
             is EventDetailsEvent.ToTimeChanged -> changeToTime(event.time)
+            is EventDetailsEvent.OnEmailUpdated -> {
+                val email = event.email
+                updateState(
+                    state.copy(
+                        emailAddress = email,
+                        isEmailValid = eventUseCases.validateEmailUseCase(email),
+                        isErrorEmail = false,
+                        emailLabel = R.string.email_hint
+                    )
+                )
+            }
+            is EventDetailsEvent.DeleteAttendee -> {
+                val attendees = state.agendaItem.attendees - event.attendee
+                updateState(
+                    state.copy(
+                        agendaItem =  state.agendaItem.copy(
+                            attendees = attendees
+                        )
+                    )
+                )
+                filterAttendees(attendees)
+            }
+            EventDetailsEvent.HideAddAttendeeDialog -> {
+                updateState(state.copy(addAttendeeDialogIsVisible = false)) }
+            EventDetailsEvent.ShowAttendeeDialog -> {
+                updateState(state.copy(addAttendeeDialogIsVisible = true))
+            }
         }
     }
 
@@ -232,10 +259,10 @@ class EventDetailsViewModel @Inject constructor(
 
     }
 
-    private fun addAttendee(email: String) {
+    private fun addAttendee() {
         updateState(state.copy(isLoading = true))
         viewModelScope.launch {
-            eventUseCases.checkAttendee(email)
+            eventUseCases.checkAttendee(state.emailAddress)
                 .onSuccess { attendee ->
                     if (attendee != null) {
                         val newAttendee = Attendee(
@@ -244,7 +271,7 @@ class EventDetailsViewModel @Inject constructor(
                             userId = attendee.userId,
                             eventId = state.agendaItem.id,
                             isGoing = true,
-                            remindAt = 0L
+                            remindAt = 0L,
                         )
                         val agendaItem = state.agendaItem
                         val attendees = agendaItem.attendees + newAttendee
@@ -253,10 +280,11 @@ class EventDetailsViewModel @Inject constructor(
                                 agendaItem = agendaItem.copy(
                                     attendees = attendees
                                 ),
+                                addAttendeeDialogIsVisible = false,
                                 isLoading = false
                             )
                         )
-                        filterAttendees(agendaItem.attendees)
+                        filterAttendees(attendees)
                     } else {
                         updateState(
                             state.copy(

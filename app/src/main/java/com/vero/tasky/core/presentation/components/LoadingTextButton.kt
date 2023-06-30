@@ -17,11 +17,13 @@ import com.vero.tasky.ui.theme.buttonText
 fun LoadingTextButton(
     @StringRes textRes: Int,
     isLoading: Boolean,
+    onClick : () -> Unit,
     modifier: Modifier = Modifier,
-    onClick : () -> Unit
+    enabled: Boolean = true,
 ) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         shape = RoundedCornerShape(38.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.buttonBackground,

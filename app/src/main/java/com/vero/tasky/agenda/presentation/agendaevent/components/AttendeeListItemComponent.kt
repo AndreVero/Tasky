@@ -1,9 +1,7 @@
 package com.vero.tasky.agenda.presentation.agendaevent.components
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -15,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vero.tasky.R
+import com.vero.tasky.agenda.domain.model.Attendee
 import com.vero.tasky.agenda.domain.util.UserNameParser
 import com.vero.tasky.agenda.presentation.components.ProfileIcon
 import com.vero.tasky.ui.theme.Inter500Size14
@@ -22,22 +21,23 @@ import com.vero.tasky.ui.theme.profileIcon
 
 @Composable
 fun AttendeeListItemComponent(
-    fullName: String,
+    attendee: Attendee,
     isCreator: Boolean,
     isEditable: Boolean,
     modifier: Modifier = Modifier,
+    onDeleteAttendee: (Attendee) -> Unit
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.align(Alignment.CenterStart)
         ) {
             ProfileIcon(
-                text = UserNameParser.toShortName(fullName)
+                text = UserNameParser.toShortName(attendee.fullName)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = fullName,
+                text = attendee.fullName,
                 style = MaterialTheme.typography.Inter500Size14,
                 color = MaterialTheme.colors.primary,
             )
@@ -53,7 +53,10 @@ fun AttendeeListItemComponent(
             Icon(
                 imageVector = Icons.Default.Delete,
                 contentDescription = stringResource(id = R.string.delete_attendee),
-                tint = MaterialTheme.colors.profileIcon,
+                tint = MaterialTheme.colors.primary,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .clickable { onDeleteAttendee(attendee) }
             )
         }
     }
