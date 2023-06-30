@@ -96,6 +96,13 @@ val Typography.Inter400Size16: TextStyle
         fontSize = 16.sp
     )
 
+val Typography.Inter400Size18: TextStyle
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp
+    )
+
 val Typography.Inter600Size16: TextStyle
     get() = TextStyle(
         fontFamily = Inter,

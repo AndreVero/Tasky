@@ -65,4 +65,6 @@
     <string name="delete_event">Delete event</string>
     <string name="edit_description">Edit description</string>
     <string name="edit_title">Edit title</string>
+    <string name="photo_for_editing">Photo for editing</string>
+    <string name="edit_photo">Photo</string>
 </resources>

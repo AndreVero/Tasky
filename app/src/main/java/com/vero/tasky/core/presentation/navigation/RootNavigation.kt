@@ -13,14 +13,16 @@ import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.presentation.agenda.AgendaScreen
 import com.vero.tasky.agenda.presentation.agendaevent.EventDetailsScreen
+import com.vero.tasky.agenda.presentation.editphoto.EditPhotoScreen
 import com.vero.tasky.agenda.presentation.edittext.EditTextScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.auth.presentation.registration.RegistrationScreen
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_DESCRIPTION_VALUE
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TITLE_VALUE
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_PHOTO_URI
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_TYPE
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_VALUE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.IS_EDITABLE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
-import com.vero.tasky.ui.theme.Inter400Size14
+import com.vero.tasky.ui.theme.Inter400Size18
 import com.vero.tasky.ui.theme.Inter400Size26
 
 @Composable
@@ -72,65 +74,85 @@ fun RootNavigation(
             route = Screens.Event.route + agendaItemScreenParameters,
             arguments = agendaItemArgumentTypes
         ) {
-
             EventDetailsScreen(
                 navigateBack = { navController.popBackStack() },
                 onEditTitle = { title ->
                     navController.navigate(
-                        Screens.EditTitle.route + "?$EDIT_TITLE_VALUE=$title"
+                        Screens.EditText.route + "?$EDIT_TEXT_VALUE=$title" +
+                                "&$EDIT_TEXT_TYPE=${EditTextScreenType.TITLE}"
                     )
                 },
                 onEditDescription = { description ->
                     navController.navigate(
-                        Screens.EditDescription.route + "?$EDIT_DESCRIPTION_VALUE=$description"
+                        Screens.EditText.route + "?$EDIT_TEXT_VALUE=$description" +
+                                "&$EDIT_TEXT_TYPE=${EditTextScreenType.DESCRIPTION}"
                     )
                 },
-                title = it.savedStateHandle.get(EDIT_TITLE_VALUE),
-                description = it.savedStateHandle.get(EDIT_DESCRIPTION_VALUE),
+                onEditPhoto = { uri ->
+                    navController.navigate(
+                        Screens.EditPhoto.route + "?$EDIT_PHOTO_URI=$uri"
+                    )
+                },
+                title = it.savedStateHandle.get(EditTextScreenType.TITLE.toString()),
+                description = it.savedStateHandle.get(EditTextScreenType.DESCRIPTION.toString()),
+                deletedPhotoUri = it.savedStateHandle.get(EDIT_PHOTO_URI),
             )
         }
         composable(
-            route = Screens.EditTitle.route + "?$EDIT_TITLE_VALUE={$EDIT_TITLE_VALUE}",
+            route = Screens.EditPhoto.route + "?$EDIT_PHOTO_URI={$EDIT_PHOTO_URI}",
             arguments = listOf(
-                navArgument(EDIT_TITLE_VALUE) {
+                navArgument(EDIT_PHOTO_URI) {
                     type = NavType.StringType
                 }
             )
         ) {
-            val text = it.arguments?.getString(EDIT_TITLE_VALUE) ?: ""
+            val uri = it.arguments?.getString(EDIT_PHOTO_URI) ?: ""
+            EditPhotoScreen(
+                uri = uri,
+                label = R.string.edit_photo,
+                navBack = { navController.popBackStack() },
+                deletePhoto = { resultStr ->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(EDIT_PHOTO_URI, resultStr)
+                    navController.popBackStack()
+                },
+            )
+        }
+        composable(
+            route = Screens.EditText.route + "?$EDIT_TEXT_VALUE={$EDIT_TEXT_VALUE}" +
+                    "&$EDIT_TEXT_TYPE={$EDIT_TEXT_TYPE}",
+            arguments = listOf(
+                navArgument(EDIT_TEXT_VALUE) {
+                    type = NavType.StringType
+                },
+                navArgument(EDIT_TEXT_TYPE) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            val text = it.arguments?.getString(EDIT_TEXT_VALUE) ?: ""
+            val typeStr = it.arguments?.getString(EDIT_TEXT_TYPE)
+            val type = EditTextScreenType.valueOf(
+                typeStr
+                    ?: EditTextScreenType.DESCRIPTION.toString()
+            )
+            val label = if (type == EditTextScreenType.TITLE) R.string.edit_title
+            else R.string.edit_description
+            val textStyle = if (type == EditTextScreenType.TITLE)
+                MaterialTheme.typography.Inter400Size26
+            else MaterialTheme.typography.Inter400Size18
             EditTextScreen(
-                label = R.string.edit_title,
+                label = label,
                 textValue = text,
                 navBack = { navController.popBackStack() },
                 save = { resultStr ->
                     navController.previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set(EDIT_TITLE_VALUE, resultStr)
+                        ?.set(type.toString(), resultStr)
                     navController.popBackStack()
                 },
-                textStyle = MaterialTheme.typography.Inter400Size26
-            )
-        }
-        composable(
-            route = Screens.EditDescription.route + "?$EDIT_DESCRIPTION_VALUE={$EDIT_DESCRIPTION_VALUE}",
-            arguments = listOf(
-                navArgument(EDIT_DESCRIPTION_VALUE) {
-                    type = NavType.StringType
-                }
-            )
-        ) {
-            val text = it.arguments?.getString(EDIT_DESCRIPTION_VALUE) ?: ""
-            EditTextScreen(
-                label = R.string.edit_description,
-                textValue = text,
-                navBack = { navController.popBackStack() },
-                save = { resultStr ->
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(EDIT_DESCRIPTION_VALUE, resultStr)
-                    navController.popBackStack()
-                },
-                textStyle = MaterialTheme.typography.Inter400Size14
+                textStyle = textStyle
             )
         }
         composable(
