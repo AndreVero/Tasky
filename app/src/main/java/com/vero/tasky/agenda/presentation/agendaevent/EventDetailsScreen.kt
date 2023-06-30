@@ -52,6 +52,7 @@ fun EventDetailsScreen(
     val dateToDialog = rememberMaterialDialogState()
     val timeToDialog = rememberMaterialDialogState()
 
+
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
@@ -195,7 +196,9 @@ fun EventDetailsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 ReminderComponent(
                     reminderRange = state.reminderRange,
-                    onReminderClick = { },
+                    onReminderClick = { reminderRange ->
+                        viewModel.onEvent(EventDetailsEvent.ReminderChanged(reminderRange))
+                    },
                     isEditable = state.isEditableForAttendee
                 )
                 Spacer(modifier = Modifier.height(16.dp))

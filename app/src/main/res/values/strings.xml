@@ -67,4 +67,5 @@
     <string name="edit_title">Edit title</string>
     <string name="photo_for_editing">Photo for editing</string>
     <string name="edit_photo">Photo</string>
+    <string name="choose_reminder">Choose reminder</string>
 </resources>
