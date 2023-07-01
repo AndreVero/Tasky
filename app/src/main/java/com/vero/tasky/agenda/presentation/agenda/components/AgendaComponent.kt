@@ -52,10 +52,12 @@ fun AgendaComponent(
     }
 
     if (isDeleteAgendaItemDialogVisible) {
-        DeleteAgendaItemDialog(
+        DefaultConfirmationDialog(
             onDismissRequest = { isDeleteAgendaItemDialogVisible = false },
             onYesClick = { onDeleteClick() },
-            onNoClick = { isDeleteAgendaItemDialogVisible = false })
+            onNoClick = { isDeleteAgendaItemDialogVisible = false },
+            label = R.string.delete_agenda_item
+        )
     }
 
     Column(modifier = modifier

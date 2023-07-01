@@ -1,5 +1,6 @@
 package com.vero.tasky.agenda.presentation.agenda.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,10 +15,11 @@ import androidx.compose.ui.res.stringResource
 import com.vero.tasky.R
 
 @Composable
-fun DeleteAgendaItemDialog(
+fun DefaultConfirmationDialog(
     onDismissRequest: () -> Unit,
     onYesClick: () -> Unit,
     onNoClick: () -> Unit,
+    @StringRes label: Int,
     modifier: Modifier = Modifier
 ) {
 
@@ -27,7 +29,7 @@ fun DeleteAgendaItemDialog(
         backgroundColor = MaterialTheme.colors.background,
         text = {
             Text(
-                text = stringResource(id = R.string.delete_agenda_item),
+                text = stringResource(id = label),
                 style = MaterialTheme.typography.body1,
                 color = Color.White
             )
