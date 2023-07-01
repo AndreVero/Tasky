@@ -33,9 +33,9 @@ interface EventDao {
     @Query("""
         SELECT *
         FROM event
-        WHERE DATE(:timestamp) = DATE()
+        WHERE time BETWEEN :from AND :to
     """)
-    fun loadEventsForDay(timestamp: Long) : Flow<List<EventWithPhotosAndAttendees>>
+    fun loadEventsForDay(from: Long, to: Long) : Flow<List<EventWithPhotosAndAttendees>>
 
     @Transaction
     @Query("SELECT * FROM event WHERE id = :id")

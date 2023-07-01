@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
+import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
@@ -34,12 +35,12 @@ import javax.inject.Inject
 class EventDetailsViewModel @Inject constructor(
     private val eventUseCases: EventUseCases,
     private val savedStateHandle: SavedStateHandle,
-    userPreferences: UserPreferences
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val itemId = savedStateHandle.get<String?>(NavigationConstants.ITEM_ID)
     private val isEditable = savedStateHandle[NavigationConstants.IS_EDITABLE] ?: false
-    private val userId = userPreferences.getUser()!!.userId
+    private val user = userPreferences.getUser()!!
 
     var state by mutableStateOf(
         (savedStateHandle.get(STATE_KEY) as? EventDetailsState)?.copy(
@@ -55,7 +56,7 @@ class EventDetailsViewModel @Inject constructor(
                 isUserEventCreator = true,
                 attendees = emptyList(),
                 photos = emptyList(),
-                host = userId
+                host = user.userId
             ),
             isEditableForCreator = isEditable && itemId == null,
             isEditableForAttendee = isEditable,
@@ -75,7 +76,8 @@ class EventDetailsViewModel @Inject constructor(
                     state.copy(
                         agendaItem = agendaItem,
                         isGoing = if (agendaItem.isUserEventCreator) true
-                        else agendaItem.attendees.find { userId == it.userId }?.isGoing ?: false,
+                        else agendaItem.attendees.find { user.userId == it.userId }?.isGoing
+                            ?: false,
                         isEditableForCreator = agendaItem.isUserEventCreator && isEditable,
                         isEditableForAttendee = isEditable,
                         presenceEvent = getCurrentPresenceEvent(agendaItem),
@@ -211,13 +213,27 @@ class EventDetailsViewModel @Inject constructor(
                 event = state.agendaItem,
                 deletedPhotoKeys = state.deletedPhotoKeys,
                 isGoing = isGoing,
-                modificationType = modificationType
+                modificationType = modificationType,
+                currentUser = getCurrentUserAsAttendee(modificationType)
             ).onSuccess {
-                channel.send(UiEventDetailsEvent.ShowInfoToast(it.countOfSkippedMessages.toString()))
+                if (it.countOfSkippedMessages > 0)
+                    channel.send(UiEventDetailsEvent.ShowInfoToast(it.countOfSkippedMessages.toString()))
                 channel.send(UiEventDetailsEvent.OnBackClick)
             }
         }
     }
+
+    private fun getCurrentUserAsAttendee(modificationType: ModificationType) =
+        if (modificationType == ModificationType.CREATED) {
+            Attendee(
+                email = userPreferences.getEmail(),
+                fullName = user.fullName,
+                userId = user.userId,
+                eventId = state.agendaItem.id,
+                isGoing = true,
+                remindAt = LocalDateTimeConverter.localDateTimeToLong(state.agendaItem.remindAt)
+            )
+        } else null
 
     private fun changeReminder(reminderRange: ReminderRange) {
         updateState(state.copy(reminderRange = reminderRange))
@@ -265,7 +281,7 @@ class EventDetailsViewModel @Inject constructor(
         updateState(
             state.copy(
                 isEditableForAttendee = !state.isEditableForAttendee,
-                isEditableForCreator = if (state.agendaItem.host == userId) !state.isEditableForCreator
+                isEditableForCreator = if (state.agendaItem.host == user.userId) !state.isEditableForCreator
                 else false
             )
         )
@@ -336,7 +352,7 @@ class EventDetailsViewModel @Inject constructor(
 
     private fun getCurrentPresenceEvent(agendaItem: AgendaItem.Event) =
         if (agendaItem.isUserEventCreator) PresenceEvent.DELETE
-        else if (agendaItem.attendees.find { userId == it.userId }?.isGoing == true)
+        else if (agendaItem.attendees.find { user.userId == it.userId }?.isGoing == true)
             PresenceEvent.LEAVE
         else PresenceEvent.JOIN
 

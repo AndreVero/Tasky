@@ -18,8 +18,8 @@ interface ReminderDao {
     @Query("""
         SELECT *
         FROM reminder
-        WHERE DATE(:timestamp) = DATE()
+        WHERE time BETWEEN :from AND :to
     """)
-    fun loadRemindersForDay(timestamp: Long) : Flow<List<ReminderEntity>>
+    fun loadRemindersForDay(from: Long, to: Long) : Flow<List<ReminderEntity>>
 
 }

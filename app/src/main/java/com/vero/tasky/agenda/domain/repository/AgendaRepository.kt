@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AgendaRepository {
 
-    suspend fun getAgendaForDay(timestamp: Long) : Flow<List<AgendaItem>>
+    suspend fun getAgendaForDay(from: Long, to: Long) : Flow<List<AgendaItem>>
 
     suspend fun updateAgendaForDay(timestamp: Long): Result<Unit>
 

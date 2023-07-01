@@ -18,8 +18,8 @@ interface TaskDao {
     @Query("""
         SELECT *
         FROM task
-        WHERE DATE(:timestamp) = DATE()
+        WHERE time BETWEEN :from AND :to
     """)
-    fun loadTasksForDay(timestamp: Long) : Flow<List<TaskEntity>>
+    fun loadTasksForDay(from: Long, to: Long) : Flow<List<TaskEntity>>
 
 }

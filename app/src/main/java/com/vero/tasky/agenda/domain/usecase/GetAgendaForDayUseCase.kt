@@ -8,8 +8,8 @@ class GetAgendaForDayUseCase(
     private val agendaRepository: AgendaRepository
     ) {
 
-    suspend operator fun invoke(timestamp: Long) : Flow<List<AgendaItem>> {
-        return agendaRepository.getAgendaForDay(timestamp)
+    suspend operator fun invoke(from: Long, to: Long) : Flow<List<AgendaItem>> {
+        return agendaRepository.getAgendaForDay(from, to)
     }
 
 }

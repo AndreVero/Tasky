@@ -10,5 +10,5 @@ data class CreateEventRequest(
     val from: Long,
     val to: Long,
     val remindAt: Long,
-    val attendeesIds: List<String>
+    val attendeeIds: List<String>
 )
