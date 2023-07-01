@@ -78,7 +78,8 @@ class EventDetailsViewModel @Inject constructor(
                         else agendaItem.attendees.find { userId == it.userId }?.isGoing ?: false,
                         isEditableForCreator = agendaItem.isUserEventCreator && isEditable,
                         isEditableForAttendee = isEditable,
-                        presenceEvent = getCurrentPresenceEvent(agendaItem)
+                        presenceEvent = getCurrentPresenceEvent(agendaItem),
+                        isAddPhotoVisible = agendaItem.photos.size < 9
                     )
                 )
                 filterAttendees(agendaItem.attendees)
@@ -278,7 +279,8 @@ class EventDetailsViewModel @Inject constructor(
             state.copy(
                 agendaItem = agendaItem.copy(
                     photos = agendaItem.photos + newPhoto
-                )
+                ),
+                isAddPhotoVisible = agendaItem.photos.size < 9
             )
         )
 

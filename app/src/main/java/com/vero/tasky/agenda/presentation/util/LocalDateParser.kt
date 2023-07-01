@@ -34,7 +34,7 @@ object LocalDateParser {
     }
 
     fun updateLocalDateTime(localDateTime: LocalDateTime, localTime: LocalTime) : LocalDateTime {
-        return localDateTime.withHour(localTime.hour).withMinute(localTime.minute)
+        return LocalDateTime.of(localDateTime.toLocalDate(), localTime)
     }
 
     fun updateLocalDateTime(localDateTime: LocalDateTime, localDate: LocalDate) : LocalDateTime {

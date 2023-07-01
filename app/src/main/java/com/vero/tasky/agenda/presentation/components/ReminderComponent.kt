@@ -28,12 +28,16 @@ fun ReminderComponent(
     onReminderClick: (ReminderRange) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var isReminderDropDownAreVisible by remember {
+    var isReminderDropDownVisible by remember {
         mutableStateOf(false)
     }
 
+    val reminderRanges by remember {
+        derivedStateOf {  ReminderRange.values() }
+    }
+
     Column {
-        Box(modifier = modifier.fillMaxWidth().clickable(isEditable) { isReminderDropDownAreVisible = true }) {
+        Box(modifier = modifier.fillMaxWidth().clickable(isEditable) { isReminderDropDownVisible = true }) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -43,7 +47,7 @@ fun ReminderComponent(
                     .width(35.dp)
                     .height(35.dp)
                     .background(reminderBackgroundColor)
-                    .clickable(enabled = isEditable) { isReminderDropDownAreVisible = true }) {
+                    .clickable(enabled = isEditable) { isReminderDropDownVisible = true }) {
                     Icon(
                         imageVector = Icons.Outlined.Notifications,
                         contentDescription = stringResource(id = R.string.choose_reminder),
@@ -67,18 +71,18 @@ fun ReminderComponent(
                 )
             }
         }
-        if (isReminderDropDownAreVisible) {
+        if (isReminderDropDownVisible) {
             DropdownMenu(
                 expanded = true,
                 onDismissRequest = {
-                    isReminderDropDownAreVisible = false
+                    isReminderDropDownVisible = false
                 },
             ) {
-                ReminderRange.values().forEach { reminderRange ->
+               reminderRanges.forEach { reminderRange ->
                     DropdownMenuItem(
                         onClick = {
                             onReminderClick(reminderRange)
-                            isReminderDropDownAreVisible = false
+                            isReminderDropDownVisible = false
                         }) {
                         Text(
                             text = stringResource(id = reminderRange.label),

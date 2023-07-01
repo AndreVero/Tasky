@@ -9,7 +9,7 @@ import java.time.LocalTime
 @Composable
 fun TimeDialog(
     dialogState : MaterialDialogState,
-    onTimePicked : (time: LocalTime) -> Unit
+    onTimePicked : (time: LocalTime) -> Unit,
 ) {
 
     MaterialDialog(
@@ -17,7 +17,7 @@ fun TimeDialog(
         buttons = {
             positiveButton("Ok")
             negativeButton("Cancel")
-        }
+        },
     ) {
         timepicker { time ->
             onTimePicked(time)

@@ -25,7 +25,8 @@ fun PhotoList(
     photos: List<AgendaPhoto>,
     onPhotoClick: (AgendaPhoto) -> Unit,
     onAddPhotoClick: () -> Unit,
-    modifier: Modifier = Modifier
+    isAddPhotoVisible: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     if (photos.isEmpty()) {
         Row(
@@ -67,11 +68,15 @@ fun PhotoList(
                         PhotoListItem(photo = it, onPhotoClick = onPhotoClick)
                     }
                 }
-                item {
-                    Box(modifier = Modifier
-                        .padding(8.dp)
-                        .aspectRatio(1f)) {
-                        AddPhotoListItem(onAddPhotoClick = onAddPhotoClick)
+                if (isAddPhotoVisible) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .aspectRatio(1f)
+                        ) {
+                            AddPhotoListItem(onAddPhotoClick = onAddPhotoClick)
+                        }
                     }
                 }
             }
