@@ -1,5 +1,6 @@
 package com.vero.tasky.agenda.data.util.multipart
 
+import androidx.core.net.toUri
 import com.vero.tasky.agenda.data.util.FileCompressor
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import okhttp3.MultipartBody
@@ -9,18 +10,23 @@ import java.io.File
 class MultipartParser(
     private val fileCompressor: FileCompressor
 ) {
-    fun getMultipartPhotos(photos: List<AgendaPhoto.LocalPhoto>): List<MultipartBody.Part> {
+    fun getMultipartPhotos(photos: List<AgendaPhoto.LocalPhoto>): List<Pair<File, MultipartBody.Part>> {
         return photos.mapNotNull { photo ->
-            fileCompressor.getCompressedFile(File(photo.uri))
+            photo.uri.toUri().let {
+                fileCompressor.getCompressedFile(it)
+            }
         }
             .filter { it.length() / FileCompressor.BYTE_IN_KB < FileCompressor.KB_IN_MB }
-            .map {
-                MultipartBody.Part
-                    .createFormData(
-                        "photos[]",
-                        it.name,
-                        it.asRequestBody()
-                    )
+            .mapIndexed { index, file ->
+                Pair(
+                    file,
+                    MultipartBody.Part
+                        .createFormData(
+                            "photo$index",
+                            file.name,
+                            file.asRequestBody()
+                        ),
+                )
             }
     }
 }

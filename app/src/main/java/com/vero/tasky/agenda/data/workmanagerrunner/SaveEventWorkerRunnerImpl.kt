@@ -24,7 +24,7 @@ class SaveEventWorkerRunnerImpl(
             .build()
 
         workManager.beginUniqueWork(
-            "save_event_worker",
+            "save_event_worker:$eventId",
             ExistingWorkPolicy.APPEND,
             workRequest
         ).enqueue()

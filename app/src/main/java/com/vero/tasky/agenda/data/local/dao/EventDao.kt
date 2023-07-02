@@ -29,6 +29,9 @@ interface EventDao {
     @Delete
     suspend fun deleteEvents(vararg events: EventEntity)
 
+    @Delete
+    suspend fun deleteLocalPhotos(vararg localPhotos: LocalPhotoEntity)
+
     @Transaction
     @Query("""
         SELECT *

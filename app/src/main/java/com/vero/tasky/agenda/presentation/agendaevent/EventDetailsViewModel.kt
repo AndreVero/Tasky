@@ -68,7 +68,6 @@ class EventDetailsViewModel @Inject constructor(
     private val channel = Channel<UiEventDetailsEvent>()
     val uiEvent = channel.receiveAsFlow()
 
-
     init {
         itemId?.let { id ->
             eventUseCases.getEvent.invoke(id).onEach { agendaItem ->
@@ -81,7 +80,7 @@ class EventDetailsViewModel @Inject constructor(
                         isEditableForCreator = agendaItem.isUserEventCreator && isEditable,
                         isEditableForAttendee = isEditable,
                         presenceEvent = getCurrentPresenceEvent(agendaItem),
-                        isAddPhotoVisible = agendaItem.photos.size < 9
+                        isAddPhotoVisible = isPhotosSizeExceedsLimit(agendaItem)
                     )
                 )
                 filterAttendees(agendaItem.attendees)
@@ -296,10 +295,9 @@ class EventDetailsViewModel @Inject constructor(
                 agendaItem = agendaItem.copy(
                     photos = agendaItem.photos + newPhoto
                 ),
-                isAddPhotoVisible = agendaItem.photos.size < 9
+                isAddPhotoVisible = isPhotosSizeExceedsLimit(agendaItem)
             )
         )
-
     }
 
     private fun addAttendee() {
@@ -349,6 +347,9 @@ class EventDetailsViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun isPhotosSizeExceedsLimit(agendaItem: AgendaItem.Event) = agendaItem.photos.size < 10
+
 
     private fun getCurrentPresenceEvent(agendaItem: AgendaItem.Event) =
         if (agendaItem.isUserEventCreator) PresenceEvent.DELETE

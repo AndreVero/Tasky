@@ -23,6 +23,7 @@ import com.vero.tasky.ui.theme.headerText
 @Composable
 fun EditPhotoScreen(
     uri: String,
+    isEditable: Boolean,
     navBack: () -> Unit,
     @StringRes label: Int,
     deletePhoto: (String) -> Unit,
@@ -51,12 +52,14 @@ fun EditPhotoScreen(
                 style = MaterialTheme.typography.Inter600Size20,
                 color = MaterialTheme.colors.headerText,
             )
-            IconButton(onClick = { deletePhoto(uri) }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(id = R.string.delete),
-                    tint = MaterialTheme.colors.headerText,
-                )
+            if (isEditable) {
+                IconButton(onClick = { deletePhoto(uri) }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(id = R.string.delete),
+                        tint = MaterialTheme.colors.headerText,
+                    )
+                }
             }
         }
         AsyncImage(
