@@ -29,11 +29,11 @@ fun AddAttendeeDialog(
     onDismissClick: () -> Unit,
     onAddEmail: () -> Unit,
     onEmailChanged: (String) -> Unit,
-    modifier: Modifier = Modifier,
     email: String,
     isEmailValid: Boolean,
     isErrorEmail: Boolean,
     @StringRes emailLabel: Int,
+    modifier: Modifier = Modifier,
 ) {
 
     Dialog(onDismissRequest = onDismissClick) {

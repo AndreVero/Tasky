@@ -7,6 +7,7 @@ import com.vero.tasky.core.data.interceptors.UnauthorizedInterceptor
 import com.vero.tasky.core.data.matcher.EmailMatcherImpl
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.matcher.EmailMatcher
+import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
 import dagger.Module
 import dagger.Provides
@@ -62,6 +63,12 @@ object CoreModule {
     @Singleton
     fun provideEmailMatcher() : EmailMatcher {
         return EmailMatcherImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidateEmailUseCase(emailMatcher: EmailMatcher) : ValidateEmailUseCase {
+        return ValidateEmailUseCase(emailMatcher)
     }
 
 }

@@ -31,6 +31,7 @@ data class EventDetailsState(
     val isLoading: Boolean = false,
     val isGoingAttendees: List<Attendee> = emptyList(),
     val isNotGoingAttendees: List<Attendee> = emptyList(),
+    val isAddPhotoVisible: Boolean = true,
     val emailAddress: String = "",
     val isEmailValid: Boolean = false,
     val isErrorEmail: Boolean = false,

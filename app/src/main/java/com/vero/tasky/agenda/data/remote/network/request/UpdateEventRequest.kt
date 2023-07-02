@@ -10,7 +10,7 @@ data class UpdateEventRequest(
     val from: Long,
     val to: Long,
     val remindAt: Long,
-    val attendeesIds: List<String>,
+    val attendeeIds: List<String>,
     val deletedPhotoKeys: List<String>,
     val isGoing: Boolean
 )

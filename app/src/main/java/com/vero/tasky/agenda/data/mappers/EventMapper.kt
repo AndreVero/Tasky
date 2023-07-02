@@ -64,7 +64,7 @@ fun EventEntity.toCreateEventRequest(attendeesEntity: List<AttendeeEntity>) : Cr
         from = this.time,
         to = this.to,
         remindAt = this.remindAt,
-        attendeesIds = attendeesEntity.map { it.userId }
+        attendeeIds = attendeesEntity.map { it.userId }
     )
 }
 
@@ -80,7 +80,7 @@ fun EventEntity.toUpdateEventRequest(
         from = this.time,
         to = this.to,
         remindAt = this.remindAt,
-        attendeesIds = attendeesEntity.map { it.userId },
+        attendeeIds = attendeesEntity.map { it.userId },
         isGoing = isGoing,
         deletedPhotoKeys = deletedPhotoKeys
     )

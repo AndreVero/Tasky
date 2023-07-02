@@ -10,11 +10,16 @@ interface UserPreferences {
 
     fun saveUser(user: User)
 
+    fun saveEmail(email: String)
+
+    fun getEmail() : String
+
     fun clear()
 
     companion object {
         const val TOKEN = "TOKEN"
         const val FULL_NAME = "FULL_NAME"
         const val USER_ID = "USER_ID"
+        const val EMAIL = "EMAIL"
     }
 }

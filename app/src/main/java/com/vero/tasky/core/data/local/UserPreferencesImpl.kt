@@ -41,6 +41,16 @@ class UserPreferencesImpl @Inject constructor(
         }
     }
 
+    override fun saveEmail(email: String) {
+        pref.edit {
+            putString(UserPreferences.EMAIL, email)
+        }
+    }
+
+    override fun getEmail(): String {
+        return pref.getString(UserPreferences.EMAIL, "") ?: ""
+    }
+
     override fun clear() {
         pref.edit {
             clear()

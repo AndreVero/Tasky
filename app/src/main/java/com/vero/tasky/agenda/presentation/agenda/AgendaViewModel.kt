@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
@@ -51,10 +52,14 @@ class AgendaViewModel @Inject constructor(
 
     fun onEvent(event: AgendaEvent) {
         when (event) {
-            is AgendaEvent.DeleteAgendaItem -> { }
-            AgendaEvent.LogOut -> { logOut() }
-            is AgendaEvent.OnDayClick -> { getAgendaForChosenDay(event.date) }
-            is AgendaEvent.OnCheckChanged -> { }
+            is AgendaEvent.DeleteAgendaItem -> {}
+            AgendaEvent.LogOut -> {
+                logOut()
+            }
+            is AgendaEvent.OnDayClick -> {
+                getAgendaForChosenDay(event.date)
+            }
+            is AgendaEvent.OnCheckChanged -> {}
         }
     }
 
@@ -70,11 +75,16 @@ class AgendaViewModel @Inject constructor(
     }
 
     private fun getAgendaForChosenDay(day: LocalDate) {
-        val timestamp = LocalDateTimeConverter.localDateToLong(day)
+        val from = LocalDateTimeConverter.localDateTimeToLong(
+            LocalDateTime.of(day, LocalTime.of(0, 0))
+        )
+        val to = LocalDateTimeConverter.localDateTimeToLong(
+            LocalDateTime.of(day, LocalTime.of(23, 59))
+        )
 
         currentDayJob?.cancel()
         currentDayJob = viewModelScope.launch {
-            agendaUseCases.getAgendaForDayUseCase(timestamp = timestamp)
+            agendaUseCases.getAgendaForDayUseCase(from, to)
                 .collectLatest { items ->
                     updateState(
                         state.copy(agendaItems = items)
@@ -84,7 +94,7 @@ class AgendaViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            agendaUseCases.updateAgendaForDayUseCase(timestamp = timestamp)
+            agendaUseCases.updateAgendaForDayUseCase(timestamp = from)
         }
 
         updateState(getInitialState(date = day))
@@ -109,7 +119,6 @@ class AgendaViewModel @Inject constructor(
             updateState(state.copy(currentAgendaItem = currentAgendaItem))
         }
     }
-
 
     companion object {
         private const val STATE_KEY = "state"

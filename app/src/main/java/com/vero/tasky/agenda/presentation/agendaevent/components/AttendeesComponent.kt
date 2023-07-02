@@ -20,13 +20,17 @@ fun AttendeesComponent(
 ) {
     var currentFilter by remember { mutableStateOf(Filter.ALL) }
 
+    val filters by remember {
+        derivedStateOf {  Filter.values() }
+    }
+
     Spacer(modifier = Modifier.height(32.dp))
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier.fillMaxWidth()
     ) {
-        Filter.values().forEach {
+        filters.forEach {
             VisitorFilterButton(
                 filter = it,
                 isSelected = it == currentFilter,

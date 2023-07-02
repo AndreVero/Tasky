@@ -2,7 +2,6 @@ package com.vero.tasky.auth.di
 
 import com.vero.tasky.auth.data.remote.AuthApi
 import com.vero.tasky.auth.data.repository.AuthRepositoryImpl
-import com.vero.tasky.core.domain.matcher.EmailMatcher
 import com.vero.tasky.auth.domain.repository.AuthRepository
 import com.vero.tasky.auth.domain.usecase.*
 import com.vero.tasky.auth.domain.usecase.password.ValidatePasswordUseCase
@@ -34,11 +33,11 @@ object AuthModule {
     @Provides
     @ViewModelScoped
     fun provideLoginUseCases(
-        emailMatcher: EmailMatcher,
         authRepository: AuthRepository,
+        validateEmailUseCase: ValidateEmailUseCase
     ) : LoginUseCases {
         return LoginUseCases(
-            validateEmailUseCase = ValidateEmailUseCase(emailMatcher),
+            validateEmailUseCase = validateEmailUseCase,
             validatePasswordUseCase = ValidatePasswordUseCase(),
             loginUseCase = LoginUseCase(authRepository)
         )
@@ -47,11 +46,11 @@ object AuthModule {
     @Provides
     @ViewModelScoped
     fun provideRegisterUseCases(
-        emailMatcher: EmailMatcher,
+        validateEmailUseCase: ValidateEmailUseCase,
         authRepository: AuthRepository,
     ) : RegistrationUseCases {
         return RegistrationUseCases(
-            validateEmailUseCase = ValidateEmailUseCase(emailMatcher),
+            validateEmailUseCase = validateEmailUseCase,
             validatePasswordUseCase = ValidatePasswordUseCase(),
             validateNameUseCase = ValidateNameUseCase(),
             registerUseCase = RegisterUseCase(authRepository)

@@ -5,15 +5,11 @@ import java.time.*
 object LocalDateTimeConverter {
 
     fun longToLocalDateTime(timestamp: Long): LocalDateTime {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault())
     }
 
     fun localDateTimeToLong(localDateTime: LocalDateTime) : Long {
-        return localDateTime.toEpochSecond(ZoneOffset.of(ZoneOffset.systemDefault().id))
-    }
-
-    fun localDateToLong(localDateTime: LocalDate) : Long {
-        return localDateTime.toEpochDay()
+        return localDateTime.toEpochSecond(ZoneId.of(ZoneId.systemDefault().id).rules.getOffset(Instant.now()))
     }
 
 }

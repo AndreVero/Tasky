@@ -72,6 +72,7 @@ class LoginViewModel @Inject constructor(
                     password = state.password
                 ).onSuccess { user ->
                     userPreferences.saveUser(user)
+                    userPreferences.saveEmail(state.emailAddress)
                     authEventBus.sendEvent(AuthEventBusEvent.LogIn)
                 }.onFailure {
                     updateState(state.copy(isLoading = false))

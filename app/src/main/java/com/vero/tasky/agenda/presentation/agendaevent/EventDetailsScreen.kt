@@ -193,6 +193,7 @@ fun EventDetailsScreen(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     },
+                    isAddPhotoVisible = state.isAddPhotoVisible
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 BaseLine()

@@ -23,14 +23,14 @@ class AgendaRepositoryImpl(
     private val reminderDao: ReminderDao,
 ) : AgendaRepository {
 
-    override suspend fun getAgendaForDay(timestamp: Long) : Flow<List<AgendaItem>> {
-        val taskFlow = taskDao.loadTasksForDay(timestamp).map {
+    override suspend fun getAgendaForDay(from: Long, to: Long) : Flow<List<AgendaItem>> {
+        val taskFlow = taskDao.loadTasksForDay(from, to).map {
             it.map { taskEntity ->  taskEntity.toTask() }
         }
-        val eventFlow = eventDao.loadEventsForDay(timestamp).map {
+        val eventFlow = eventDao.loadEventsForDay(from, to).map {
             it.map { eventEntity ->  eventEntity.toEvent() }
         }
-        val reminderFlow = reminderDao.loadRemindersForDay(timestamp).map {
+        val reminderFlow = reminderDao.loadRemindersForDay(from, to).map {
             it.map { reminderEntity ->  reminderEntity.toReminder() }
         }
         return merge(taskFlow, eventFlow, reminderFlow).map { it.sortedBy { item -> item.time } }
