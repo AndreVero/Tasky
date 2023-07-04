@@ -25,6 +25,7 @@ fun PhotoList(
     onPhotoClick: (AgendaPhoto) -> Unit,
     onAddPhotoClick: () -> Unit,
     isAddPhotoVisible: Boolean,
+    isEditable: Boolean,
     modifier: Modifier = Modifier,
 ) {
     if (photos.isEmpty()) {
@@ -35,7 +36,7 @@ fun PhotoList(
                 .height(110.dp)
                 .fillMaxWidth()
                 .background(reminderBackgroundColor)
-                .clickable { onAddPhotoClick() }
+                .clickable(isEditable) { onAddPhotoClick() }
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -65,7 +66,7 @@ fun PhotoList(
                         PhotoListItem(photo = it, onPhotoClick = onPhotoClick)
                     }
                 }
-                if (isAddPhotoVisible) {
+                if (isAddPhotoVisible && isEditable) {
                     item {
                         Box(
                             modifier = Modifier

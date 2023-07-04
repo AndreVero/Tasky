@@ -36,7 +36,7 @@ class EventRepositoryImpl(
         val localPhotos = event.photos.filterIsInstance<AgendaPhoto.LocalPhoto>()
         alarmHandler.setAlarm(
             AlarmData(
-                time = event.time,
+                time = event.remindAt,
                 itemId = event.id,
                 title = event.title,
                 description = event.description
@@ -50,6 +50,7 @@ class EventRepositoryImpl(
 
         val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
         val skippedPhotos = localPhotos.size - multipartPhotos.size
+        multipartPhotos.map { it.first }.forEach { it.delete() }
 
         saveEventWorkerRunner.run(
             isGoing = isGoing,

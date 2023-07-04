@@ -37,7 +37,7 @@ fun EventDetailsScreen(
     viewModel: EventDetailsViewModel = hiltViewModel(),
     onEditTitle: (String) -> Unit,
     onEditDescription: (String) -> Unit,
-    onEditPhoto: (String) -> Unit,
+    onEditPhoto: (String, Boolean) -> Unit,
     navigateBack: () -> Unit,
     title: String? = null,
     description: String? = null,
@@ -187,13 +187,14 @@ fun EventDetailsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 PhotoList(
                     photos = state.agendaItem.photos,
-                    onPhotoClick = { onEditPhoto(it.path) },
+                    onPhotoClick = { onEditPhoto(it.path, state.isEditableForCreator) },
                     onAddPhotoClick = {
                         singlePhotoPickerLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     },
-                    isAddPhotoVisible = state.isAddPhotoVisible
+                    isAddPhotoVisible = state.isAddPhotoVisible,
+                    isEditable = state.isEditableForCreator
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 BaseLine()

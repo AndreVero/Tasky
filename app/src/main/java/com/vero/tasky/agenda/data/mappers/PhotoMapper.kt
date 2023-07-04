@@ -26,14 +26,6 @@ fun LocalPhotoEntity.toLocalPhoto(): AgendaPhoto.LocalPhoto {
     )
 }
 
-fun AgendaPhoto.RemotePhoto.toRemotePhotoEntity(eventId: String): RemotePhotoEntity {
-    return RemotePhotoEntity(
-        path = this.path,
-        key = this.key,
-        eventId = eventId
-    )
-}
-
 fun AgendaPhoto.LocalPhoto.toLocalPhotoEntity(eventId: String): LocalPhotoEntity {
     return LocalPhotoEntity(
         path = this.path,

@@ -24,6 +24,8 @@ import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
 import com.vero.tasky.ui.theme.Inter400Size18
 import com.vero.tasky.ui.theme.Inter400Size26
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun RootNavigation(
@@ -88,9 +90,11 @@ fun RootNavigation(
                                 "&$EDIT_TEXT_TYPE=${EditTextScreenType.DESCRIPTION}"
                     )
                 },
-                onEditPhoto = { uri ->
+                onEditPhoto = { uri, isEditable ->
+                    val encodedUri = URLEncoder.encode(uri, StandardCharsets.UTF_8.toString())
                     navController.navigate(
-                        Screens.EditPhoto.route + "?$EDIT_PHOTO_URI=$uri"
+                        Screens.EditPhoto.route + "?$EDIT_PHOTO_URI=$encodedUri" +
+                                "&$IS_EDITABLE=$isEditable"
                     )
                 },
                 title = it.savedStateHandle.get(EditTextScreenType.TITLE.toString()),
@@ -99,17 +103,23 @@ fun RootNavigation(
             )
         }
         composable(
-            route = Screens.EditPhoto.route + "?$EDIT_PHOTO_URI={$EDIT_PHOTO_URI}",
+            route = Screens.EditPhoto.route + "?$EDIT_PHOTO_URI={$EDIT_PHOTO_URI}" +
+                    "&$IS_EDITABLE={$IS_EDITABLE}",
             arguments = listOf(
                 navArgument(EDIT_PHOTO_URI) {
                     type = NavType.StringType
+                },
+                navArgument(IS_EDITABLE) {
+                    type = NavType.BoolType
                 }
             )
         ) {
             val uri = it.arguments?.getString(EDIT_PHOTO_URI) ?: ""
+            val isEditable = it.arguments?.getBoolean(IS_EDITABLE) ?: false
             EditPhotoScreen(
                 uri = uri,
                 label = R.string.edit_photo,
+                isEditable = isEditable,
                 navBack = { navController.popBackStack() },
                 deletePhoto = { resultStr ->
                     navController.previousBackStackEntry
