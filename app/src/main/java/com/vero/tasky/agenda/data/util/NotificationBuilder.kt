@@ -2,12 +2,15 @@ package com.vero.tasky.agenda.data.util
 
 import android.app.Notification
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import com.vero.tasky.MainActivity
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_DEEP_LINK
 
 object NotificationBuilder {
 
@@ -17,15 +20,19 @@ object NotificationBuilder {
         description: String?,
         itemId: String
     ) : Notification {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra(AlarmHandler.ITEM_ID, itemId)
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("$EVENT_DEEP_LINK$itemId"),
             context,
-            0,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE)
+            MainActivity::class.java
+        )
+        val pendingIntent: PendingIntent = TaskStackBuilder.create(context).run {
+            addNextIntentWithParentStack(intent)
+            getPendingIntent(
+                0,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        }
 
         return NotificationCompat.Builder(context, AlarmHandler.CHANNEL_ID)
             .setSmallIcon(R.drawable.tasky_logo)

@@ -63,7 +63,7 @@ class AlarmHandlerImpl(
         val tasks = taskDao.loadAllTasks().map { it.toTask() }
         val reminders = reminderDao.loadAllReminders().map { it.toReminder() }
         (tasks + reminders).forEach {
-            if (it.time.isAfter(LocalDateTime.now())) {
+            if (it.remindAt.isAfter(LocalDateTime.now())) {
                 setAlarm(
                     AlarmData(
                         time = it.remindAt,
@@ -75,7 +75,7 @@ class AlarmHandlerImpl(
             }
         }
         events.forEach { agendaItem ->
-            if (agendaItem.time.isAfter(LocalDateTime.now())) {
+            if (agendaItem.remindAt.isAfter(LocalDateTime.now())) {
                 val user = agendaItem.attendees
                     .find { attendee -> attendee.userId == userId }
                 if (user != null && user.isGoing) {

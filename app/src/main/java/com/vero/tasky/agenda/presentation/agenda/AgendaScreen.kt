@@ -1,5 +1,8 @@
 package com.vero.tasky.agenda.presentation.agenda
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +28,7 @@ import com.vero.tasky.agenda.presentation.agenda.components.*
 import com.vero.tasky.agenda.presentation.components.BaseAgendaScreen
 import com.vero.tasky.agenda.presentation.components.DateDialog
 import com.vero.tasky.agenda.presentation.components.ProfileIcon
+import com.vero.tasky.agenda.presentation.ext.hasNotificationPermission
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
 import com.vero.tasky.ui.theme.*
 import kotlinx.coroutines.launch
@@ -49,7 +53,15 @@ fun AgendaScreen(
         mutableStateOf(false)
     }
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {})
+
     LaunchedEffect(key1 = true) {
+        if (!context.hasNotificationPermission()) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UiAgendaEvent.ShowErrorMessage -> {
