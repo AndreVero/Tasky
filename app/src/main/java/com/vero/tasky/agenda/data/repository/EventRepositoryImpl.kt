@@ -101,6 +101,7 @@ class EventRepositoryImpl(
     }
 
     override suspend fun deleteEvent(event: AgendaItem.Event) {
+        alarmHandler.cancelAlarm(event.id)
         eventDao.deleteEvents(event.toEventEntity())
 
         safeSuspendCall {

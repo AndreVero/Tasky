@@ -1,27 +1,26 @@
 package com.vero.tasky.agenda.data.workmanagerrunner
 
-import androidx.work.Constraints
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.vero.tasky.agenda.data.worker.GetFullAgendaWorker
 import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkerRunner
+import java.util.concurrent.TimeUnit
 
 class GetFullAgendaWorkerRunnerImpl(
     private val workManager: WorkManager
 ) : GetFullAgendaWorkerRunner {
 
     override fun run()  {
-        val workRequest = OneTimeWorkRequestBuilder<GetFullAgendaWorker>()
+        val workRequest = PeriodicWorkRequestBuilder<GetFullAgendaWorker>(
+            repeatInterval = 30L, TimeUnit.MINUTES
+        )
             .setConstraints(createConstraints())
             .build()
 
-        workManager.beginUniqueWork(
+        workManager.enqueueUniquePeriodicWork(
             "get_full_agenda",
-            ExistingWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             workRequest
-        ).enqueue()
+        )
     }
 
     private fun createConstraints() : Constraints {

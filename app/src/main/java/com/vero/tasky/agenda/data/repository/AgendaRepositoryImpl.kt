@@ -8,6 +8,7 @@ import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.dto.AgendaDto
 import com.vero.tasky.agenda.data.remote.network.request.SyncAgendaRequest
 import com.vero.tasky.agenda.domain.model.AgendaItem
+import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import kotlinx.coroutines.*
@@ -21,6 +22,7 @@ class AgendaRepositoryImpl(
     private val taskDao: TaskDao,
     private val eventDao: EventDao,
     private val reminderDao: ReminderDao,
+    private val alarmHandler: AlarmHandler,
 ) : AgendaRepository {
 
     override suspend fun getAgendaForDay(from: Long, to: Long) : Flow<List<AgendaItem>> {
@@ -59,7 +61,9 @@ class AgendaRepositoryImpl(
 
     override suspend fun getFullAgenda() = safeSuspendCall {
         val result = api.getFullAgenda()
+        alarmHandler.cancelAllAlarms()
         saveAgendaItems(result)
+        alarmHandler.updateAlarmsForAllAgendaItems()
     }
 
     private suspend fun saveAgendaItems(agendaDto: AgendaDto) {

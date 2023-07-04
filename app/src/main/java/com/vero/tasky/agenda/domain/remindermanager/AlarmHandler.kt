@@ -4,6 +4,8 @@ interface AlarmHandler {
 
     fun setAlarm(data: AlarmData)
     fun cancelAlarm(id: String)
+    fun updateAlarmsForAllAgendaItems()
+    fun cancelAllAlarms()
 
     companion object {
         const val CHANNEL_ID = "reminders_channel"
