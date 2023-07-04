@@ -22,4 +22,10 @@ interface ReminderDao {
     """)
     fun loadRemindersForDay(from: Long, to: Long) : Flow<List<ReminderEntity>>
 
+    @Query("""
+        SELECT *
+        FROM reminder
+    """)
+    fun loadAllReminders() : List<ReminderEntity>
+
 }

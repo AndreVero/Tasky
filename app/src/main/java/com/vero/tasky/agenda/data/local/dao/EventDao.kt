@@ -42,10 +42,16 @@ interface EventDao {
 
     @Transaction
     @Query("SELECT * FROM event WHERE id = :id")
-    fun loadEventFlow(id: String) : Flow<EventWithPhotosAndAttendees>
+    fun loadEventFlow(id: String) : Flow<EventWithPhotosAndAttendees?>
 
     @Transaction
     @Query("SELECT * FROM event WHERE id = :id")
     suspend fun loadEvent(id: String) : EventWithPhotosAndAttendees
+
+    @Query("""
+        SELECT *
+        FROM event
+    """)
+    fun loadAllEvents() : List<EventWithPhotosAndAttendees>
 
 }

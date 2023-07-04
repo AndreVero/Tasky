@@ -7,6 +7,8 @@ import com.squareup.moshi.Moshi
 import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
+import com.vero.tasky.agenda.data.local.dao.ReminderDao
+import com.vero.tasky.agenda.data.local.dao.TaskDao
 import com.vero.tasky.agenda.data.remindermanager.AlarmHandlerImpl
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
@@ -114,6 +116,18 @@ object AgendaModule {
     @Singleton
     fun provideEventDao(db: AgendaDatabase) : EventDao {
         return db.eventDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskDao(db: AgendaDatabase) : TaskDao {
+        return db.taskDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderDao(db: AgendaDatabase) : ReminderDao {
+        return db.reminderDao()
     }
 
     @Provides

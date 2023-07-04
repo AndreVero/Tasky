@@ -16,7 +16,7 @@ import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 class EventRepositoryImpl(
     private val api: EventApi,
@@ -50,7 +50,6 @@ class EventRepositoryImpl(
 
         val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
         val skippedPhotos = localPhotos.size - multipartPhotos.size
-        multipartPhotos.map { it.first }.forEach { it.delete() }
 
         saveEventWorkerRunner.run(
             isGoing = isGoing,
@@ -91,7 +90,7 @@ class EventRepositoryImpl(
     }
 
     override fun getEvent(id: String): Flow<AgendaItem.Event> {
-        return eventDao.loadEventFlow(id).map { it.toEvent() }
+        return eventDao.loadEventFlow(id).mapNotNull { it?.toEvent() }
     }
 
     override suspend fun fetchEvent(eventId: String){

@@ -28,7 +28,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import okhttp3.MultipartBody
-import java.io.File
 
 @HiltWorker
 class SaveEventWorker @AssistedInject constructor(
@@ -62,23 +61,19 @@ class SaveEventWorker @AssistedInject constructor(
             return Result.failure()
         }
 
-        var multipartPhotoFiles : List<File>? = null
-
         val result = safeSuspendCall {
             val agendaItem = eventDao.loadEvent(eventId)
 
             val multipartPhotos = multipartParser.getMultipartPhotos(
                 agendaItem.localPhotos.map { it.toLocalPhoto() }
             )
-            multipartPhotoFiles = multipartPhotos.map { it.first }
 
             when(modificationType) {
-                ModificationType.CREATED -> createEvent(agendaItem, multipartPhotos.map {it.second })
-                ModificationType.UPDATED -> updateEvent(agendaItem, multipartPhotos.map { it.second }, isGoing)
+                ModificationType.CREATED -> createEvent(agendaItem, multipartPhotos)
+                ModificationType.UPDATED -> updateEvent(agendaItem, multipartPhotos, isGoing)
                 else -> return@safeSuspendCall
             }
         }
-        multipartPhotoFiles?.forEach { it.delete() }
         return if (result.isSuccess)
             Result.success()
         else
