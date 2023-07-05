@@ -80,7 +80,10 @@ fun EventDetailsScreen(
                 }
                 UiEventDetailsEvent.OnBackClick -> navigateBack()
                 is UiEventDetailsEvent.ShowInfoToast -> {
-                    Toast.makeText(context, event.text, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "${event.text} ${context.getString(R.string.skipped_photo_desc)}",
+                        Toast.LENGTH_LONG).show()
                 }
             }
         }

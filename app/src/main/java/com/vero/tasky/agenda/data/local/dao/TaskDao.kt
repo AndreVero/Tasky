@@ -22,4 +22,9 @@ interface TaskDao {
     """)
     fun loadTasksForDay(from: Long, to: Long) : Flow<List<TaskEntity>>
 
+    @Query("""
+        SELECT *
+        FROM task
+    """)
+    fun loadAllTasks() : List<TaskEntity>
 }

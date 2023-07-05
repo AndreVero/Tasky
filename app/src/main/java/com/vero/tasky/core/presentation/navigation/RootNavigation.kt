@@ -1,5 +1,6 @@
 package com.vero.tasky.core.presentation.navigation
 
+import android.content.Intent.ACTION_VIEW
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaItemType
@@ -20,6 +22,7 @@ import com.vero.tasky.auth.presentation.registration.RegistrationScreen
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_PHOTO_URI
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_TYPE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_VALUE
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_DEEP_LINK
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.IS_EDITABLE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
 import com.vero.tasky.ui.theme.Inter400Size18
@@ -74,7 +77,13 @@ fun RootNavigation(
         }
         composable(
             route = Screens.Event.route + agendaItemScreenParameters,
-            arguments = agendaItemArgumentTypes
+            arguments = agendaItemArgumentTypes,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "$EVENT_DEEP_LINK{$ITEM_ID}"
+                    action = ACTION_VIEW
+                }
+            ),
         ) {
             EventDetailsScreen(
                 navigateBack = { navController.popBackStack() },

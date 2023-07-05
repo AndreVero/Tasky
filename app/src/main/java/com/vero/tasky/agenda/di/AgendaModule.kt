@@ -27,6 +27,7 @@ import com.vero.tasky.agenda.domain.usecase.event.*
 import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
+import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import dagger.Module
 import dagger.Provides
@@ -53,12 +54,14 @@ object AgendaModule {
 
     @Provides
     @Singleton
-    fun provideAgendaRepository(api: AgendaApi, db: AgendaDatabase) : AgendaRepository {
+    fun provideAgendaRepository(api: AgendaApi, db: AgendaDatabase, alarmHandler: AlarmHandler)
+        : AgendaRepository {
         return AgendaRepositoryImpl(
             api = api,
             taskDao = db.taskDao(),
             eventDao = db.eventDao(),
-            reminderDao = db.reminderDao()
+            reminderDao = db.reminderDao(),
+            alarmHandler = alarmHandler
         )
     }
 
@@ -177,8 +180,16 @@ object AgendaModule {
     @Provides
     @Singleton
     fun provideReminderManager(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        db: AgendaDatabase,
+        preferences: UserPreferences
     ) : AlarmHandler {
-        return AlarmHandlerImpl(context)
+        return AlarmHandlerImpl(
+            context = context,
+            taskDao = db.taskDao(),
+            reminderDao = db.reminderDao(),
+            eventDao = db.eventDao(),
+            preferences = preferences
+        )
     }
 }

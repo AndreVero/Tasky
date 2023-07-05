@@ -2,6 +2,7 @@ package com.vero.tasky
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.usecase.MainUseCases
 import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
@@ -18,6 +19,7 @@ class MainViewModel @Inject constructor(
     private val preferences: UserPreferences,
     private val mainUseCases: MainUseCases,
     private val authEventBus: AuthEventBus,
+    private val alarmHandler: AlarmHandler,
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(
@@ -58,6 +60,7 @@ class MainViewModel @Inject constructor(
 
     private fun logOut() {
         viewModelScope.launch {
+            alarmHandler.cancelAllAlarms()
             mainUseCases.clearDatabase()
             preferences.clear()
             _state.value = _state.value.copy(isLoggedIn = false)
