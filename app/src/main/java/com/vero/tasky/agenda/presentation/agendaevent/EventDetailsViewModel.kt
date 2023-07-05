@@ -39,6 +39,7 @@ class EventDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val itemId = savedStateHandle.get<String?>(NavigationConstants.ITEM_ID)
+        ?: savedStateHandle.get(NavigationConstants.EVENT_ITEM_ID)
     private val isEditable = savedStateHandle[NavigationConstants.IS_EDITABLE] ?: false
     private val user = userPreferences.getUser()!!
 
@@ -92,15 +93,11 @@ class EventDetailsViewModel @Inject constructor(
         when (event) {
             EventDetailsEvent.AddAttendee -> addAttendee()
             is EventDetailsEvent.AddPhoto -> addPhoto(event.uri)
-            EventDetailsEvent.ChangeIsGoingState -> saveAgendaItem(
-                isGoing = !state.isGoing,
-                modificationType = ModificationType.UPDATED
-            )
             EventDetailsEvent.ChangeMode -> changeMode()
             EventDetailsEvent.ChangePresenceState -> changePresenceState()
             is EventDetailsEvent.ReminderChanged -> changeReminder(event.reminderRange)
             EventDetailsEvent.SaveEvent -> saveAgendaItem(
-                isGoing = true,
+                isGoing = state.isGoing,
                 modificationType = if (itemId != null)
                     ModificationType.UPDATED
                 else ModificationType.CREATED
@@ -148,16 +145,14 @@ class EventDetailsViewModel @Inject constructor(
                 deleteEvent()
             }
             PresenceEvent.LEAVE -> {
-                saveAgendaItem(
-                    isGoing = false,
-                    modificationType = ModificationType.UPDATED
-                )
+                val attendee = getCurrentUserAsAttendee() ?: return
+                changeAttendeeState(attendee, attendee.copy(isGoing = false))
+                saveAgendaItem(modificationType = ModificationType.UPDATED, isGoing = false)
             }
             PresenceEvent.JOIN -> {
-                saveAgendaItem(
-                    isGoing = true,
-                    modificationType = ModificationType.UPDATED
-                )
+                val attendee = getCurrentUserAsAttendee() ?: return
+                changeAttendeeState(attendee, attendee.copy(isGoing = true))
+                saveAgendaItem(modificationType = ModificationType.UPDATED, isGoing = true)
             }
             else -> return
         }
@@ -211,9 +206,9 @@ class EventDetailsViewModel @Inject constructor(
             eventUseCases.saveEvent(
                 event = state.agendaItem,
                 deletedPhotoKeys = state.deletedPhotoKeys,
-                isGoing = isGoing,
                 modificationType = modificationType,
-                currentUser = getCurrentUserAsAttendee(modificationType)
+                currentUser = getCurrentUserAsAttendee(modificationType),
+                isGoing = isGoing
             ).onSuccess {
                 if (it.countOfSkippedMessages > 0)
                     channel.send(UiEventDetailsEvent.ShowInfoToast(it.countOfSkippedMessages.toString()))
@@ -242,6 +237,25 @@ class EventDetailsViewModel @Inject constructor(
             state.copy(
                 agendaItem = agendaItem.copy(
                     remindAt = newRemindAt,
+                )
+            )
+        )
+        if (!agendaItem.isUserEventCreator) {
+            val attendee = getCurrentUserAsAttendee() ?: return
+            changeAttendeeState(attendee, attendee.copy(
+                remindAt = LocalDateTimeConverter.localDateTimeToLong(newRemindAt))
+            )
+        }
+    }
+
+    private fun getCurrentUserAsAttendee() : Attendee?
+        = state.agendaItem.attendees.find { it.userId == user.userId }
+
+    private fun changeAttendeeState(oldAttendee: Attendee, newAttendeeState: Attendee) {
+        updateState(
+            state.copy(
+                agendaItem = state.agendaItem.copy(
+                    attendees = state.agendaItem.attendees - oldAttendee + newAttendeeState
                 )
             )
         )

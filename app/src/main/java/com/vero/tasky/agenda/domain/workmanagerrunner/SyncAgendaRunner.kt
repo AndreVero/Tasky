@@ -1,6 +1,6 @@
 package com.vero.tasky.agenda.domain.workmanagerrunner
 
-interface GetFullAgendaWorkerRunner {
+interface SyncAgendaRunner {
 
     fun run()
 

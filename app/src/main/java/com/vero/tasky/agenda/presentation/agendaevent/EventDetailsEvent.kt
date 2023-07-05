@@ -25,5 +25,4 @@ sealed interface EventDetailsEvent {
     class DeleteAttendee(val attendee: Attendee): EventDetailsEvent
     object ChangePresenceState : EventDetailsEvent
     object SaveEvent : EventDetailsEvent
-    object ChangeIsGoingState : EventDetailsEvent
 }

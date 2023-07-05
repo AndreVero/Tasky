@@ -3,14 +3,14 @@ package com.vero.tasky.agenda.data.workmanagerrunner
 import androidx.work.*
 import com.vero.tasky.agenda.data.worker.SaveEventWorker
 import com.vero.tasky.agenda.domain.model.ModificationType
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner.Companion.EVENT_ID
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner.Companion.IS_GOING
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner.Companion.MODIFICATION_TYPE
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner.Companion.EVENT_ID
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner.Companion.IS_GOING
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner.Companion.MODIFICATION_TYPE
 
-class SaveEventWorkerRunnerImpl(
+class SaveEventRunnerImpl(
     private val workManager: WorkManager
-) : SaveEventWorkerRunner {
+) : SaveEventRunner {
 
     override fun run(isGoing: Boolean, eventId: String, modificationType: ModificationType)  {
         val workRequest = OneTimeWorkRequestBuilder<SaveEventWorker>()

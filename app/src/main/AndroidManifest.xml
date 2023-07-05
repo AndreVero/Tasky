@@ -29,7 +29,7 @@
 
             <intent-filter>
                 <data
-                    android:host="veroevent.com"
+                    android:host="vero.tasky.com"
                     android:scheme="https" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -37,29 +37,6 @@
 
                 <action android:name="android.intent.action.VIEW" />
 
-            </intent-filter>
-
-            <intent-filter>
-                <data
-                    android:host="verotask.com"
-                    android:scheme="https" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <action android:name="android.intent.action.VIEW" />
-
-            </intent-filter>
-
-            <intent-filter>
-                <data
-                    android:host="veroreminder.com"
-                    android:scheme="https" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
 

@@ -10,7 +10,7 @@ import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 
 @HiltWorker
-class GetFullAgendaWorker @AssistedInject constructor(
+class UpdateAgendaWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val agendaRepository: AgendaRepository
@@ -19,7 +19,7 @@ class GetFullAgendaWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         if (runAttemptCount >= 3)
             return Result.failure()
-        val result = agendaRepository.getFullAgenda()
+        val result = agendaRepository.updateAgenda()
         return if (result.isSuccess)
             Result.success()
         else {

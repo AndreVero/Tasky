@@ -26,5 +26,5 @@ interface TaskDao {
         SELECT *
         FROM task
     """)
-    fun loadAllTasks() : List<TaskEntity>
+    suspend fun loadAllTasks() : List<TaskEntity>
 }

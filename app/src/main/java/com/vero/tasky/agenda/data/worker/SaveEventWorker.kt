@@ -20,7 +20,7 @@ import com.vero.tasky.agenda.data.remote.network.request.UpdateEventRequest
 import com.vero.tasky.agenda.data.util.multipart.MultipartParser
 import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.domain.model.ModificationType
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -41,9 +41,9 @@ class SaveEventWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
-        val isGoing = inputData.getBoolean(SaveEventWorkerRunner.IS_GOING, true)
-        val eventId = inputData.getString(SaveEventWorkerRunner.EVENT_ID)
-        val modificationTypeStr = inputData.getString(SaveEventWorkerRunner.MODIFICATION_TYPE)
+        val isGoing = inputData.getBoolean(SaveEventRunner.IS_GOING, true)
+        val eventId = inputData.getString(SaveEventRunner.EVENT_ID)
+        val modificationTypeStr = inputData.getString(SaveEventRunner.MODIFICATION_TYPE)
 
         if (eventId == null || modificationTypeStr == null)
             return Result.success()

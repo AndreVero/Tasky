@@ -15,5 +15,5 @@ interface AgendaRepository {
         deletedReminderIds: List<String>,
     ) : Result<Unit>
 
-    suspend fun getFullAgenda() : Result<Unit>
+    suspend fun updateAgenda() : Result<Unit>
 }

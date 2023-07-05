@@ -19,12 +19,15 @@ import com.vero.tasky.agenda.presentation.editphoto.EditPhotoScreen
 import com.vero.tasky.agenda.presentation.edittext.EditTextScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.auth.presentation.registration.RegistrationScreen
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.DEEP_LINK_HOST
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_PHOTO_URI
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_TYPE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_VALUE
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_DEEP_LINK
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_ITEM_ID
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.IS_EDITABLE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.REMINDER_ITEM_ID
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.TASK_ITEM_ID
 import com.vero.tasky.ui.theme.Inter400Size18
 import com.vero.tasky.ui.theme.Inter400Size26
 import java.net.URLEncoder
@@ -80,7 +83,7 @@ fun RootNavigation(
             arguments = agendaItemArgumentTypes,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "$EVENT_DEEP_LINK{$ITEM_ID}"
+                    uriPattern = "$DEEP_LINK_HOST?$EVENT_ITEM_ID={$EVENT_ITEM_ID}"
                     action = ACTION_VIEW
                 }
             ),
@@ -176,11 +179,23 @@ fun RootNavigation(
         }
         composable(
             route = Screens.Task.route + agendaItemScreenParameters,
-            arguments = agendaItemArgumentTypes
+            arguments = agendaItemArgumentTypes,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "$DEEP_LINK_HOST?$TASK_ITEM_ID={$TASK_ITEM_ID}"
+                    action = ACTION_VIEW
+                }
+            ),
         ) { backStackEntry -> }
         composable(
             route = Screens.Reminder.route + agendaItemScreenParameters,
-            arguments = agendaItemArgumentTypes
+            arguments = agendaItemArgumentTypes,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "$DEEP_LINK_HOST?$REMINDER_ITEM_ID={$REMINDER_ITEM_ID}"
+                    action = ACTION_VIEW
+                }
+            ),
         ) { backStackEntry -> }
         composable(route = Screens.Registration.route) {
             RegistrationScreen(
