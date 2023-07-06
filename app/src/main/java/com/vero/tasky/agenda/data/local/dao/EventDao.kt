@@ -52,6 +52,6 @@ interface EventDao {
         SELECT *
         FROM event
     """)
-    fun loadAllEvents() : List<EventWithPhotosAndAttendees>
+    suspend fun loadAllEvents() : List<EventWithPhotosAndAttendees>
 
 }

@@ -26,6 +26,6 @@ interface ReminderDao {
         SELECT *
         FROM reminder
     """)
-    fun loadAllReminders() : List<ReminderEntity>
+    suspend fun loadAllReminders() : List<ReminderEntity>
 
 }

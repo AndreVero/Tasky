@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import com.vero.tasky.MainActivity
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_DEEP_LINK
 
 object NotificationBuilder {
 
@@ -18,11 +17,11 @@ object NotificationBuilder {
         context: Context,
         title: String,
         description: String?,
-        itemId: String
+        uriStr: String
     ) : Notification {
         val intent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse("$EVENT_DEEP_LINK$itemId"),
+            Uri.parse(uriStr),
             context,
             MainActivity::class.java
         )

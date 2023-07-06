@@ -1,10 +1,7 @@
 package com.vero.tasky.agenda.data.local.dao
 
 import com.vero.tasky.agenda.data.local.EventWithPhotosAndAttendees
-import com.vero.tasky.agenda.data.local.entities.AttendeeEntity
-import com.vero.tasky.agenda.data.local.entities.EventEntity
-import com.vero.tasky.agenda.data.local.entities.LocalPhotoEntity
-import com.vero.tasky.agenda.data.local.entities.RemotePhotoEntity
+import com.vero.tasky.agenda.data.local.entities.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -32,20 +29,60 @@ class EventDaoFake : EventDao {
         }
     }
     override suspend fun insertLocalPhotoEntity(vararg photos: LocalPhotoEntity) {}
+    override suspend fun insertDeletedPhotoEntity(vararg photos: DeletedPhotoEntity) {
+
+    }
 
     override suspend fun updateEvents(vararg events: EventEntity) {}
 
     override suspend fun deleteEvents(vararg events: EventEntity) {}
+    override suspend fun deleteLocalPhotos(vararg localPhotos: LocalPhotoEntity) {
+    }
 
-    override fun loadEventsForDay(timestamp: Long): Flow<List<EventWithPhotosAndAttendees>> {
+    override fun loadEventsForDay(from: Long, to: Long): Flow<List<EventWithPhotosAndAttendees>> {
 
         return flow { emit(
             listOf(EventWithPhotosAndAttendees(
                 event = eventSet.first(),
                 attendees = attendeeSet.toList(),
                 networkPhotos = remotePhotoSet.toList(),
-                localPhotos = emptyList()
+                localPhotos = emptyList(),
+                deletedPhoto = emptyList()
             ))
         ) }
+    }
+
+    override fun loadEventFlow(id: String): Flow<EventWithPhotosAndAttendees?> {
+        return flow { emit(
+            EventWithPhotosAndAttendees(
+                event = eventSet.first(),
+                attendees = attendeeSet.toList(),
+                networkPhotos = remotePhotoSet.toList(),
+                localPhotos = emptyList(),
+                deletedPhoto = emptyList()
+            )
+        ) }
+    }
+
+    override suspend fun loadEvent(id: String): EventWithPhotosAndAttendees {
+        return EventWithPhotosAndAttendees(
+            event = eventSet.first(),
+            attendees = attendeeSet.toList(),
+            networkPhotos = remotePhotoSet.toList(),
+            localPhotos = emptyList(),
+            deletedPhoto = emptyList()
+        )
+    }
+
+    override suspend fun loadAllEvents(): List<EventWithPhotosAndAttendees> {
+        return listOf(
+            EventWithPhotosAndAttendees(
+                event = eventSet.first(),
+                attendees = attendeeSet.toList(),
+                networkPhotos = remotePhotoSet.toList(),
+                localPhotos = emptyList(),
+                deletedPhoto = emptyList()
+            )
+        )
     }
 }

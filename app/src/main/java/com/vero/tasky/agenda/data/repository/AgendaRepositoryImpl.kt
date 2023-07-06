@@ -59,11 +59,11 @@ class AgendaRepositoryImpl(
         )
     }
 
-    override suspend fun getFullAgenda() = safeSuspendCall {
+    override suspend fun updateAgenda() = safeSuspendCall {
         val result = api.getFullAgenda()
         alarmHandler.cancelAllAlarms()
         saveAgendaItems(result)
-        alarmHandler.updateAlarmsForAllAgendaItems()
+        alarmHandler.setAlarmForFutureAgendaItems()
     }
 
     private suspend fun saveAgendaItems(agendaDto: AgendaDto) {

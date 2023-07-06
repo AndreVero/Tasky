@@ -2,7 +2,7 @@ package com.vero.tasky.agenda.domain.workmanagerrunner
 
 import com.vero.tasky.agenda.domain.model.ModificationType
 
-interface SaveEventWorkerRunner {
+interface SaveEventRunner {
 
     fun run(isGoing: Boolean, eventId: String, modificationType: ModificationType)
 

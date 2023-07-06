@@ -12,7 +12,7 @@ import com.vero.tasky.agenda.domain.model.*
 import com.vero.tasky.agenda.domain.remindermanager.AlarmData
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.EventRepository
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +23,7 @@ class EventRepositoryImpl(
     private val eventDao: EventDao,
     private val modifiedAgendaItemDao: ModifiedAgendaItemDao,
     private val multipartParser: MultipartParser,
-    private val saveEventWorkerRunner: SaveEventWorkerRunner,
+    private val saveEventRunner: SaveEventRunner,
     private val alarmHandler: AlarmHandler,
 ) : EventRepository {
 
@@ -34,14 +34,17 @@ class EventRepositoryImpl(
         modificationType: ModificationType
     ): Result<AgendaItemUploadResult> {
         val localPhotos = event.photos.filterIsInstance<AgendaPhoto.LocalPhoto>()
-        alarmHandler.setAlarm(
-            AlarmData(
-                time = event.remindAt,
-                itemId = event.id,
-                title = event.title,
-                description = event.description
+        if (isGoing) {
+            alarmHandler.setAlarm(
+                AlarmData(
+                    time = event.remindAt,
+                    itemId = event.id,
+                    title = event.title,
+                    description = event.description,
+                    type = AgendaItemType.EVENT.toString()
+                )
             )
-        )
+        }
         saveEventLocally(
             event = event,
             localPhotos = localPhotos,
@@ -51,7 +54,7 @@ class EventRepositoryImpl(
         val multipartPhotos = multipartParser.getMultipartPhotos(localPhotos)
         val skippedPhotos = localPhotos.size - multipartPhotos.size
 
-        saveEventWorkerRunner.run(
+        saveEventRunner.run(
             isGoing = isGoing,
             modificationType = modificationType,
             eventId = event.id

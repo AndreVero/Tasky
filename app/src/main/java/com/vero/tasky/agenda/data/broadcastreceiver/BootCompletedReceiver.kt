@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -15,7 +16,7 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
-            alarmHandler.updateAlarmsForAllAgendaItems()
+            runBlocking { alarmHandler.setAlarmForFutureAgendaItems() }
         }
     }
 }

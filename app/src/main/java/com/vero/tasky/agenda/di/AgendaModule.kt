@@ -7,16 +7,16 @@ import com.squareup.moshi.Moshi
 import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
-import com.vero.tasky.agenda.data.remindermanager.AlarmHandlerImpl
+import com.vero.tasky.agenda.data.alarmhandler.AlarmHandlerImpl
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
 import com.vero.tasky.agenda.data.repository.EventRepositoryImpl
 import com.vero.tasky.agenda.data.util.FileCompressor
 import com.vero.tasky.agenda.data.util.multipart.MultipartParser
-import com.vero.tasky.agenda.data.workmanagerrunner.GetFullAgendaWorkerRunnerImpl
-import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaWorkerRunnerImpl
-import com.vero.tasky.agenda.data.workmanagerrunner.SaveEventWorkerRunnerImpl
+import com.vero.tasky.agenda.data.workmanagerrunner.UpdateAgendaRunnerImpl
+import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaRunnerImpl
+import com.vero.tasky.agenda.data.workmanagerrunner.SaveEventRunnerImpl
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
@@ -24,9 +24,9 @@ import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.event.*
-import com.vero.tasky.agenda.domain.workmanagerrunner.GetFullAgendaWorkerRunner
-import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaWorkerRunner
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventWorkerRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateAgendaRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import dagger.Module
@@ -83,8 +83,8 @@ object AgendaModule {
     @Provides
     @Singleton
     fun provideGetFullAgendaWorkerRunner(workManager: WorkManager)
-        : GetFullAgendaWorkerRunner {
-        return GetFullAgendaWorkerRunnerImpl(
+        : UpdateAgendaRunner {
+        return UpdateAgendaRunnerImpl(
             workManager = workManager
         )
     }
@@ -92,8 +92,8 @@ object AgendaModule {
     @Provides
     @Singleton
     fun provideSyncAgendaWorkerRunner(workManager: WorkManager)
-        : SyncAgendaWorkerRunner {
-        return SyncAgendaWorkerRunnerImpl(
+        : SyncAgendaRunner {
+        return SyncAgendaRunnerImpl(
             workManager = workManager
         )
     }
@@ -101,8 +101,8 @@ object AgendaModule {
     @Provides
     @Singleton
     fun provideUpdateEventWorkerRunner(workManager: WorkManager)
-            : SaveEventWorkerRunner {
-        return SaveEventWorkerRunnerImpl(
+            : SaveEventRunner {
+        return SaveEventRunnerImpl(
             workManager = workManager
         )
     }
@@ -147,7 +147,7 @@ object AgendaModule {
         api: EventApi,
         db: AgendaDatabase,
         multipartParser: MultipartParser,
-        saveEventWorkerRunner: SaveEventWorkerRunner,
+        saveEventRunner: SaveEventRunner,
         alarmHandler: AlarmHandler
     ) : EventRepository {
         return EventRepositoryImpl(
@@ -155,7 +155,7 @@ object AgendaModule {
             eventDao = db.eventDao(),
             modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
             multipartParser = multipartParser,
-            saveEventWorkerRunner = saveEventWorkerRunner,
+            saveEventRunner = saveEventRunner,
             alarmHandler = alarmHandler
         )
     }

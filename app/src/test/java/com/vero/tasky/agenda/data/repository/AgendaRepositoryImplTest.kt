@@ -3,6 +3,7 @@
 package com.vero.tasky.agenda.data.repository
 
 import com.google.common.truth.Truth.assertThat
+import com.vero.tasky.agenda.data.alarmhandler.AlarmHandlerFake
 import com.vero.tasky.agenda.data.local.dao.*
 import com.vero.tasky.agenda.data.local.entities.EventEntity
 import com.vero.tasky.agenda.data.local.entities.ReminderEntity
@@ -10,6 +11,7 @@ import com.vero.tasky.agenda.data.local.entities.TaskEntity
 import com.vero.tasky.agenda.data.remote.malformedAgendaResponse
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.validAgendaResponse
+import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -33,6 +35,7 @@ class AgendaRepositoryImplTest {
     private lateinit var taskDao: TaskDao
     private lateinit var reminderDao: ReminderDao
     private lateinit var eventDao: EventDao
+    private lateinit var alarmHandler: AlarmHandler
 
     private val taskEntity = TaskEntity(
         id = "",
@@ -79,11 +82,13 @@ class AgendaRepositoryImplTest {
         taskDao = TaskDaoFake()
         eventDao = EventDaoFake()
         reminderDao = ReminderDaoFake()
+        alarmHandler = AlarmHandlerFake()
         agendaRepository = AgendaRepositoryImpl(
             api = api,
             taskDao = taskDao,
             eventDao = eventDao,
-            reminderDao = reminderDao
+            reminderDao = reminderDao,
+            alarmHandler = alarmHandler
         )
     }
 
@@ -97,7 +102,7 @@ class AgendaRepositoryImplTest {
         taskDao.insertTasks(taskEntity)
         eventDao.insertEvents(eventEntity)
         reminderDao.insertReminders(reminderEntity)
-        val items = agendaRepository.getAgendaForDay(1).toList()
+        val items = agendaRepository.getAgendaForDay(1, 2).toList()
         assertThat(items.size).isEqualTo(3)
     }
 
@@ -110,13 +115,13 @@ class AgendaRepositoryImplTest {
         )
 
         agendaRepository.updateAgendaForDay(1)
-        val tasks = taskDao.loadTasksForDay(1).toList()
+        val tasks = taskDao.loadTasksForDay(1, 2).toList()
         assertThat(tasks.size).isEqualTo(1)
 
-        val events = eventDao.loadEventsForDay(1).toList()
+        val events = eventDao.loadEventsForDay(1, 2).toList()
         assertThat(events.size).isEqualTo(1)
 
-        val reminders = reminderDao.loadRemindersForDay(1).toList()
+        val reminders = reminderDao.loadRemindersForDay(1, 2).toList()
         assertThat(reminders.size).isEqualTo(1)
     }
 
@@ -152,17 +157,17 @@ class AgendaRepositoryImplTest {
                 .setBody(validAgendaResponse)
         )
 
-        agendaRepository.getFullAgenda()
-        val tasks = taskDao.loadTasksForDay(1).toList()
+        agendaRepository.updateAgenda()
+        val tasks = taskDao.loadTasksForDay(1, 2).toList()
         assertThat(tasks.size).isEqualTo(1)
 
-        val events = eventDao.loadEventsForDay(1).toList()
+        val events = eventDao.loadEventsForDay(1, 2).toList()
         assertThat(events.size).isEqualTo(1)
 
         assertThat(events.first().first().attendees).isNotEmpty()
         assertThat(events.first().first().networkPhotos).isNotEmpty()
 
-        val reminders = reminderDao.loadRemindersForDay(1).toList()
+        val reminders = reminderDao.loadRemindersForDay(1, 2).toList()
         assertThat(reminders.size).isEqualTo(1)
 
     }
