@@ -7,11 +7,9 @@ import android.content.Intent
 import com.vero.tasky.agenda.data.util.NotificationBuilder
 import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.DEEP_LINK_HOST
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_ITEM_ID
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.REMINDER_ITEM_ID
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.TASK_ITEM_ID
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getEventDeepLink
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getReminderDeepLink
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getTaskDeepLink
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -23,16 +21,16 @@ class AlarmReceiver : BroadcastReceiver() {
         val description = intent.getStringExtra(AlarmHandler.DESCRIPTION)
         val title = intent.getStringExtra(AlarmHandler.TITLE) ?: return
         val type = when (AgendaItemType.valueOf(typeStr)) {
-            AgendaItemType.EVENT -> "$EVENT_ITEM_ID=$ITEM_ID"
-            AgendaItemType.TASK -> "$TASK_ITEM_ID=$ITEM_ID"
-            AgendaItemType.REMINDER -> "$REMINDER_ITEM_ID=$ITEM_ID"
+            AgendaItemType.EVENT -> getEventDeepLink(itemId)
+            AgendaItemType.TASK -> getTaskDeepLink(itemId)
+            AgendaItemType.REMINDER -> getReminderDeepLink(itemId)
         }
 
         val notification = NotificationBuilder.buildAlarmNotification(
             context = context,
             title = title,
             description = description,
-            uriStr = "$DEEP_LINK_HOST?$type"
+            uriStr = type
         )
 
         val notificationManager: NotificationManager =

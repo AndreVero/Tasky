@@ -1,7 +1,7 @@
 package com.vero.tasky.agenda.data.workmanagerrunner
 
 import androidx.work.*
-import com.vero.tasky.agenda.data.worker.SyncAgendaWorker
+import com.vero.tasky.agenda.data.worker.SyncDeletedItemWorker
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaRunner
 
 class SyncAgendaRunnerImpl(
@@ -9,7 +9,7 @@ class SyncAgendaRunnerImpl(
 ) : SyncAgendaRunner {
 
     override fun run() {
-        val workRequest = OneTimeWorkRequestBuilder<SyncAgendaWorker>()
+        val workRequest = OneTimeWorkRequestBuilder<SyncDeletedItemWorker>()
             .setConstraints(createConstraints())
             .build()
 
