@@ -8,18 +8,23 @@ import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
 import com.vero.tasky.agenda.data.alarmhandler.AlarmHandlerImpl
+import com.vero.tasky.agenda.data.local.dao.TaskDao
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
+import com.vero.tasky.agenda.data.remote.network.api.TaskApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
 import com.vero.tasky.agenda.data.repository.EventRepositoryImpl
+import com.vero.tasky.agenda.data.repository.TaskRepositoryImpl
 import com.vero.tasky.agenda.data.util.FileCompressor
 import com.vero.tasky.agenda.data.util.multipart.MultipartParser
 import com.vero.tasky.agenda.data.workmanagerrunner.UpdateAgendaRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SaveEventRunnerImpl
+import com.vero.tasky.agenda.data.workmanagerrunner.SaveTaskRunnerImpl
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
+import com.vero.tasky.agenda.domain.repository.TaskRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
@@ -28,6 +33,7 @@ import com.vero.tasky.agenda.domain.usecase.event.*
 import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateAgendaRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
+import com.vero.tasky.agenda.domain.workmanagerrunner.SaveTaskRunner
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import dagger.Module
@@ -101,9 +107,18 @@ object AgendaModule {
 
     @Provides
     @Singleton
-    fun provideUpdateEventWorkerRunner(workManager: WorkManager)
+    fun provideSaveEventWorkerRunner(workManager: WorkManager)
             : SaveEventRunner {
         return SaveEventRunnerImpl(
+            workManager = workManager
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveTaskWorkerRunner(workManager: WorkManager)
+            : SaveTaskRunner {
+        return SaveTaskRunnerImpl(
             workManager = workManager
         )
     }
@@ -122,6 +137,12 @@ object AgendaModule {
 
     @Provides
     @Singleton
+    fun provideTaskDao(db: AgendaDatabase) : TaskDao {
+        return db.taskDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideAgendaUseCases(agendaRepository: AgendaRepository) : AgendaUseCases {
         return AgendaUseCases(
             getAgendaForDayUseCase = GetAgendaForDayUseCase(agendaRepository),
@@ -133,6 +154,12 @@ object AgendaModule {
     @Singleton
     fun provideEventApi(retrofit: Retrofit) : EventApi {
         return retrofit.create(EventApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskApi(retrofit: Retrofit) : TaskApi {
+        return retrofit.create(TaskApi::class.java)
     }
 
     @Provides
@@ -158,6 +185,25 @@ object AgendaModule {
             modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
             multipartParser = multipartParser,
             saveEventRunner = saveEventRunner,
+            alarmHandler = alarmHandler,
+            syncAgendaUseCase = syncAgendaUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskRepository(
+        api: TaskApi,
+        db: AgendaDatabase,
+        saveTaskRunner: SaveTaskRunner,
+        alarmHandler: AlarmHandler,
+        syncAgendaUseCase: SyncAgendaUseCase,
+    ) : TaskRepository {
+        return TaskRepositoryImpl(
+            api = api,
+            taskDao = db.taskDao(),
+            modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
+            saveTaskRunner = saveTaskRunner,
             alarmHandler = alarmHandler,
             syncAgendaUseCase = syncAgendaUseCase
         )

@@ -26,7 +26,7 @@ interface TaskDao {
     fun loadTaskFlow(id: String) : Flow<TaskEntity?>
 
     @Query("SELECT * FROM task WHERE id = :id")
-    suspend fun loadTask(id: String) : TaskEntity?
+    suspend fun loadTask(id: String) : TaskEntity
 
     @Query("""
         SELECT *

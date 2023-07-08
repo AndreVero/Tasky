@@ -28,13 +28,13 @@ fun TaskEntity.toTask(): AgendaItem.Task {
     )
 }
 
-fun AgendaItem.Task.toTaskRequest(): TaskRequest {
+fun TaskEntity.toTaskRequest(): TaskRequest {
     return TaskRequest(
         id = this.id,
         title = this.title,
         description = this.description,
-        remindAt = LocalDateTimeConverter.localDateTimeToLong(this.remindAt),
-        time = LocalDateTimeConverter.localDateTimeToLong(this.time),
+        remindAt = this.remindAt,
+        time = this.time,
         isDone = this.isDone
     )
 }
