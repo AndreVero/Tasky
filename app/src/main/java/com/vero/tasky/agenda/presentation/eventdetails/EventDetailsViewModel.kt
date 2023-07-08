@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent
+package com.vero.tasky.agenda.presentation.eventdetails
 
 import android.net.Uri
 import androidx.compose.runtime.getValue
@@ -14,7 +14,7 @@ import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
 import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.event.EventUseCases
-import com.vero.tasky.agenda.presentation.agendaevent.model.PresenceEvent
+import com.vero.tasky.agenda.presentation.eventdetails.model.PresenceEvent
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.domain.local.UserPreferences

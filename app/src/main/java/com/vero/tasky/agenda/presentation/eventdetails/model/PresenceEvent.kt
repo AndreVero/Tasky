@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent.model
+package com.vero.tasky.agenda.presentation.eventdetails.model
 
 import androidx.annotation.StringRes
 import com.vero.tasky.R

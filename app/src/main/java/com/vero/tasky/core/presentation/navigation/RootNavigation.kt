@@ -14,7 +14,7 @@ import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.presentation.agenda.AgendaScreen
-import com.vero.tasky.agenda.presentation.agendaevent.EventDetailsScreen
+import com.vero.tasky.agenda.presentation.eventdetails.EventDetailsScreen
 import com.vero.tasky.agenda.presentation.editphoto.EditPhotoScreen
 import com.vero.tasky.agenda.presentation.edittext.EditTextScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen

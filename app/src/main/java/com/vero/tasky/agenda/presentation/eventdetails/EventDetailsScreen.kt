@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent
+package com.vero.tasky.agenda.presentation.eventdetails
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vero.tasky.R
 import com.vero.tasky.agenda.presentation.agenda.components.DefaultConfirmationDialog
-import com.vero.tasky.agenda.presentation.agendaevent.components.*
+import com.vero.tasky.agenda.presentation.eventdetails.components.*
 import com.vero.tasky.agenda.presentation.components.*
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState

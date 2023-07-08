@@ -1,11 +1,11 @@
-package com.vero.tasky.agenda.presentation.agendaevent
+package com.vero.tasky.agenda.presentation.eventdetails
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.Attendee
-import com.vero.tasky.agenda.presentation.agendaevent.model.PresenceEvent
+import com.vero.tasky.agenda.presentation.eventdetails.model.PresenceEvent
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
