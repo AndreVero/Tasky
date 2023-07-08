@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vero.tasky.R
@@ -24,7 +25,8 @@ import com.vero.tasky.ui.theme.taskBackgroundColor
 fun CircleCheckBox(
     agendaItem: AgendaItem.Task,
     onCheckChanged: (task: AgendaItem.Task) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = taskBackgroundColor
 ) {
     Box(
         modifier = modifier
@@ -34,7 +36,7 @@ fun CircleCheckBox(
             .background(MaterialTheme.colors.background)
             .padding(1.dp)
             .clip(CircleShape)
-            .background(taskBackgroundColor),
+            .background(backgroundColor),
         contentAlignment = Alignment.Center
     ) {
         if (agendaItem.isDone)

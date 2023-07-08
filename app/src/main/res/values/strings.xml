@@ -72,4 +72,6 @@
     <string name="join_event">Join event</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="skipped_photo_desc">photos were skipped because they were too large</string>
+    <string name="at">At</string>
+    <string name="delete_task">Delete task</string>
 </resources>
