@@ -2,6 +2,7 @@ package com.vero.tasky.agenda.data.mappers
 
 import com.vero.tasky.agenda.data.local.entities.TaskEntity
 import com.vero.tasky.agenda.data.remote.network.dto.TaskDto
+import com.vero.tasky.agenda.data.remote.network.request.TaskRequest
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
 import com.vero.tasky.agenda.domain.model.AgendaItem
 
@@ -23,6 +24,17 @@ fun TaskEntity.toTask(): AgendaItem.Task {
         description = this.description,
         remindAt = LocalDateTimeConverter.longToLocalDateTime(this.remindAt),
         time = LocalDateTimeConverter.longToLocalDateTime(this.time),
+        isDone = this.isDone
+    )
+}
+
+fun AgendaItem.Task.toTaskRequest(): TaskRequest {
+    return TaskRequest(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        remindAt = LocalDateTimeConverter.localDateTimeToLong(this.remindAt),
+        time = LocalDateTimeConverter.localDateTimeToLong(this.time),
         isDone = this.isDone
     )
 }
