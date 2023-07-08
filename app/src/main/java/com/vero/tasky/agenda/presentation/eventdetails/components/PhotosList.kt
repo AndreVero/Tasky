@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent.components
+package com.vero.tasky.agenda.presentation.eventdetails.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

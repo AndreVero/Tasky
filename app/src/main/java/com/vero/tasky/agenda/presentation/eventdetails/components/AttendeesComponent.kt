@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent.components
+package com.vero.tasky.agenda.presentation.eventdetails.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.Attendee
-import com.vero.tasky.agenda.presentation.agendaevent.model.Filter
+import com.vero.tasky.agenda.presentation.eventdetails.model.Filter
 
 @Composable
 fun AttendeesComponent(

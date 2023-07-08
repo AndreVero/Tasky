@@ -30,6 +30,10 @@ import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.event.*
+import com.vero.tasky.agenda.domain.usecase.task.DeleteTaskUseCase
+import com.vero.tasky.agenda.domain.usecase.task.GetTaskUseCase
+import com.vero.tasky.agenda.domain.usecase.task.SaveTaskUseCase
+import com.vero.tasky.agenda.domain.usecase.task.TaskUseCases
 import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateAgendaRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
@@ -223,6 +227,18 @@ object AgendaModule {
             fetchEvent = FetchEventUseCase(eventRepository),
             getEvent = GetEventInfoUseCase(eventRepository),
             validateEmailUseCase = validateEmailUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskUseCases(
+        taskRepository: TaskRepository
+    ) : TaskUseCases {
+        return TaskUseCases(
+            getTask = GetTaskUseCase(taskRepository),
+            saveTask = SaveTaskUseCase(taskRepository),
+            deleteTask = DeleteTaskUseCase(taskRepository)
         )
     }
 

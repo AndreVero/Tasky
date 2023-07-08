@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent
+package com.vero.tasky.agenda.presentation.eventdetails
 
 import android.net.Uri
 import com.vero.tasky.agenda.domain.model.Attendee

@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.agendaevent.components
+package com.vero.tasky.agenda.presentation.eventdetails.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vero.tasky.agenda.presentation.agendaevent.model.Filter
+import com.vero.tasky.agenda.presentation.eventdetails.model.Filter
 import com.vero.tasky.ui.theme.textFieldBackground
 
 @Composable
