@@ -22,6 +22,7 @@ import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
+import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.event.*
 import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateAgendaRunner
@@ -148,7 +149,8 @@ object AgendaModule {
         db: AgendaDatabase,
         multipartParser: MultipartParser,
         saveEventRunner: SaveEventRunner,
-        alarmHandler: AlarmHandler
+        alarmHandler: AlarmHandler,
+        syncAgendaUseCase: SyncAgendaUseCase,
     ) : EventRepository {
         return EventRepositoryImpl(
             api = api,
@@ -156,7 +158,8 @@ object AgendaModule {
             modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
             multipartParser = multipartParser,
             saveEventRunner = saveEventRunner,
-            alarmHandler = alarmHandler
+            alarmHandler = alarmHandler,
+            syncAgendaUseCase = syncAgendaUseCase
         )
     }
 

@@ -2,7 +2,7 @@ package com.vero.tasky.agenda.data.local.dao
 
 import com.vero.tasky.agenda.data.local.entities.ReminderEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
 class ReminderDaoFake : ReminderDao {
 
@@ -17,7 +17,7 @@ class ReminderDaoFake : ReminderDao {
     override suspend fun deleteReminders(vararg reminders: ReminderEntity) {}
 
     override fun loadRemindersForDay(from: Long, to: Long): Flow<List<ReminderEntity>> {
-        return flow { emit(reminderList.toList()) }
+        return  flowOf(reminderList.toList())
     }
 
     override suspend fun loadAllReminders(): List<ReminderEntity> {

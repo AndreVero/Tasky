@@ -19,15 +19,14 @@ import com.vero.tasky.agenda.presentation.editphoto.EditPhotoScreen
 import com.vero.tasky.agenda.presentation.edittext.EditTextScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.auth.presentation.registration.RegistrationScreen
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.DEEP_LINK_HOST
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_PHOTO_URI
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_TYPE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_VALUE
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_ITEM_ID
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.IS_EDITABLE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.REMINDER_ITEM_ID
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.TASK_ITEM_ID
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getEventDeepLink
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getReminderDeepLink
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getTaskDeepLink
 import com.vero.tasky.ui.theme.Inter400Size18
 import com.vero.tasky.ui.theme.Inter400Size26
 import java.net.URLEncoder
@@ -83,7 +82,7 @@ fun RootNavigation(
             arguments = agendaItemArgumentTypes,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "$DEEP_LINK_HOST?$EVENT_ITEM_ID={$EVENT_ITEM_ID}"
+                    uriPattern = getEventDeepLink()
                     action = ACTION_VIEW
                 }
             ),
@@ -182,7 +181,7 @@ fun RootNavigation(
             arguments = agendaItemArgumentTypes,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "$DEEP_LINK_HOST?$TASK_ITEM_ID={$TASK_ITEM_ID}"
+                    uriPattern = getTaskDeepLink()
                     action = ACTION_VIEW
                 }
             ),
@@ -192,7 +191,7 @@ fun RootNavigation(
             arguments = agendaItemArgumentTypes,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "$DEEP_LINK_HOST?$REMINDER_ITEM_ID={$REMINDER_ITEM_ID}"
+                    uriPattern = getReminderDeepLink()
                     action = ACTION_VIEW
                 }
             ),

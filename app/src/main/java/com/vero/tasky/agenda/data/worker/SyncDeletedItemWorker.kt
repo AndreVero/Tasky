@@ -15,7 +15,7 @@ import kotlinx.coroutines.supervisorScope
 import retrofit2.HttpException
 
 @HiltWorker
-class SyncAgendaWorker @AssistedInject constructor(
+class SyncDeletedItemWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val agendaRepository: AgendaRepository,

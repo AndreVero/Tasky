@@ -2,7 +2,7 @@ package com.vero.tasky.agenda.data.local.dao
 
 import com.vero.tasky.agenda.data.local.entities.TaskEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
 class TaskDaoFake : TaskDao {
 
@@ -18,9 +18,7 @@ class TaskDaoFake : TaskDao {
 
     override fun loadTasksForDay(from: Long, to: Long): Flow<List<TaskEntity>> {
 
-        return flow {
-            emit(taskList.toList())
-        }
+        return  flowOf(taskList.toList())
     }
 
     override suspend fun loadAllTasks(): List<TaskEntity> {

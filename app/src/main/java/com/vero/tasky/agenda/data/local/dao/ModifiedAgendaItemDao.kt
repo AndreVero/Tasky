@@ -15,23 +15,21 @@ interface ModifiedAgendaItemDao {
     @Query("""
         SELECT *
         FROM modified_agenda_item
-        WHERE modificationType = 'deleted'
+        WHERE modificationType = 'DELETED'
     """)
     suspend fun loadDeletedAgendaItems() : List<ModifiedAgendaItemEntity>
 
     @Query("""
         SELECT *
         FROM modified_agenda_item
-        WHERE modificationType = 'created'
-        AND agendaItemType = 'event'
+        WHERE modificationType = 'CREATED'
     """)
-    suspend fun loadCreatedEvents() : List<ModifiedAgendaItemEntity>
+    suspend fun loadCreatedAgendaItems() : List<ModifiedAgendaItemEntity>
 
     @Query("""
         SELECT *
         FROM modified_agenda_item
-        WHERE modificationType = 'updated'
-        AND agendaItemType = 'event'
+        WHERE modificationType = 'UPDATED'
     """)
-    suspend fun loadUpdatedEvents() : List<ModifiedAgendaItemEntity>
+    suspend fun loadUpdatedAgendaItems() : List<ModifiedAgendaItemEntity>
 }

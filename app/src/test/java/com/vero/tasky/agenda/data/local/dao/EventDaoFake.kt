@@ -3,7 +3,7 @@ package com.vero.tasky.agenda.data.local.dao
 import com.vero.tasky.agenda.data.local.EventWithPhotosAndAttendees
 import com.vero.tasky.agenda.data.local.entities.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
 class EventDaoFake : EventDao {
 
@@ -41,7 +41,7 @@ class EventDaoFake : EventDao {
 
     override fun loadEventsForDay(from: Long, to: Long): Flow<List<EventWithPhotosAndAttendees>> {
 
-        return flow { emit(
+        return flowOf(
             listOf(EventWithPhotosAndAttendees(
                 event = eventSet.first(),
                 attendees = attendeeSet.toList(),
@@ -49,11 +49,11 @@ class EventDaoFake : EventDao {
                 localPhotos = emptyList(),
                 deletedPhoto = emptyList()
             ))
-        ) }
+        )
     }
 
     override fun loadEventFlow(id: String): Flow<EventWithPhotosAndAttendees?> {
-        return flow { emit(
+        return  flowOf(
             EventWithPhotosAndAttendees(
                 event = eventSet.first(),
                 attendees = attendeeSet.toList(),
@@ -61,7 +61,7 @@ class EventDaoFake : EventDao {
                 localPhotos = emptyList(),
                 deletedPhoto = emptyList()
             )
-        ) }
+        )
     }
 
     override suspend fun loadEvent(id: String): EventWithPhotosAndAttendees {
