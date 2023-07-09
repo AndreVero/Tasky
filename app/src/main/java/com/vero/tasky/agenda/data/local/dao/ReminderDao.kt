@@ -22,6 +22,8 @@ interface ReminderDao {
     """)
     fun loadRemindersForDay(from: Long, to: Long) : Flow<List<ReminderEntity>>
 
+    @Query("SELECT * FROM reminder WHERE id = :id")
+    suspend fun loadReminder(id: String) : ReminderEntity
     @Query("""
         SELECT *
         FROM reminder

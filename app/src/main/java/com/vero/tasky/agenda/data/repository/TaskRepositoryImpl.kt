@@ -46,7 +46,7 @@ class TaskRepositoryImpl(
                     ModifiedAgendaItemEntity(
                         id = task.id,
                         agendaItemType = AgendaItemType.TASK,
-                        modificationType = ModificationType.CREATED
+                        modificationType = modificationType
                     )
                 )
             }

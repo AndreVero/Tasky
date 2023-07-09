@@ -7,13 +7,16 @@ import androidx.work.WorkerParameters
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
 import com.vero.tasky.agenda.data.local.dao.ReminderDao
 import com.vero.tasky.agenda.data.local.dao.TaskDao
+import com.vero.tasky.agenda.data.mappers.toReminder
 import com.vero.tasky.agenda.data.mappers.toTask
 import com.vero.tasky.agenda.domain.model.AgendaItemType
 import com.vero.tasky.agenda.domain.model.ModificationType
+import com.vero.tasky.agenda.domain.repository.ReminderRepository
 import com.vero.tasky.agenda.domain.repository.TaskRepository
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import retrofit2.HttpException
@@ -23,6 +26,7 @@ class SyncAgendaSavedItemsWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val taskRepository: TaskRepository,
+    private val reminderRepository: ReminderRepository,
     private val modifiedAgendaItemDao: ModifiedAgendaItemDao,
     private val reminderDao: ReminderDao,
     private val taskDao: TaskDao,
@@ -43,11 +47,11 @@ class SyncAgendaSavedItemsWorker @AssistedInject constructor(
         if (createdTasks.isEmpty() && createdReminders.isEmpty()
             && updatedTasks.isEmpty() && updatedReminders.isEmpty()
         )
-            Result.success()
+            return Result.success()
 
         val result = safeSuspendCall {
             supervisorScope {
-                createdTasks.map { modifiedAgendaItem ->
+                val createdTaskJobs = createdTasks.map { modifiedAgendaItem ->
                     launch {
                         taskRepository.saveTask(
                             task = taskDao.loadTask(modifiedAgendaItem.id).toTask(),
@@ -55,7 +59,7 @@ class SyncAgendaSavedItemsWorker @AssistedInject constructor(
                         ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
                     }
                 }
-                updatedTasks.map { modifiedAgendaItem ->
+                val updatedTaskJobs = updatedTasks.map { modifiedAgendaItem ->
                     launch {
                         taskRepository.saveTask(
                             task = taskDao.loadTask(modifiedAgendaItem.id).toTask(),
@@ -63,6 +67,25 @@ class SyncAgendaSavedItemsWorker @AssistedInject constructor(
                         ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
                     }
                 }
+                val createdRemindersJobs = createdReminders.map { modifiedAgendaItem ->
+                    launch {
+                        reminderRepository.saveReminder(
+                            reminder = reminderDao.loadReminder(modifiedAgendaItem.id).toReminder(),
+                            modificationType = ModificationType.CREATED
+                        ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
+                    }
+                }
+                val updatedRemindersJobs = updatedReminders.map { modifiedAgendaItem ->
+                    launch {
+                        taskRepository.saveTask(
+                            task = taskDao.loadTask(modifiedAgendaItem.id).toTask(),
+                            modificationType = ModificationType.UPDATED
+                        ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
+                    }
+                }
+                (createdRemindersJobs + updatedRemindersJobs
+                        + createdTaskJobs + updatedTaskJobs)
+                    .joinAll()
             }
         }
 
