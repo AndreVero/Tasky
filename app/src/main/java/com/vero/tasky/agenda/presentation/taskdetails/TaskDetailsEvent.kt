@@ -11,6 +11,6 @@ sealed interface TaskDetailsEvent {
     class AtDateChanged(val date: LocalDate) : TaskDetailsEvent
     class AtTimeChanged(val time: LocalTime) : TaskDetailsEvent
     class ReminderChanged(val reminderRange: ReminderRange) : TaskDetailsEvent
-    object SaveEvent : TaskDetailsEvent
-    object DeleteEvent : TaskDetailsEvent
+    object SaveTask : TaskDetailsEvent
+    object DeleteTask : TaskDetailsEvent
 }

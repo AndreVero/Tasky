@@ -23,8 +23,12 @@ import com.vero.tasky.auth.presentation.registration.RegistrationScreen
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_PHOTO_URI
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_TYPE
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_TEXT_VALUE
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EVENT_ITEM_ID
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.IS_EDITABLE
-import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.ITEM_ID
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.REMINDER_ITEM_ID
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.TASK_ITEM_ID
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getAgendaItemScreenArgumentTypes
+import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getAgendaItemScreenParameters
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getEventDeepLink
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getReminderDeepLink
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.getTaskDeepLink
@@ -40,18 +44,6 @@ fun RootNavigation(
     modifier: Modifier = Modifier,
 ) {
 
-    val agendaItemScreenParameters = "?$ITEM_ID={$ITEM_ID}&$IS_EDITABLE={$IS_EDITABLE}"
-    val agendaItemArgumentTypes = listOf(
-        navArgument(ITEM_ID) {
-            type = NavType.StringType
-            nullable = true
-        },
-        navArgument(IS_EDITABLE) {
-            type = NavType.BoolType
-            defaultValue = true
-        }
-    )
-
     NavHost(
         navController = navController,
         startDestination = if (isLoggedIn) Screens.Agenda.route else Screens.Login.route,
@@ -61,11 +53,11 @@ fun RootNavigation(
             AgendaScreen(
                 onAgendaItemClick = { agendaItem, isEditable ->
                     val route = when (agendaItem) {
-                        is AgendaItem.Event -> Screens.Event.route
-                        is AgendaItem.Reminder -> Screens.Reminder.route
-                        is AgendaItem.Task -> Screens.Task.route
+                        is AgendaItem.Event -> Screens.Event.route + "?$EVENT_ITEM_ID"
+                        is AgendaItem.Task -> Screens.Task.route + "?$TASK_ITEM_ID"
+                        is AgendaItem.Reminder -> Screens.Reminder.route + "?$REMINDER_ITEM_ID"
                     }
-                    val parameters = "?$ITEM_ID=${agendaItem.id}&$IS_EDITABLE=$isEditable"
+                    val parameters = "=${agendaItem.id}&$IS_EDITABLE=$isEditable"
                     navController.navigate("$route$parameters")
                 },
                 onNewAgendaItemClick = { agendaItemType ->
@@ -79,8 +71,8 @@ fun RootNavigation(
             )
         }
         composable(
-            route = Screens.Event.route + agendaItemScreenParameters,
-            arguments = agendaItemArgumentTypes,
+            route = Screens.Event.route + getAgendaItemScreenParameters(EVENT_ITEM_ID),
+            arguments = getAgendaItemScreenArgumentTypes(EVENT_ITEM_ID),
             deepLinks = listOf(
                 navDeepLink {
                     uriPattern = getEventDeepLink()
@@ -178,8 +170,8 @@ fun RootNavigation(
             )
         }
         composable(
-            route = Screens.Task.route + agendaItemScreenParameters,
-            arguments = agendaItemArgumentTypes,
+            route = Screens.Task.route +  getAgendaItemScreenParameters(TASK_ITEM_ID),
+            arguments = getAgendaItemScreenArgumentTypes(TASK_ITEM_ID),
             deepLinks = listOf(
                 navDeepLink {
                     uriPattern = getTaskDeepLink()
@@ -206,8 +198,8 @@ fun RootNavigation(
             )
         }
         composable(
-            route = Screens.Reminder.route + agendaItemScreenParameters,
-            arguments = agendaItemArgumentTypes,
+            route = Screens.Reminder.route +  getAgendaItemScreenParameters(REMINDER_ITEM_ID),
+            arguments = getAgendaItemScreenArgumentTypes(REMINDER_ITEM_ID),
             deepLinks = listOf(
                 navDeepLink {
                     uriPattern = getReminderDeepLink()

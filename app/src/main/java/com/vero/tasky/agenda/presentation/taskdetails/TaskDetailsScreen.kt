@@ -71,7 +71,7 @@ fun TaskDetailsScreen(
     if (isDeleteDialogVisible) {
         DefaultConfirmationDialog(
             onDismissRequest = { isDeleteDialogVisible = false },
-            onYesClick = { viewModel.onEvent(TaskDetailsEvent.DeleteEvent) },
+            onYesClick = { viewModel.onEvent(TaskDetailsEvent.DeleteTask) },
             onNoClick = { isDeleteDialogVisible = false },
             label = R.string.are_you_sure
         )
@@ -83,7 +83,7 @@ fun TaskDetailsScreen(
               text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate()),
               isLoading = state.isLoading,
               isEditable = state.isEditable,
-              onSaveClick = { viewModel.onEvent(TaskDetailsEvent.SaveEvent) },
+              onSaveClick = { viewModel.onEvent(TaskDetailsEvent.SaveTask) },
               onChangeModeClick = { viewModel.onEvent(TaskDetailsEvent.ChangeMode) },
               onBackClick = navigateBack,
           )

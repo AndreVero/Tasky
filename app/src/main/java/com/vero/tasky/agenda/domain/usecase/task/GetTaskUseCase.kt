@@ -6,5 +6,5 @@ class GetTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
 
-    operator fun invoke(id: String) = taskRepository.getTask(id)
+    suspend operator fun invoke(id: String) = taskRepository.getTask(id)
 }

@@ -38,8 +38,7 @@ class EventDetailsViewModel @Inject constructor(
     private val userPreferences: UserPreferences
 ) : ViewModel() {
 
-    private val itemId = savedStateHandle.get<String?>(NavigationConstants.ITEM_ID)
-        ?: savedStateHandle.get(NavigationConstants.EVENT_ITEM_ID)
+    private val itemId = savedStateHandle.get<String?>(NavigationConstants.EVENT_ITEM_ID)
     private val isEditable = savedStateHandle[NavigationConstants.IS_EDITABLE] ?: false
     private val user = userPreferences.getUser()!!
 

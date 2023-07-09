@@ -2,7 +2,6 @@ package com.vero.tasky.agenda.domain.repository
 
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.ModificationType
-import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
 
@@ -11,9 +10,7 @@ interface TaskRepository {
         modificationType: ModificationType
     ) : Result<Unit>
 
-    fun getTask(id: String): Flow<AgendaItem.Task>
-
-    suspend fun fetchTask(id: String)
+    suspend fun getTask(id: String): AgendaItem.Task
 
     suspend fun deleteTask(task: AgendaItem.Task)
 }

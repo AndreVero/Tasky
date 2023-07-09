@@ -48,6 +48,7 @@ interface EventDao {
     @Query("SELECT * FROM event WHERE id = :id")
     suspend fun loadEvent(id: String) : EventWithPhotosAndAttendees
 
+    @Transaction
     @Query("""
         SELECT *
         FROM event
