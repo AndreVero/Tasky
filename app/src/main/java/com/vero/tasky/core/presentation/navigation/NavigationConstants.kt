@@ -32,9 +32,9 @@ class NavigationConstants {
             })
         }
 
-        fun getEventDeepLink(itemId: String = "{$EVENT_ITEM_ID") = "$DEEP_LINK_HOST?$EVENT_ITEM_ID=$itemId"
+        fun getEventDeepLink(itemId: String = "{$EVENT_ITEM_ID}") = "$DEEP_LINK_HOST?$EVENT_ITEM_ID=$itemId"
         fun getTaskDeepLink(itemId: String = "{$TASK_ITEM_ID}") = "$DEEP_LINK_HOST?$TASK_ITEM_ID=$itemId"
-        fun getReminderDeepLink(itemId: String = "{$REMINDER_ITEM_ID") = "$DEEP_LINK_HOST?$REMINDER_ITEM_ID=$itemId"
+        fun getReminderDeepLink(itemId: String = "{$REMINDER_ITEM_ID}") = "$DEEP_LINK_HOST?$REMINDER_ITEM_ID=$itemId"
     }
 
 }
