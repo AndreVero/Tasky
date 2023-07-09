@@ -12,9 +12,11 @@ import com.vero.tasky.agenda.data.local.dao.ReminderDao
 import com.vero.tasky.agenda.data.local.dao.TaskDao
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
+import com.vero.tasky.agenda.data.remote.network.api.ReminderApi
 import com.vero.tasky.agenda.data.remote.network.api.TaskApi
 import com.vero.tasky.agenda.data.repository.AgendaRepositoryImpl
 import com.vero.tasky.agenda.data.repository.EventRepositoryImpl
+import com.vero.tasky.agenda.data.repository.ReminderRepositoryImpl
 import com.vero.tasky.agenda.data.repository.TaskRepositoryImpl
 import com.vero.tasky.agenda.data.util.FileCompressor
 import com.vero.tasky.agenda.data.util.multipart.MultipartParser
@@ -24,6 +26,7 @@ import com.vero.tasky.agenda.data.workmanagerrunner.SaveEventRunnerImpl
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
+import com.vero.tasky.agenda.domain.repository.ReminderRepository
 import com.vero.tasky.agenda.domain.repository.TaskRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
@@ -164,6 +167,12 @@ object AgendaModule {
 
     @Provides
     @Singleton
+    fun provideReminderApi(retrofit: Retrofit) : ReminderApi {
+        return retrofit.create(ReminderApi::class.java)
+    }
+
+    @Provides
+    @Singleton
     fun provideMultipartParser(
         @ApplicationContext context: Context) : MultipartParser {
         return MultipartParser(FileCompressor(context))
@@ -187,6 +196,21 @@ object AgendaModule {
             saveEventRunner = saveEventRunner,
             alarmHandler = alarmHandler,
             syncAgendaUseCase = syncAgendaUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderRepository(
+        api: ReminderApi,
+        db: AgendaDatabase,
+        alarmHandler: AlarmHandler,
+    ) : ReminderRepository {
+        return ReminderRepositoryImpl(
+            api = api,
+            reminderDao = db.reminderDao(),
+            modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
+            alarmHandler = alarmHandler,
         )
     }
 

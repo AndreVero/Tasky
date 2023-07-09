@@ -32,7 +32,7 @@ class SyncAgendaDeletedItemsWorker @AssistedInject constructor(
         val events = deletedItems.filter { it.agendaItemType == AgendaItemType.EVENT }
 
         if (tasks.isEmpty() && reminders.isEmpty() && events.isEmpty())
-            Result.success()
+            return Result.success()
 
         val result = agendaRepository.syncAgenda(
             deletedEventIds = events.map { it.id },
