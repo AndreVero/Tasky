@@ -36,16 +36,18 @@ class AlarmHandlerImpl(
             putExtra(AlarmHandler.TITLE, data.title)
             putExtra(AlarmHandler.TYPE, data.type)
         }
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            LocalDateTimeConverter.localDateTimeToLong(data.time) * 1000,
-            PendingIntent.getBroadcast(
-                context,
-                data.itemId.hashCode(),
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        if (data.time.isAfter(LocalDateTime.now())) {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                LocalDateTimeConverter.localDateTimeToLong(data.time) * 1000,
+                PendingIntent.getBroadcast(
+                    context,
+                    data.itemId.hashCode(),
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
             )
-        )
+        }
     }
 
     override fun cancelAlarm(id: String) {

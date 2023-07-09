@@ -13,8 +13,6 @@ import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.presentation.navigation.NavigationConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -27,8 +25,7 @@ class TaskDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val itemId = savedStateHandle.get<String?>(NavigationConstants.ITEM_ID)
-        ?: savedStateHandle.get(NavigationConstants.TASK_ITEM_ID)
+    private val itemId = savedStateHandle.get<String?>(NavigationConstants.TASK_ITEM_ID)
     private val isEditable = savedStateHandle[NavigationConstants.IS_EDITABLE] ?: false
 
     var state by mutableStateOf(
@@ -44,13 +41,9 @@ class TaskDetailsViewModel @Inject constructor(
 
     init {
         itemId?.let { id ->
-            taskUseCases.getTask(id).onEach { agendaItem ->
-                updateState(
-                    state.copy(
-                        agendaItem = agendaItem,
-                    )
-                )
-            }.launchIn(viewModelScope)
+            viewModelScope.launch {
+                updateState(state.copy(agendaItem = taskUseCases.getTask(id),))
+            }
         }
     }
 
@@ -60,9 +53,9 @@ class TaskDetailsViewModel @Inject constructor(
             is TaskDetailsEvent.AtTimeChanged -> changeAtTime(event.time)
             TaskDetailsEvent.ChangeMode -> changeMode()
             is TaskDetailsEvent.CheckModifiedInfo -> checkModifiedInfo(event)
-            TaskDetailsEvent.DeleteEvent -> deleteEvent()
+            TaskDetailsEvent.DeleteTask -> deleteEvent()
             is TaskDetailsEvent.ReminderChanged -> changeReminder(event.reminderRange)
-            TaskDetailsEvent.SaveEvent -> {
+            TaskDetailsEvent.SaveTask -> {
                 saveAgendaItem(
                     modificationType = if (itemId != null)
                         ModificationType.UPDATED

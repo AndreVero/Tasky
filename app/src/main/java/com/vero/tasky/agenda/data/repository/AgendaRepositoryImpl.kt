@@ -13,8 +13,8 @@ import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import java.util.*
 
 class AgendaRepositoryImpl(
@@ -35,7 +35,11 @@ class AgendaRepositoryImpl(
         val reminderFlow = reminderDao.loadRemindersForDay(from, to).map {
             it.map { reminderEntity ->  reminderEntity.toReminder() }
         }
-        return merge(taskFlow, eventFlow, reminderFlow).map { it.sortedBy { item -> item.time } }
+        return taskFlow.combine(eventFlow) { tasks, events ->
+            tasks + events
+        }.combine(reminderFlow) { listOfItems, reminders ->
+            (listOfItems + reminders).sortedBy { it.time }
+        }
     }
 
     override suspend fun updateAgendaForDay(timestamp: Long): Result<Unit> {

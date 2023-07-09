@@ -8,6 +8,7 @@ import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
 import com.vero.tasky.agenda.data.alarmhandler.AlarmHandlerImpl
+import com.vero.tasky.agenda.data.local.dao.ReminderDao
 import com.vero.tasky.agenda.data.local.dao.TaskDao
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
 import com.vero.tasky.agenda.data.remote.network.api.EventApi
@@ -20,7 +21,6 @@ import com.vero.tasky.agenda.data.util.multipart.MultipartParser
 import com.vero.tasky.agenda.data.workmanagerrunner.UpdateAgendaRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SaveEventRunnerImpl
-import com.vero.tasky.agenda.data.workmanagerrunner.SaveTaskRunnerImpl
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
@@ -37,7 +37,6 @@ import com.vero.tasky.agenda.domain.usecase.task.TaskUseCases
 import com.vero.tasky.agenda.domain.workmanagerrunner.UpdateAgendaRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SyncAgendaRunner
 import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
-import com.vero.tasky.agenda.domain.workmanagerrunner.SaveTaskRunner
 import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
 import dagger.Module
@@ -120,15 +119,6 @@ object AgendaModule {
 
     @Provides
     @Singleton
-    fun provideSaveTaskWorkerRunner(workManager: WorkManager)
-            : SaveTaskRunner {
-        return SaveTaskRunnerImpl(
-            workManager = workManager
-        )
-    }
-
-    @Provides
-    @Singleton
     fun provideDeletedTasksDao(db: AgendaDatabase) : ModifiedAgendaItemDao {
         return db.modifiedAgendaItemDao()
     }
@@ -143,6 +133,12 @@ object AgendaModule {
     @Singleton
     fun provideTaskDao(db: AgendaDatabase) : TaskDao {
         return db.taskDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderDao(db: AgendaDatabase) : ReminderDao {
+        return db.reminderDao()
     }
 
     @Provides
@@ -199,17 +195,13 @@ object AgendaModule {
     fun provideTaskRepository(
         api: TaskApi,
         db: AgendaDatabase,
-        saveTaskRunner: SaveTaskRunner,
         alarmHandler: AlarmHandler,
-        syncAgendaUseCase: SyncAgendaUseCase,
     ) : TaskRepository {
         return TaskRepositoryImpl(
             api = api,
             taskDao = db.taskDao(),
             modifiedAgendaItemDao = db.modifiedAgendaItemDao(),
-            saveTaskRunner = saveTaskRunner,
             alarmHandler = alarmHandler,
-            syncAgendaUseCase = syncAgendaUseCase
         )
     }
 
