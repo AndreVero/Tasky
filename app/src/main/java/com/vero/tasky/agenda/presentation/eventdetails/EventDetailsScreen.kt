@@ -8,14 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -28,7 +23,6 @@ import com.vero.tasky.agenda.presentation.eventdetails.components.*
 import com.vero.tasky.agenda.presentation.components.*
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
-import com.vero.tasky.core.presentation.components.ProgressBarText
 import com.vero.tasky.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -126,38 +120,14 @@ fun EventDetailsScreen(
 
     BaseAgendaScreen(
         headerContent = {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(id = R.string.close),
-                tint = MaterialTheme.colors.headerText,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .clickable { navigateBack() },
-            )
-            Text(
+            AgendaItemHeaderComponent(
                 text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate()),
-                style = MaterialTheme.typography.Inter600Size16,
-                modifier = Modifier.align(Alignment.Center)
+                isLoading = state.isLoading,
+                isEditable = state.isEditableForAttendee,
+                onSaveClick = { viewModel.onEvent(EventDetailsEvent.SaveEvent) },
+                onChangeModeClick = { viewModel.onEvent(EventDetailsEvent.ChangeMode) } ,
+                onBackClick = navigateBack,
             )
-            if (state.isEditableForAttendee) {
-                ProgressBarText(
-                    isLoading = state.isLoading,
-                    textRes = R.string.save,
-                    textStyle = MaterialTheme.typography.Inter600Size16,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickable { viewModel.onEvent(EventDetailsEvent.SaveEvent) }
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(id = R.string.edit),
-                    tint = MaterialTheme.colors.headerText,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickable { viewModel.onEvent(EventDetailsEvent.ChangeMode) }
-                )
-            }
         },
         bodyContent = {
             Column(

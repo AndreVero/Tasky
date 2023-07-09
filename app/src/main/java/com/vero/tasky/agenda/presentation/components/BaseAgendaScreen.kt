@@ -12,9 +12,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BaseAgendaScreen(
-    modifier: Modifier = Modifier,
-    bodyContent: @Composable BoxScope.() -> Unit,
     headerContent: @Composable BoxScope.() -> Unit,
+    bodyContent: @Composable BoxScope.() -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column (
         modifier = modifier.background(MaterialTheme.colors.background),
@@ -32,7 +32,7 @@ fun BaseAgendaScreen(
             content = bodyContent,
             modifier = Modifier
                 .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-                .fillMaxHeight()
+                .fillMaxSize()
                 .background(MaterialTheme.colors.primaryVariant)
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp)
         )

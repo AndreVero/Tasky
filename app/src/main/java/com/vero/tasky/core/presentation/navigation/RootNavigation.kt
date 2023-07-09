@@ -17,6 +17,7 @@ import com.vero.tasky.agenda.presentation.agenda.AgendaScreen
 import com.vero.tasky.agenda.presentation.eventdetails.EventDetailsScreen
 import com.vero.tasky.agenda.presentation.editphoto.EditPhotoScreen
 import com.vero.tasky.agenda.presentation.edittext.EditTextScreen
+import com.vero.tasky.agenda.presentation.taskdetails.TaskDetailsScreen
 import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.auth.presentation.registration.RegistrationScreen
 import com.vero.tasky.core.presentation.navigation.NavigationConstants.Companion.EDIT_PHOTO_URI
@@ -86,7 +87,7 @@ fun RootNavigation(
                     action = ACTION_VIEW
                 }
             ),
-        ) {
+        ) { backEntry ->
             EventDetailsScreen(
                 navigateBack = { navController.popBackStack() },
                 onEditTitle = { title ->
@@ -108,9 +109,9 @@ fun RootNavigation(
                                 "&$IS_EDITABLE=$isEditable"
                     )
                 },
-                title = it.savedStateHandle.get(EditTextScreenType.TITLE.toString()),
-                description = it.savedStateHandle.get(EditTextScreenType.DESCRIPTION.toString()),
-                deletedPhotoUri = it.savedStateHandle.get(EDIT_PHOTO_URI),
+                title = backEntry.savedStateHandle.get(EditTextScreenType.TITLE.toString()),
+                description = backEntry.savedStateHandle.get(EditTextScreenType.DESCRIPTION.toString()),
+                deletedPhotoUri = backEntry.savedStateHandle.get(EDIT_PHOTO_URI),
             )
         }
         composable(
@@ -159,7 +160,7 @@ fun RootNavigation(
                     ?: EditTextScreenType.DESCRIPTION.toString()
             )
             val label = if (type == EditTextScreenType.TITLE) R.string.edit_title
-            else R.string.edit_description
+                else R.string.edit_description
             val textStyle = if (type == EditTextScreenType.TITLE)
                 MaterialTheme.typography.Inter400Size26
             else MaterialTheme.typography.Inter400Size18
@@ -185,7 +186,25 @@ fun RootNavigation(
                     action = ACTION_VIEW
                 }
             ),
-        ) { backStackEntry -> }
+        ) { backEntry ->
+            TaskDetailsScreen(
+                navigateBack = { navController.popBackStack() },
+                onEditTitle = { title ->
+                    navController.navigate(
+                        Screens.EditText.route + "?$EDIT_TEXT_VALUE=$title" +
+                                "&$EDIT_TEXT_TYPE=${EditTextScreenType.TITLE}"
+                    )
+                },
+                onEditDescription = { description ->
+                    navController.navigate(
+                        Screens.EditText.route + "?$EDIT_TEXT_VALUE=$description" +
+                                "&$EDIT_TEXT_TYPE=${EditTextScreenType.DESCRIPTION}"
+                    )
+                },
+                title = backEntry.savedStateHandle.get(EditTextScreenType.TITLE.toString()),
+                description = backEntry.savedStateHandle.get(EditTextScreenType.DESCRIPTION.toString()),
+            )
+        }
         composable(
             route = Screens.Reminder.route + agendaItemScreenParameters,
             arguments = agendaItemArgumentTypes,
@@ -195,7 +214,7 @@ fun RootNavigation(
                     action = ACTION_VIEW
                 }
             ),
-        ) { backStackEntry -> }
+        ) { backEntry -> }
         composable(route = Screens.Registration.route) {
             RegistrationScreen(
                 onSignUp = { navController.navigate(Screens.Login.route) },
