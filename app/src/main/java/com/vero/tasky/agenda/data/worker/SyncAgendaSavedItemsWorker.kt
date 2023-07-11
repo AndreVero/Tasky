@@ -72,7 +72,8 @@ class SyncAgendaSavedItemsWorker @AssistedInject constructor(
                         reminderRepository.saveReminder(
                             reminder = reminderDao.loadReminder(modifiedAgendaItem.id).toReminder(),
                             modificationType = ModificationType.CREATED
-                        ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
+                        )
+                        modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem)
                     }
                 }
                 val updatedRemindersJobs = updatedReminders.map { modifiedAgendaItem ->

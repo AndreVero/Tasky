@@ -8,7 +8,7 @@ interface ReminderRepository {
     suspend fun saveReminder(
         reminder: AgendaItem.Reminder,
         modificationType: ModificationType
-    ) : Result<Unit>
+    )
 
     suspend fun getReminder(id: String):  AgendaItem.Reminder
 
