@@ -1,4 +1,4 @@
-package com.vero.tasky.agenda.presentation.taskdetails
+package com.vero.tasky.agenda.presentation.reminderdetails
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,9 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,8 +19,8 @@ import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.ui.theme.*
 
 @Composable
-fun TaskDetailsScreen(
-    viewModel: TaskDetailsViewModel = hiltViewModel(),
+fun ReminderDetailsScreen(
+    viewModel: ReminderDetailsViewModel = hiltViewModel(),
     onEditTitle: (String) -> Unit,
     onEditDescription: (String) -> Unit,
     navigateBack: () -> Unit,
@@ -36,28 +34,28 @@ fun TaskDetailsScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(
-            TaskDetailsEvent.CheckModifiedInfo(
+            ReminderDetailsEvent.CheckModifiedInfo(
                 title = title,
                 description = description
             )
         )
         viewModel.uiEvent.collect { event ->
             when (event) {
-                UiTaskDetailsEvent.OnBackClick -> navigateBack()
+                UiReminderDetailsEvent.OnBackClick -> navigateBack()
             }
         }
     }
     DateDialog(dialogState = dateAtDialog, onDayPicked = {
-        viewModel.onEvent(TaskDetailsEvent.AtDateChanged(it))
+        viewModel.onEvent(ReminderDetailsEvent.AtDateChanged(it))
     })
     TimeDialog(dialogState = timeAtDialog, onTimePicked = {
-        viewModel.onEvent(TaskDetailsEvent.AtTimeChanged(it))
+        viewModel.onEvent(ReminderDetailsEvent.AtTimeChanged(it))
     })
 
     if (isDeleteDialogVisible) {
         DefaultConfirmationDialog(
             onDismissRequest = { isDeleteDialogVisible = false },
-            onYesClick = { viewModel.onEvent(TaskDetailsEvent.DeleteTask) },
+            onYesClick = { viewModel.onEvent(ReminderDetailsEvent.DeleteReminder) },
             onNoClick = { isDeleteDialogVisible = false },
             label = R.string.are_you_sure
         )
@@ -65,14 +63,14 @@ fun TaskDetailsScreen(
 
     BaseAgendaScreen(
         headerContent = {
-          AgendaItemHeaderComponent(
-              text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate()),
-              isLoading = state.isLoading,
-              isEditable = state.isEditable,
-              onSaveClick = { viewModel.onEvent(TaskDetailsEvent.SaveTask) },
-              onChangeModeClick = { viewModel.onEvent(TaskDetailsEvent.ChangeMode) },
-              onBackClick = navigateBack,
-          )
+            AgendaItemHeaderComponent(
+                text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate()),
+                isLoading = state.isLoading,
+                isEditable = state.isEditable,
+                onSaveClick = { viewModel.onEvent(ReminderDetailsEvent.SaveReminder) },
+                onChangeModeClick = { viewModel.onEvent(ReminderDetailsEvent.ChangeMode) },
+                onBackClick = navigateBack,
+            )
         },
         bodyContent = {
             Column(
@@ -83,27 +81,16 @@ fun TaskDetailsScreen(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 AgendaItemTypeComponent(
-                    color = taskBackgroundColor,
-                    type = R.string.task,
+                    color = reminderBackgroundColor,
+                    type = R.string.reminder,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    CircleCheckBox(
-                        agendaItem = state.agendaItem,
-                        backgroundColor = Color.White,
-                        onCheckChanged = {}
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    AgendaItemTextComponent(
-                        text = state.agendaItem.title,
-                        isEditable = state.isEditable,
-                        onEditClick = { onEditTitle(state.agendaItem.title) },
-                        textStyle = MaterialTheme.typography.Inter700Size26
-                    )
-                }
+                AgendaItemTextComponent(
+                    text = state.agendaItem.title,
+                    isEditable = state.isEditable,
+                    onEditClick = { onEditTitle(state.agendaItem.title) },
+                    textStyle = MaterialTheme.typography.Inter700Size26
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 BaseLine()
                 Spacer(modifier = Modifier.height(16.dp))
@@ -129,7 +116,7 @@ fun TaskDetailsScreen(
                 ReminderComponent(
                     reminderRange = state.reminderRange,
                     onReminderClick = { reminderRange ->
-                        viewModel.onEvent(TaskDetailsEvent.ReminderChanged(reminderRange))
+                        viewModel.onEvent(ReminderDetailsEvent.ReminderChanged(reminderRange))
                     },
                     isEditable = state.isEditable
                 )
@@ -141,7 +128,7 @@ fun TaskDetailsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = stringResource(id = R.string.delete_task).uppercase(),
+                        text = stringResource(id = R.string.delete_reminder).uppercase(),
                         style = MaterialTheme.typography.Inter600Size16,
                         color = MaterialTheme.colors.onTextFieldIcon,
                         modifier = Modifier.clickable { isDeleteDialogVisible = true }

@@ -33,6 +33,10 @@ import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.event.*
+import com.vero.tasky.agenda.domain.usecase.reminder.DeleteReminderUseCase
+import com.vero.tasky.agenda.domain.usecase.reminder.GetReminderUseCase
+import com.vero.tasky.agenda.domain.usecase.reminder.ReminderUseCases
+import com.vero.tasky.agenda.domain.usecase.reminder.SaveReminderUseCase
 import com.vero.tasky.agenda.domain.usecase.task.DeleteTaskUseCase
 import com.vero.tasky.agenda.domain.usecase.task.GetTaskUseCase
 import com.vero.tasky.agenda.domain.usecase.task.SaveTaskUseCase
@@ -255,6 +259,18 @@ object AgendaModule {
             getTask = GetTaskUseCase(taskRepository),
             saveTask = SaveTaskUseCase(taskRepository),
             deleteTask = DeleteTaskUseCase(taskRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderUseCases(
+        reminderRepository: ReminderRepository
+    ) : ReminderUseCases {
+        return ReminderUseCases(
+            saveReminder = SaveReminderUseCase(reminderRepository),
+            getReminder = GetReminderUseCase(reminderRepository),
+            deleteReminder = DeleteReminderUseCase(reminderRepository)
         )
     }
 

@@ -14,12 +14,12 @@ interface ReminderApi {
         @Body reminderRequest: ReminderRequest
     )
 
-    @PUT("task")
+    @PUT("reminder")
     suspend fun updateReminder(
         @Body reminderRequest: ReminderRequest
     )
 
-    @DELETE("task")
+    @DELETE("reminder")
     suspend fun deleteReminder(
         @Query(value = "reminderId") reminderId: String
     )
