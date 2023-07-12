@@ -96,8 +96,8 @@ class AgendaViewModel @Inject constructor(
     }
 
     private fun getAgendaForChosenDay(day: LocalDate) {
-        val from = LocalDateTimeConverter.localDateTimeToLong(day.atStartOfDay())
-        val to = LocalDateTimeConverter.localDateTimeToLong(
+        val from = LocalDateTimeConverter.getEpochForCurrentTimezone(day.atStartOfDay())
+        val to = LocalDateTimeConverter.getEpochForCurrentTimezone(
             LocalDateTime.of(day, LocalTime.of(23, 59))
         )
 

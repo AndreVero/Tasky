@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
 import com.vero.tasky.agenda.domain.connectivitymanager.ConnectionHandler
+import com.vero.tasky.agenda.domain.connectivitymanager.ConnectionStatus
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
@@ -22,6 +23,7 @@ import com.vero.tasky.core.domain.local.UserPreferences
 import com.vero.tasky.core.presentation.navigation.NavigationConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -89,6 +91,15 @@ class EventDetailsViewModel @Inject constructor(
                 )
                 filterAttendees(agendaItem.attendees)
             }.launchIn(viewModelScope)
+        }
+
+        viewModelScope.launch {
+            connectionHandler.observeConnectionState().collectLatest {
+                if (it == ConnectionStatus.Available)
+                    updateState(state.copy(isConnected = true))
+                else
+                    updateState(state.copy(isConnected = false))
+            }
         }
     }
 
@@ -228,7 +239,7 @@ class EventDetailsViewModel @Inject constructor(
                 userId = user.userId,
                 eventId = state.agendaItem.id,
                 isGoing = true,
-                remindAt = LocalDateTimeConverter.localDateTimeToLong(state.agendaItem.remindAt)
+                remindAt = LocalDateTimeConverter.getEpochForUTC(state.agendaItem.remindAt)
             )
         } else null
 
@@ -246,7 +257,7 @@ class EventDetailsViewModel @Inject constructor(
         if (!agendaItem.isUserEventCreator) {
             val attendee = getCurrentUserAsAttendee() ?: return
             changeAttendeeState(attendee, attendee.copy(
-                remindAt = LocalDateTimeConverter.localDateTimeToLong(newRemindAt))
+                remindAt = LocalDateTimeConverter.getEpochForUTC(newRemindAt))
             )
         }
     }
@@ -329,7 +340,9 @@ class EventDetailsViewModel @Inject constructor(
                             userId = attendee.userId,
                             eventId = state.agendaItem.id,
                             isGoing = true,
-                            remindAt = 0L,
+                            remindAt = LocalDateTimeConverter.getEpochForUTC(
+                                state.agendaItem.remindAt
+                            ),
                         )
                         val agendaItem = state.agendaItem
                         val attendees = agendaItem.attendees + newAttendee
