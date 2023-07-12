@@ -7,7 +7,7 @@ import com.vero.tasky.agenda.data.remote.network.dto.EventDto
 import com.vero.tasky.agenda.data.remote.network.request.CreateEventRequest
 import com.vero.tasky.agenda.data.remote.network.request.UpdateEventRequest
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
-import com.vero.tasky.agenda.data.util.LocalDateTimeConverter.localDateTimeToLong
+import com.vero.tasky.agenda.data.util.LocalDateTimeConverter.getEpochForUTC
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 
@@ -33,9 +33,9 @@ fun EventWithPhotosAndAttendees.toEvent(): AgendaItem.Event {
         id = event.id,
         title = event.title,
         description = event.description,
-        remindAt = LocalDateTimeConverter.longToLocalDateTime(event.remindAt),
-        time = LocalDateTimeConverter.longToLocalDateTime(event.time),
-        to = LocalDateTimeConverter.longToLocalDateTime(event.to),
+        remindAt = LocalDateTimeConverter.longToLocalDateTimeWithTimezone(event.remindAt),
+        time = LocalDateTimeConverter.longToLocalDateTimeWithTimezone(event.time),
+        to = LocalDateTimeConverter.longToLocalDateTimeWithTimezone(event.to),
         host = event.host,
         isUserEventCreator = event.isUserEventCreator,
         attendees = this.attendees.map { it.toAttendee() },
@@ -48,9 +48,9 @@ fun AgendaItem.Event.toEventEntity(): EventEntity {
         id = this.id,
         title = this.title,
         description = this.description,
-        time = localDateTimeToLong(this.time),
-        to = localDateTimeToLong(this.to),
-        remindAt = localDateTimeToLong(this.remindAt),
+        time = getEpochForUTC(this.time),
+        to = getEpochForUTC(this.to),
+        remindAt = getEpochForUTC(this.remindAt),
         host = this.host,
         isUserEventCreator = this.isUserEventCreator
     )

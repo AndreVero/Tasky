@@ -16,7 +16,8 @@ import androidx.room.PrimaryKey
     ]
 )
 data class AttendeeEntity(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
+    val id: Int? = null,
     val userId: String,
     val email: String,
     val fullName: String,
