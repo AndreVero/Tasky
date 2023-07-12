@@ -11,8 +11,8 @@ class SaveReminderUseCase(
     suspend operator fun invoke(
         reminder: AgendaItem.Reminder,
         modificationType: ModificationType,
-    ) : Result<Unit> {
-        return reminderRepository.saveReminder(
+    ) {
+        reminderRepository.saveReminder(
             reminder = reminder,
             modificationType = modificationType
         )

@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.vero.tasky.R
 import com.vero.tasky.agenda.domain.model.AgendaItem
@@ -40,15 +41,20 @@ fun AgendaComponent(
         mutableStateOf(false)
     }
 
-    val backgroundColor = when(agendaItem) {
+    val backgroundColor = when (agendaItem) {
         is AgendaItem.Reminder -> reminderBackgroundColor
         is AgendaItem.Task -> taskBackgroundColor
         is AgendaItem.Event -> eventBackgroundColor
     }
 
-    val textColor = when(agendaItem) {
+    val textColor = when (agendaItem) {
         is AgendaItem.Task -> Color.White
         else -> MaterialTheme.colors.text
+    }
+
+    val textDecoration = when (agendaItem) {
+        is AgendaItem.Task -> if (agendaItem.isDone) TextDecoration.LineThrough else TextDecoration.None
+        else -> TextDecoration.None
     }
 
     if (isDeleteAgendaItemDialogVisible) {
@@ -68,7 +74,7 @@ fun AgendaComponent(
         .padding(16.dp)
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            Row (
+            Row(
                 modifier = Modifier.align(Alignment.CenterStart),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -80,6 +86,7 @@ fun AgendaComponent(
                     text = agendaItem.title,
                     style = MaterialTheme.typography.Inter700Size20,
                     color = textColor,
+                    textDecoration = textDecoration
                 )
             }
             Column(modifier = Modifier.align(Alignment.CenterEnd)) {
@@ -96,7 +103,7 @@ fun AgendaComponent(
                             R.string.edit to { onEditClick() },
                             R.string.delete to { isDeleteAgendaItemDialogVisible = true }
                         ),
-                        onDismissRequest = { isMoreDropDownVisible = false}
+                        onDismissRequest = { isMoreDropDownVisible = false }
                     )
                 }
             }

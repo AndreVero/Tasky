@@ -160,14 +160,14 @@ fun EventDetailsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 PhotoList(
                     photos = state.agendaItem.photos,
-                    onPhotoClick = { onEditPhoto(it.path, state.isEditableForCreator) },
+                    onPhotoClick = { onEditPhoto(it.path, state.isEditableForCreator && state.isConnected) },
                     onAddPhotoClick = {
                         singlePhotoPickerLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     },
-                    isAddPhotoVisible = state.isAddPhotoVisible,
-                    isEditable = state.isEditableForCreator
+                    isAddPhotoVisible = state.isAddPhotoVisible && state.isConnected,
+                    isEditable = state.isEditableForCreator && state.isConnected
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 BaseLine()

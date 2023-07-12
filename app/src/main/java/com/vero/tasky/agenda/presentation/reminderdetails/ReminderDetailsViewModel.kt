@@ -83,9 +83,8 @@ class ReminderDetailsViewModel @Inject constructor(
             reminderUseCases.saveReminder(
                 reminder = state.agendaItem,
                 modificationType = modificationType,
-            ).onSuccess {
-                channel.send(UiReminderDetailsEvent.OnBackClick)
-            }
+            )
+            channel.send(UiReminderDetailsEvent.OnBackClick)
         }
     }
 

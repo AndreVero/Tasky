@@ -8,6 +8,7 @@ import com.vero.tasky.agenda.data.local.AgendaDatabase
 import com.vero.tasky.agenda.data.local.dao.EventDao
 import com.vero.tasky.agenda.data.local.dao.ModifiedAgendaItemDao
 import com.vero.tasky.agenda.data.alarmhandler.AlarmHandlerImpl
+import com.vero.tasky.agenda.data.connectivitymanager.ConnectionHandlerImpl
 import com.vero.tasky.agenda.data.local.dao.ReminderDao
 import com.vero.tasky.agenda.data.local.dao.TaskDao
 import com.vero.tasky.agenda.data.remote.network.api.AgendaApi
@@ -23,6 +24,7 @@ import com.vero.tasky.agenda.data.util.multipart.MultipartParser
 import com.vero.tasky.agenda.data.workmanagerrunner.UpdateAgendaRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SyncAgendaRunnerImpl
 import com.vero.tasky.agenda.data.workmanagerrunner.SaveEventRunnerImpl
+import com.vero.tasky.agenda.domain.connectivitymanager.ConnectionHandler
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
@@ -150,10 +152,19 @@ object AgendaModule {
 
     @Provides
     @Singleton
-    fun provideAgendaUseCases(agendaRepository: AgendaRepository) : AgendaUseCases {
+    fun provideAgendaUseCases(
+        agendaRepository: AgendaRepository,
+        taskRepository: TaskRepository,
+        eventRepository: EventRepository,
+        reminderRepository: ReminderRepository,
+    ) : AgendaUseCases {
         return AgendaUseCases(
-            getAgendaForDayUseCase = GetAgendaForDayUseCase(agendaRepository),
-            updateAgendaForDayUseCase = UpdateAgendaForDayUseCase(agendaRepository)
+            getAgendaForDay = GetAgendaForDayUseCase(agendaRepository),
+            updateAgendaForDay = UpdateAgendaForDayUseCase(agendaRepository),
+            deleteTaskUseCase = DeleteTaskUseCase(taskRepository),
+            deleteEventUseCase = DeleteEventUseCase(eventRepository),
+            deleteReminderUseCase = DeleteReminderUseCase(reminderRepository),
+            updateTask = SaveTaskUseCase(taskRepository)
         )
     }
 
@@ -288,5 +299,11 @@ object AgendaModule {
             eventDao = db.eventDao(),
             preferences = preferences
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectionHandler(@ApplicationContext context: Context) : ConnectionHandler {
+        return ConnectionHandlerImpl(context)
     }
 }

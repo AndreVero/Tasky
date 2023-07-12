@@ -36,6 +36,7 @@ data class EventDetailsState(
     val isEmailValid: Boolean = false,
     val isErrorEmail: Boolean = false,
     val addAttendeeDialogIsVisible : Boolean = false,
+    val isConnected: Boolean = true,
     @StringRes val emailLabel: Int = R.string.email_hint,
     val presenceEvent: PresenceEvent? = null,
     val reminderRange: ReminderRange = ReminderRange.MINUTES_10

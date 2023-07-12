@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
 import com.vero.tasky.agenda.domain.model.AgendaItem
+import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.agenda.domain.util.UserNameParser
@@ -52,14 +53,34 @@ class AgendaViewModel @Inject constructor(
 
     fun onEvent(event: AgendaEvent) {
         when (event) {
-            is AgendaEvent.DeleteAgendaItem -> {}
+            is AgendaEvent.DeleteAgendaItem -> {
+                deleteAgendaItem(event.agendaItem)
+            }
             AgendaEvent.LogOut -> {
                 logOut()
             }
             is AgendaEvent.OnDayClick -> {
                 getAgendaForChosenDay(event.date)
             }
-            is AgendaEvent.OnCheckChanged -> {}
+            is AgendaEvent.OnCheckChanged -> {
+                viewModelScope.launch {
+                    val task = event.agendaItem
+                    agendaUseCases.updateTask(
+                        task.copy(isDone = !task.isDone),
+                        modificationType = ModificationType.UPDATED
+                    )
+                }
+            }
+        }
+    }
+
+    private fun deleteAgendaItem(agendaItem: AgendaItem) {
+        viewModelScope.launch {
+            when (agendaItem) {
+                is AgendaItem.Reminder -> agendaUseCases.deleteReminderUseCase(agendaItem)
+                is AgendaItem.Event -> agendaUseCases.deleteEventUseCase(agendaItem)
+                is AgendaItem.Task -> agendaUseCases.deleteTaskUseCase(agendaItem)
+            }
         }
     }
 
@@ -82,7 +103,7 @@ class AgendaViewModel @Inject constructor(
 
         currentDayJob?.cancel()
         currentDayJob = viewModelScope.launch {
-            agendaUseCases.getAgendaForDayUseCase(from, to)
+            agendaUseCases.getAgendaForDay(from, to)
                 .collectLatest { items ->
                     updateState(
                         state.copy(agendaItems = items)
@@ -92,7 +113,7 @@ class AgendaViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            agendaUseCases.updateAgendaForDayUseCase(timestamp = from)
+            agendaUseCases.updateAgendaForDay(timestamp = from)
         }
 
         updateState(getInitialState(date = day))

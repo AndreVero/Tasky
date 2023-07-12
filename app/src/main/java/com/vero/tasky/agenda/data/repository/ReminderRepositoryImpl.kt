@@ -23,7 +23,7 @@ class ReminderRepositoryImpl(
     override suspend fun saveReminder(
         reminder: AgendaItem.Reminder,
         modificationType: ModificationType
-    ): Result<Unit> {
+    ) {
         alarmHandler.setAlarm(
             AlarmData(
                 time = reminder.remindAt,
@@ -48,7 +48,6 @@ class ReminderRepositoryImpl(
                     )
                 )
             }
-        return Result.success(Unit)
     }
 
     override suspend fun getReminder(id: String): AgendaItem.Reminder {

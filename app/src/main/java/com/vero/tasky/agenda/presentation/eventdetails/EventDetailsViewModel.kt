@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.R
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
+import com.vero.tasky.agenda.domain.connectivitymanager.ConnectionHandler
 import com.vero.tasky.agenda.domain.model.AgendaItem
 import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
@@ -35,7 +36,8 @@ import javax.inject.Inject
 class EventDetailsViewModel @Inject constructor(
     private val eventUseCases: EventUseCases,
     private val savedStateHandle: SavedStateHandle,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val connectionHandler: ConnectionHandler
 ) : ViewModel() {
 
     private val itemId = savedStateHandle.get<String?>(NavigationConstants.EVENT_ITEM_ID)
@@ -45,6 +47,7 @@ class EventDetailsViewModel @Inject constructor(
     var state by mutableStateOf(
         (savedStateHandle.get(STATE_KEY) as? EventDetailsState)?.copy(
             isLoading = false,
+            isConnected = connectionHandler.isConnected()
         ) ?: EventDetailsState(
             agendaItem = AgendaItem.Event(
                 id = UUID.randomUUID().toString(),
@@ -58,6 +61,7 @@ class EventDetailsViewModel @Inject constructor(
                 photos = emptyList(),
                 host = user.userId
             ),
+            isConnected = connectionHandler.isConnected(),
             isEditableForCreator = isEditable && itemId == null,
             isEditableForAttendee = isEditable,
             presenceEvent = if (itemId != null) PresenceEvent.DELETE else null
