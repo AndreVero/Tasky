@@ -22,8 +22,8 @@ fun TaskEntity.toTask(): AgendaItem.Task {
         id = this.id,
         title = this.title,
         description = this.description,
-        remindAt = LocalDateTimeConverter.longToLocalDateTime(this.remindAt),
-        time = LocalDateTimeConverter.longToLocalDateTime(this.time),
+        remindAt = LocalDateTimeConverter.longToLocalDateTimeWithTimezone(this.remindAt),
+        time = LocalDateTimeConverter.longToLocalDateTimeWithTimezone(this.time),
         isDone = this.isDone
     )
 }
@@ -33,8 +33,8 @@ fun AgendaItem.Task.toTaskRequest(): TaskRequest {
         id = this.id,
         title = this.title,
         description = this.description,
-        remindAt = LocalDateTimeConverter.localDateTimeToLong(this.remindAt),
-        time = LocalDateTimeConverter.localDateTimeToLong(this.time),
+        remindAt = LocalDateTimeConverter.getEpochForUTC(this.remindAt),
+        time = LocalDateTimeConverter.getEpochForUTC(this.time),
         isDone = this.isDone
     )
 }
@@ -44,8 +44,8 @@ fun AgendaItem.Task.toTaskEntity(): TaskEntity {
         id = this.id,
         title = this.title,
         description = this.description,
-        remindAt = LocalDateTimeConverter.localDateTimeToLong(this.remindAt),
-        time = LocalDateTimeConverter.localDateTimeToLong(this.time),
+        remindAt = LocalDateTimeConverter.getEpochForUTC(this.remindAt),
+        time = LocalDateTimeConverter.getEpochForUTC(this.time),
         isDone = this.isDone
     )
 }

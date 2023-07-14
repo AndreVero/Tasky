@@ -4,7 +4,7 @@ import com.vero.tasky.agenda.data.local.entities.ReminderEntity
 import com.vero.tasky.agenda.data.remote.network.dto.ReminderDto
 import com.vero.tasky.agenda.data.remote.network.request.ReminderRequest
 import com.vero.tasky.agenda.data.util.LocalDateTimeConverter
-import com.vero.tasky.agenda.data.util.LocalDateTimeConverter.localDateTimeToLong
+import com.vero.tasky.agenda.data.util.LocalDateTimeConverter.getEpochForUTC
 import com.vero.tasky.agenda.domain.model.AgendaItem
 
 
@@ -13,8 +13,8 @@ fun ReminderEntity.toReminder(): AgendaItem.Reminder {
         id = this.id,
         title = this.title,
         description = this.description,
-        remindAt = LocalDateTimeConverter.longToLocalDateTime(this.remindAt),
-        time = LocalDateTimeConverter.longToLocalDateTime(this.time)
+        remindAt = LocalDateTimeConverter.longToLocalDateTimeWithTimezone(this.remindAt),
+        time = LocalDateTimeConverter.longToLocalDateTimeWithTimezone(this.time)
     )
 }
 
@@ -33,8 +33,8 @@ fun AgendaItem.Reminder.toReminderEntity(): ReminderEntity {
         id = this.id,
         title = this.title,
         description = this.description,
-        remindAt = localDateTimeToLong(this.remindAt),
-        time = localDateTimeToLong(this.time)
+        remindAt = getEpochForUTC(this.remindAt),
+        time = getEpochForUTC(this.time)
     )
 }
 
@@ -43,8 +43,8 @@ fun AgendaItem.Reminder.toReminderRequest(): ReminderRequest {
         id = this.id,
         title = this.title,
         description = this.description,
-        remindAt = localDateTimeToLong(this.remindAt),
-        time = localDateTimeToLong(this.time),
+        remindAt = getEpochForUTC(this.remindAt),
+        time = getEpochForUTC(this.time),
     )
 }
 

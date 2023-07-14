@@ -39,7 +39,7 @@ class AlarmHandlerImpl(
         if (data.time.isAfter(LocalDateTime.now())) {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
-                LocalDateTimeConverter.localDateTimeToLong(data.time) * 1000,
+                LocalDateTimeConverter.getEpochForCurrentTimezone(data.time) * 1000,
                 PendingIntent.getBroadcast(
                     context,
                     data.itemId.hashCode(),
@@ -85,10 +85,12 @@ class AlarmHandlerImpl(
             }
         }
         events.forEach { agendaItem ->
-            if (agendaItem.remindAt.isAfter(LocalDateTime.now())) {
-                val user = agendaItem.attendees
-                    .find { attendee -> attendee.userId == userId }
-                if (user?.isGoing == true) {
+            val user = agendaItem.attendees
+                .find { attendee -> attendee.userId == userId } ?: return@forEach
+            if (LocalDateTimeConverter.longToLocalDateTimeWithTimezone(user.remindAt)
+                    .isAfter(LocalDateTime.now())
+            ) {
+                if (user.isGoing) {
                     setAlarm(
                         AlarmData(
                             time = agendaItem.remindAt,

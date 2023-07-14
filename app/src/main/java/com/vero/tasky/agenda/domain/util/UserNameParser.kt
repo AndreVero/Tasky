@@ -5,7 +5,7 @@ object UserNameParser {
     fun toShortName(name: String) : String {
         if (name.isEmpty())
             return ""
-        val nameParts = name.split(" ")
+        val nameParts = name.trim().split(" ")
         if (nameParts.size > 1)
             return "${nameParts[0][0].uppercaseChar()}${nameParts[1][0].uppercaseChar()}"
         else if (nameParts.isNotEmpty() && nameParts[0].length > 1)
