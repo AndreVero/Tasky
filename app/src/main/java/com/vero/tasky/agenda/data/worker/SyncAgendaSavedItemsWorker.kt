@@ -53,35 +53,38 @@ class SyncAgendaSavedItemsWorker @AssistedInject constructor(
             supervisorScope {
                 val createdTaskJobs = createdTasks.map { modifiedAgendaItem ->
                     launch {
+                        modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem)
                         taskRepository.saveTask(
                             task = taskDao.loadTask(modifiedAgendaItem.id).toTask(),
                             modificationType = ModificationType.CREATED
-                        ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
+                        )
                     }
                 }
                 val updatedTaskJobs = updatedTasks.map { modifiedAgendaItem ->
                     launch {
+                        modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem)
                         taskRepository.saveTask(
                             task = taskDao.loadTask(modifiedAgendaItem.id).toTask(),
                             modificationType = ModificationType.UPDATED
-                        ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
+                        )
                     }
                 }
                 val createdRemindersJobs = createdReminders.map { modifiedAgendaItem ->
                     launch {
+                        modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem)
                         reminderRepository.saveReminder(
                             reminder = reminderDao.loadReminder(modifiedAgendaItem.id).toReminder(),
                             modificationType = ModificationType.CREATED
                         )
-                        modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem)
                     }
                 }
                 val updatedRemindersJobs = updatedReminders.map { modifiedAgendaItem ->
                     launch {
-                        taskRepository.saveTask(
-                            task = taskDao.loadTask(modifiedAgendaItem.id).toTask(),
+                        modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem)
+                        reminderRepository.saveReminder(
+                            reminder = reminderDao.loadReminder(modifiedAgendaItem.id).toReminder(),
                             modificationType = ModificationType.UPDATED
-                        ).onSuccess { modifiedAgendaItemDao.deleteAgendaItem(modifiedAgendaItem) }
+                        )
                     }
                 }
                 (createdRemindersJobs + updatedRemindersJobs

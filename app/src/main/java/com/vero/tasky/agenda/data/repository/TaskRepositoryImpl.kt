@@ -25,7 +25,7 @@ class TaskRepositoryImpl(
     override suspend fun saveTask(
         task: AgendaItem.Task,
         modificationType: ModificationType
-    ): Result<Unit> {
+    ) {
         alarmHandler.setAlarm(
             AlarmData(
                 time = task.remindAt,
@@ -42,15 +42,14 @@ class TaskRepositoryImpl(
             else
                 api.updateTask(task.toTaskRequest())
         }.onFailure {
-                modifiedAgendaItemDao.insertAgendaItem(
-                    ModifiedAgendaItemEntity(
-                        id = task.id,
-                        agendaItemType = AgendaItemType.TASK,
-                        modificationType = modificationType
-                    )
+            modifiedAgendaItemDao.insertAgendaItem(
+                ModifiedAgendaItemEntity(
+                    id = task.id,
+                    agendaItemType = AgendaItemType.TASK,
+                    modificationType = modificationType
                 )
-            }
-        return Result.success(Unit)
+            )
+        }
     }
 
     override suspend fun getTask(id: String): AgendaItem.Task {

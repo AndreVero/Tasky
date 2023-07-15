@@ -11,8 +11,8 @@ class SaveTaskUseCase(
     suspend operator fun invoke(
         task: AgendaItem.Task,
         modificationType: ModificationType,
-    ) : Result<Unit> {
-        return taskRepository.saveTask(
+    ) {
+        taskRepository.saveTask(
             task = task,
             modificationType = modificationType
         )

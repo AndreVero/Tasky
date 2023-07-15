@@ -83,9 +83,8 @@ class TaskDetailsViewModel @Inject constructor(
             taskUseCases.saveTask(
                 task = state.agendaItem,
                 modificationType = modificationType,
-            ).onSuccess {
-                channel.send(UiTaskDetailsEvent.OnBackClick)
-            }
+            )
+            channel.send(UiTaskDetailsEvent.OnBackClick)
         }
     }
 
