@@ -8,7 +8,7 @@ interface TaskRepository {
     suspend fun saveTask(
         task: AgendaItem.Task,
         modificationType: ModificationType
-    ) : Result<Unit>
+    )
 
     suspend fun getTask(id: String): AgendaItem.Task
 

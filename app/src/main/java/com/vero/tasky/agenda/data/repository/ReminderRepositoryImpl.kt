@@ -40,14 +40,14 @@ class ReminderRepositoryImpl(
             else
                 api.updateReminder(reminder.toReminderRequest())
         }.onFailure {
-                modifiedAgendaItemDao.insertAgendaItem(
-                    ModifiedAgendaItemEntity(
-                        id = reminder.id,
-                        agendaItemType = AgendaItemType.REMINDER,
-                        modificationType = modificationType
-                    )
+            modifiedAgendaItemDao.insertAgendaItem(
+                ModifiedAgendaItemEntity(
+                    id = reminder.id,
+                    agendaItemType = AgendaItemType.REMINDER,
+                    modificationType = modificationType
                 )
-            }
+            )
+        }
     }
 
     override suspend fun getReminder(id: String): AgendaItem.Reminder {
