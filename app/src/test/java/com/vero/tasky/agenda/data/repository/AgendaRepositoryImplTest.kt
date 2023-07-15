@@ -102,7 +102,7 @@ class AgendaRepositoryImplTest {
         taskDao.insertTasks(taskEntity)
         eventDao.insertEvents(eventEntity)
         reminderDao.insertReminders(reminderEntity)
-        val items = agendaRepository.getAgendaForDay(1, 2).toList()
+        val items = agendaRepository.getAgendaForDay(1, 2).toList().first()
         assertThat(items.size).isEqualTo(3)
     }
 

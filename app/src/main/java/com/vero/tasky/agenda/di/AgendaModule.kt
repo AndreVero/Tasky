@@ -32,7 +32,6 @@ import com.vero.tasky.agenda.domain.repository.ReminderRepository
 import com.vero.tasky.agenda.domain.repository.TaskRepository
 import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
 import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
-import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
 import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
 import com.vero.tasky.agenda.domain.usecase.event.*
 import com.vero.tasky.agenda.domain.usecase.reminder.DeleteReminderUseCase
@@ -201,7 +200,6 @@ object AgendaModule {
         multipartParser: MultipartParser,
         saveEventRunner: SaveEventRunner,
         alarmHandler: AlarmHandler,
-        syncAgendaUseCase: SyncAgendaUseCase,
     ) : EventRepository {
         return EventRepositoryImpl(
             api = api,
@@ -210,7 +208,6 @@ object AgendaModule {
             multipartParser = multipartParser,
             saveEventRunner = saveEventRunner,
             alarmHandler = alarmHandler,
-            syncAgendaUseCase = syncAgendaUseCase
         )
     }
 

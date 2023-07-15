@@ -29,13 +29,14 @@ class EventDaoFake : EventDao {
         }
     }
     override suspend fun insertLocalPhotoEntity(vararg photos: LocalPhotoEntity) {}
-    override suspend fun insertDeletedPhotoEntity(vararg photos: DeletedPhotoEntity) {
 
-    }
+    override suspend fun insertDeletedPhotoEntity(vararg photos: DeletedPhotoEntity) {}
 
     override suspend fun updateEvents(vararg events: EventEntity) {}
 
-    override suspend fun deleteEvents(vararg events: EventEntity) {}
+    override suspend fun deleteEvents(vararg events: EventEntity) {
+        eventSet.removeAll(events.toSet())
+    }
     override suspend fun deleteLocalPhotos(vararg localPhotos: LocalPhotoEntity) {
     }
 
@@ -75,6 +76,8 @@ class EventDaoFake : EventDao {
     }
 
     override suspend fun loadAllEvents(): List<EventWithPhotosAndAttendees> {
+        if (eventSet.isEmpty())
+            return emptyList()
         return listOf(
             EventWithPhotosAndAttendees(
                 event = eventSet.first(),

@@ -12,7 +12,6 @@ import com.vero.tasky.agenda.domain.model.*
 import com.vero.tasky.agenda.domain.remindermanager.AlarmData
 import com.vero.tasky.agenda.domain.remindermanager.AlarmHandler
 import com.vero.tasky.agenda.domain.repository.EventRepository
-import com.vero.tasky.agenda.domain.usecase.SyncAgendaUseCase
 import com.vero.tasky.agenda.domain.workmanagerrunner.SaveEventRunner
 import com.vero.tasky.core.data.remote.safeSuspendCall
 import kotlinx.coroutines.*
@@ -26,7 +25,6 @@ class EventRepositoryImpl(
     private val multipartParser: MultipartParser,
     private val saveEventRunner: SaveEventRunner,
     private val alarmHandler: AlarmHandler,
-    private val syncAgendaUseCase: SyncAgendaUseCase,
 ) : EventRepository {
 
     override suspend fun saveEvent(
@@ -119,7 +117,6 @@ class EventRepositoryImpl(
                     modificationType = ModificationType.DELETED
                 )
             )
-            syncAgendaUseCase()
         }
     }
 

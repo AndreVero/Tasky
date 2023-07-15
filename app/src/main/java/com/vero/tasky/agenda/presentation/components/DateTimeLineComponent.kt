@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.ui.theme.Inter400Size16
 import java.time.LocalDateTime
+import java.util.*
 
 @Composable
 fun DateTimeLineComponent(
@@ -30,7 +31,7 @@ fun DateTimeLineComponent(
             onEditClick = onEditTimeClick
         )
         AgendaItemTextComponent(
-            text = LocalDateParser.getShortDayLabel(localDateTime),
+            text = LocalDateParser.getShortDayLabel(localDateTime, Locale.getDefault()),
             isEditable = isEditable,
             onEditClick = onEditDateClick,
             modifier = Modifier.width(160.dp),

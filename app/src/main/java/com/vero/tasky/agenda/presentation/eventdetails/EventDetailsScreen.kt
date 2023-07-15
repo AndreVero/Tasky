@@ -25,6 +25,7 @@ import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
 import com.vero.tasky.ui.theme.*
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Composable
 fun EventDetailsScreen(
@@ -121,7 +122,7 @@ fun EventDetailsScreen(
     BaseAgendaScreen(
         headerContent = {
             AgendaItemHeaderComponent(
-                text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate()),
+                text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate(), Locale.getDefault()),
                 isLoading = state.isLoading,
                 isEditable = state.isEditableForAttendee,
                 onSaveClick = { viewModel.onEvent(EventDetailsEvent.SaveEvent) },

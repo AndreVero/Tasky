@@ -17,8 +17,11 @@ class TaskDaoFake : TaskDao {
     override suspend fun deleteTasks(vararg tasks: TaskEntity) {}
 
     override fun loadTasksForDay(from: Long, to: Long): Flow<List<TaskEntity>> {
-
         return  flowOf(taskList.toList())
+    }
+
+    override suspend fun loadTask(id: String): TaskEntity {
+        return taskList.find { it.id == id }!!
     }
 
     override suspend fun loadAllTasks(): List<TaskEntity> {

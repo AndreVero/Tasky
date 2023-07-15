@@ -13,6 +13,18 @@ class UserNameParserTest {
     }
 
     @Test
+    fun `Validate user name, name with spaces, return one symbol uppercase`() {
+        val result = UserNameParser.toShortName("    q    ")
+        assertThat(result).isEqualTo("Q")
+    }
+
+    @Test
+    fun `Validate user name, name with spaces, return two symbols uppercase`() {
+        val result = UserNameParser.toShortName("    qw    ")
+        assertThat(result).isEqualTo("QW")
+    }
+
+    @Test
     fun `Validate user name, name with zero letters, return empty string`() {
         val result = UserNameParser.toShortName("")
         assertThat(result).isEqualTo("")
