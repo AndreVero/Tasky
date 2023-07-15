@@ -14,7 +14,9 @@ class ReminderDaoFake : ReminderDao {
 
     override suspend fun updateReminders(vararg reminders: ReminderEntity) {}
 
-    override suspend fun deleteReminders(vararg reminders: ReminderEntity) {}
+    override suspend fun deleteReminders(vararg reminders: ReminderEntity) {
+        reminderList.removeAll(reminders.toSet())
+    }
 
     override fun loadRemindersForDay(from: Long, to: Long): Flow<List<ReminderEntity>> {
         return  flowOf(reminderList.toList())
