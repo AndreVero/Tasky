@@ -95,10 +95,8 @@ class EventDetailsViewModel @Inject constructor(
 
         viewModelScope.launch {
             connectionHandler.observeConnectionState().collectLatest {
-                if (it == ConnectionStatus.Available)
-                    updateState(state.copy(isConnected = true))
-                else
-                    updateState(state.copy(isConnected = false))
+                val isConnected = it == ConnectionStatus.Available
+                updateState(state.copy(isConnected = isConnected))
             }
         }
     }

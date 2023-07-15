@@ -20,6 +20,10 @@ class ReminderDaoFake : ReminderDao {
         return  flowOf(reminderList.toList())
     }
 
+    override suspend fun loadReminder(id: String): ReminderEntity {
+        return reminderList.find { it.id == id }!!
+    }
+
     override suspend fun loadAllReminders(): List<ReminderEntity> {
         return reminderList.toList()
     }

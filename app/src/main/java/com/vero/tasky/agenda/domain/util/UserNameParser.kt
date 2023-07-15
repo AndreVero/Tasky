@@ -10,6 +10,6 @@ object UserNameParser {
             return "${nameParts[0][0].uppercaseChar()}${nameParts[1][0].uppercaseChar()}"
         else if (nameParts.isNotEmpty() && nameParts[0].length > 1)
             return "${nameParts[0][0].uppercaseChar()}${nameParts[0][1].uppercaseChar()}"
-        return name.uppercase()
+        return name.trim().uppercase()
     }
 }

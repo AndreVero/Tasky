@@ -19,6 +19,7 @@ import com.vero.tasky.agenda.presentation.agenda.components.DefaultConfirmationD
 import com.vero.tasky.agenda.presentation.components.*
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.ui.theme.*
+import java.util.*
 
 @Composable
 fun TaskDetailsScreen(
@@ -66,7 +67,7 @@ fun TaskDetailsScreen(
     BaseAgendaScreen(
         headerContent = {
           AgendaItemHeaderComponent(
-              text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate()),
+              text = LocalDateParser.getDayLabel(state.agendaItem.time.toLocalDate(), Locale.getDefault()),
               isLoading = state.isLoading,
               isEditable = state.isEditable,
               onSaveClick = { viewModel.onEvent(TaskDetailsEvent.SaveTask) },
