@@ -56,7 +56,7 @@ class SyncAgendaDeletedItemsWorker @AssistedInject constructor(
         }
         else {
             result.exceptionOrNull()?.let { exception ->
-                if (exception is HttpException && exception.code() == 401)
+                return if (exception is HttpException && exception.code() == 401)
                     Result.failure()
                 else
                     Result.retry()
