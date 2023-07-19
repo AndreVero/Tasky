@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -85,7 +86,8 @@ fun AgendaScreen(
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .clickable { dialogState.show() },
+                    .clickable { dialogState.show() }
+                    .testTag("agenda_header"),
                 verticalAlignment = Alignment.CenterVertically,
 
                 ) {
