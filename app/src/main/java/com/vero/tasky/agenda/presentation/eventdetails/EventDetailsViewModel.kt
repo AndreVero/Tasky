@@ -16,6 +16,7 @@ import com.vero.tasky.agenda.domain.model.AgendaPhoto
 import com.vero.tasky.agenda.domain.model.Attendee
 import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.event.EventUseCases
+import com.vero.tasky.agenda.domain.util.ReminderRangeParser
 import com.vero.tasky.agenda.presentation.eventdetails.model.PresenceEvent
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
@@ -57,7 +58,7 @@ class EventDetailsViewModel @Inject constructor(
                 description = "New event description",
                 time = LocalDateTime.now().plusMinutes(30),
                 to = LocalDateTime.now().plusMinutes(40),
-                remindAt = LocalDateTime.now().minusMinutes(10),
+                remindAt = LocalDateTime.now().plusMinutes(20),
                 isUserEventCreator = true,
                 attendees = emptyList(),
                 photos = emptyList(),
@@ -77,6 +78,9 @@ class EventDetailsViewModel @Inject constructor(
     init {
         itemId?.let { id ->
             eventUseCases.getEvent.invoke(id).onEach { agendaItem ->
+                ReminderRangeParser.getRangeFromDateTime(
+                    time = agendaItem.time, reminder = agendaItem.remindAt
+                )
                 updateState(
                     state.copy(
                         agendaItem = agendaItem,
@@ -86,7 +90,10 @@ class EventDetailsViewModel @Inject constructor(
                         isEditableForCreator = agendaItem.isUserEventCreator && isEditable,
                         isEditableForAttendee = isEditable,
                         presenceEvent = getCurrentPresenceEvent(agendaItem),
-                        isAddPhotoVisible = isPhotosSizeExceedsLimit(agendaItem)
+                        isAddPhotoVisible = isPhotosSizeExceedsLimit(agendaItem),
+                        reminderRange = ReminderRangeParser.getRangeFromDateTime(
+                            agendaItem.time, agendaItem.remindAt
+                        )
                     )
                 )
                 filterAttendees(agendaItem.attendees)

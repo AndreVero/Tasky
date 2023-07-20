@@ -83,7 +83,7 @@ class TaskRepositoryImplTest {
             task = task,
             modificationType = ModificationType.CREATED
         )
-        Truth.assertThat(taskDao.loadAllTasks().size).isEqualTo(1)
+        Truth.assertThat(taskDao.loadAllTasks()).hasSize(1)
     }
 
     @Test
@@ -97,7 +97,7 @@ class TaskRepositoryImplTest {
             task = task,
             modificationType = ModificationType.CREATED
         )
-        Truth.assertThat(modifiedAgendaItemDao.loadCreatedAgendaItems().size).isEqualTo(1)
+        Truth.assertThat(modifiedAgendaItemDao.loadCreatedAgendaItems()).hasSize(1)
     }
 
     @Test
@@ -111,14 +111,14 @@ class TaskRepositoryImplTest {
                 task = task,
                 modificationType = ModificationType.UPDATED
             )
-            Truth.assertThat(modifiedAgendaItemDao.loadUpdatedAgendaItems().size).isEqualTo(1)
+            Truth.assertThat(modifiedAgendaItemDao.loadUpdatedAgendaItems()).hasSize(1)
         }
 
     @Test
     fun `Delete task, task deleted successfully`() = runTest {
         taskDao.insertTasks(task.toTaskEntity())
         taskRepository.deleteTask(task = task)
-        Truth.assertThat(taskDao.loadAllTasks().size).isEqualTo(0)
+        Truth.assertThat(taskDao.loadAllTasks()).isEmpty()
     }
 
     @Test
@@ -129,6 +129,6 @@ class TaskRepositoryImplTest {
         )
         taskDao.insertTasks(task.toTaskEntity())
         taskRepository.deleteTask(task = task)
-        Truth.assertThat(modifiedAgendaItemDao.loadDeletedAgendaItems().size).isEqualTo(1)
+        Truth.assertThat(modifiedAgendaItemDao.loadDeletedAgendaItems()).hasSize(1)
     }
 }

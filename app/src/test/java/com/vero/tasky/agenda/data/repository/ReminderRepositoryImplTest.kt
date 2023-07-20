@@ -82,7 +82,7 @@ class ReminderRepositoryImplTest {
             reminder = reminder,
             modificationType = ModificationType.CREATED
         )
-        Truth.assertThat(reminderDao.loadAllReminders().size).isEqualTo(1)
+        Truth.assertThat(reminderDao.loadAllReminders()).hasSize(1)
     }
 
     @Test
@@ -96,7 +96,7 @@ class ReminderRepositoryImplTest {
             reminder = reminder,
             modificationType = ModificationType.CREATED
         )
-        Truth.assertThat(modifiedAgendaItemDao.loadCreatedAgendaItems().size).isEqualTo(1)
+        Truth.assertThat(modifiedAgendaItemDao.loadCreatedAgendaItems()).hasSize(1)
     }
 
     @Test
@@ -110,14 +110,14 @@ class ReminderRepositoryImplTest {
             reminder = reminder,
             modificationType = ModificationType.UPDATED
         )
-        Truth.assertThat(modifiedAgendaItemDao.loadUpdatedAgendaItems().size).isEqualTo(1)
+        Truth.assertThat(modifiedAgendaItemDao.loadUpdatedAgendaItems()).hasSize(1)
     }
 
     @Test
     fun `Delete reminder, reminder deleted successfully`() = runTest {
         reminderDao.insertReminders(reminder.toReminderEntity())
         reminderRepository.deleteReminder(reminder)
-        Truth.assertThat(reminderDao.loadAllReminders().size).isEqualTo(0)
+        Truth.assertThat(reminderDao.loadAllReminders()).isEmpty()
     }
 
     @Test
@@ -128,6 +128,6 @@ class ReminderRepositoryImplTest {
         )
         reminderDao.insertReminders(reminder.toReminderEntity())
         reminderRepository.deleteReminder(reminder)
-        Truth.assertThat(modifiedAgendaItemDao.loadDeletedAgendaItems().size).isEqualTo(1)
+        Truth.assertThat(modifiedAgendaItemDao.loadDeletedAgendaItems()).hasSize(1)
     }
 }

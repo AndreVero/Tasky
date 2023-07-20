@@ -23,7 +23,7 @@ class TaskDaoFake : TaskDao {
     }
 
     override suspend fun loadTask(id: String): TaskEntity {
-        return taskList.first()
+        return taskList.first{ it.id == id }
     }
 
     override suspend fun loadAllTasks(): List<TaskEntity> {

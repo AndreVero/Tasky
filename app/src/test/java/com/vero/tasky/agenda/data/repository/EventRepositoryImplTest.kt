@@ -38,7 +38,7 @@ class EventRepositoryImplTest {
     private lateinit var eventRepository: EventRepository
     private lateinit var alarmHandler: AlarmHandler
 
-    private val fakeListOfLocalPhotos = listOf(
+    private val listWithOneSkippedPhoto = listOf(
         AgendaPhoto.LocalPhoto(""),
         AgendaPhoto.LocalPhoto(""),
     )
@@ -64,7 +64,7 @@ class EventRepositoryImplTest {
         host = "",
         isUserEventCreator = true,
         attendees = fakeListOfAttendee,
-        photos = fakeListOfLocalPhotos
+        photos = emptyList()
     )
 
     @Before
@@ -91,7 +91,7 @@ class EventRepositoryImplTest {
             modifiedAgendaItemDao = modifiedAgendaItemDao,
             saveEventRunner = mockk(relaxed = true),
             multipartParser = mockk(relaxed = true) {
-                every { getMultipartPhotos(fakeListOfLocalPhotos) } returns listOf(
+                every { getMultipartPhotos(listWithOneSkippedPhoto) } returns listOf(
                     MultipartBody.Part.createFormData("", "",)
                 )
                 every { getMultipartPhotos(emptyList()) } returns listOf()
@@ -107,7 +107,7 @@ class EventRepositoryImplTest {
     @Test
     fun `Save event, one image was skipped`() = runTest {
         val result = eventRepository.saveEvent(
-            event = event,
+            event = event.copy(photos = listWithOneSkippedPhoto),
             isGoing = true,
             deletedPhotoKeys = emptyList(),
             modificationType = ModificationType.CREATED
@@ -123,7 +123,7 @@ class EventRepositoryImplTest {
             deletedPhotoKeys = emptyList(),
             modificationType = ModificationType.CREATED
         )
-        Truth.assertThat(eventDao.loadAllEvents().size).isEqualTo(1)
+        Truth.assertThat(eventDao.loadAllEvents()).hasSize(1)
     }
 
     @Test
@@ -146,7 +146,7 @@ class EventRepositoryImplTest {
     }
 
     @Test
-    fun `Delete event, event wasn't deleted`() = runTest {
+    fun `Delete event, result failure, event saved to modified db`() = runTest {
         mockWebServer.enqueue(
             MockResponse()
                 .setResponseCode(422)
@@ -161,7 +161,7 @@ class EventRepositoryImplTest {
         eventRepository.deleteEvent(
             event = event
         )
-        Truth.assertThat(modifiedAgendaItemDao.loadDeletedAgendaItems().size).isEqualTo(1)
+        Truth.assertThat(modifiedAgendaItemDao.loadDeletedAgendaItems()).hasSize(1)
     }
 
     @Test

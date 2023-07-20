@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.task.TaskUseCases
+import com.vero.tasky.agenda.domain.util.ReminderRangeParser
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.presentation.navigation.NavigationConstants
@@ -42,7 +43,13 @@ class TaskDetailsViewModel @Inject constructor(
     init {
         itemId?.let { id ->
             viewModelScope.launch {
-                updateState(state.copy(agendaItem = taskUseCases.getTask(id),))
+                val task = taskUseCases.getTask(id)
+                updateState(state.copy(
+                    agendaItem = task,
+                    reminderRange = ReminderRangeParser.getRangeFromDateTime(
+                        task.time, task.remindAt
+                    )
+                ))
             }
         }
     }

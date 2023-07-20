@@ -63,6 +63,7 @@ class EventDaoTest {
     @Test
     fun getEventsForDay_returnSuccessfully() = runTest {
         eventDao.insertEvents(
+            event.copy(id = "0", time = dateTimeStartOfDay.minusDays(1)).toEventEntity(),
             event.toEventEntity(),
             event.copy(id = "2", time = dateTimeEndOfDay).toEventEntity(),
             event.copy(id = "3", time = dateTimeStartOfDay.plusDays(1)).toEventEntity(),

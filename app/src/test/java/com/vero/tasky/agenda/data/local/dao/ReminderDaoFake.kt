@@ -23,7 +23,7 @@ class ReminderDaoFake : ReminderDao {
     }
 
     override suspend fun loadReminder(id: String): ReminderEntity {
-        return reminderList.first()
+        return reminderList.first{ it.id == id }
     }
 
     override suspend fun loadAllReminders(): List<ReminderEntity> {
