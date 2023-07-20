@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,7 +60,8 @@ fun LoginScreen(
                 label = state.emailLabel,
                 isError = state.isErrorEmail,
                 text = state.emailAddress,
-                onValueChange = { email -> viewModel.onEvent(LoginEvent.OnEmailUpdated(email)) }
+                onValueChange = { email -> viewModel.onEvent(LoginEvent.OnEmailUpdated(email)) },
+                modifier = Modifier.testTag("email_text_field")
             )
             Spacer(modifier = Modifier.height(16.dp))
             PasswordTextField(
@@ -69,6 +71,7 @@ fun LoginScreen(
                 onValueChange = {
                         password -> viewModel.onEvent(LoginEvent.OnPasswordUpdated(password))
                 },
+                modifier = Modifier.testTag("password_text_field")
             )
             Spacer(modifier = Modifier.height(25.dp))
             LoadingTextButton(
