@@ -3,7 +3,6 @@ package com.vero.tasky
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
-import android.os.StrictMode
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.runner.AndroidJUnitRunner
@@ -22,7 +21,6 @@ class HiltTestRunner : AndroidJUnitRunner() {
     }
 
     override fun onCreate(arguments: Bundle?) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         super.onCreate(arguments)
         val config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
