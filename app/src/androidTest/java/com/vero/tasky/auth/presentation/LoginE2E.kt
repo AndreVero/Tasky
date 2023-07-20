@@ -14,27 +14,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.vero.tasky.MainActivity
-import com.vero.tasky.auth.data.AuthRepositoryImplFake
-import com.vero.tasky.auth.domain.usecase.LoginUseCase
-import com.vero.tasky.auth.domain.usecase.LoginUseCases
-import com.vero.tasky.auth.domain.usecase.password.ValidatePasswordUseCase
-import com.vero.tasky.auth.presentation.login.LoginViewModel
-import com.vero.tasky.core.domain.local.UserPreferences
-import com.vero.tasky.core.domain.model.User
-import com.vero.tasky.core.domain.usecase.ValidateEmailUseCase
-import com.vero.tasky.core.domain.util.eventbus.AuthEventBus
+import com.vero.tasky.agenda.domain.model.AgendaItem
+import com.vero.tasky.agenda.domain.model.AgendaItemType
+import com.vero.tasky.agenda.presentation.agenda.AgendaScreen
+import com.vero.tasky.auth.data.remote.AuthTestConstants.errorTestEmail
+import com.vero.tasky.auth.data.remote.AuthTestConstants.validTestEmail
+import com.vero.tasky.auth.data.remote.AuthTestConstants.validTestPassword
+import com.vero.tasky.auth.presentation.login.LoginScreen
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
-import com.vero.tasky.core.presentation.navigation.RootNavigationTest
+import com.vero.tasky.core.presentation.navigation.NavigationConstants
+import com.vero.tasky.core.presentation.navigation.Screens
 import com.vero.tasky.ui.theme.TaskyTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
 
 @HiltAndroidTest
 class LoginE2E {
@@ -45,39 +44,10 @@ class LoginE2E {
     @get:Rule
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    @Inject
-    lateinit var authEventBus: AuthEventBus
-
-    @Inject
-    lateinit var validEmailUseCase: ValidateEmailUseCase
-
-    @Inject
-    lateinit var preferences: UserPreferences
-
-    private lateinit var loginViewModel: LoginViewModel
-
-    private val validTestEmail = "test@gmail.com"
-    private val validTestPassword = "Qwerty12345"
-
-    private lateinit var authRepository: AuthRepositoryImplFake
-
     @Before
     fun setUp() {
         hiltRule.inject()
 
-        authRepository = AuthRepositoryImplFake()
-        loginViewModel = LoginViewModel(
-            savedStateHandle = SavedStateHandle(),
-            userPreferences = preferences,
-            authEventBus = authEventBus,
-            loginUseCases = LoginUseCases(
-                validateEmailUseCase = validEmailUseCase,
-                validatePasswordUseCase = ValidatePasswordUseCase(),
-                loginUseCase = LoginUseCase(authRepository)
-            )
-        )
-
-        preferences.clear()
         composeRule.activity.setContent {
             TaskyTheme {
                 val localSnackbarHostState = LocalSnackbarHostState.current
@@ -104,12 +74,42 @@ class LoginE2E {
                             }
                         },
                     ) { paddingValues ->
-                        RootNavigationTest(
-                            navController = rememberNavController(),
-                            isLoggedIn = composeRule.activity.viewModel.state.collectAsState().value.isLoggedIn,
-                            modifier = Modifier.padding(paddingValues),
-                            loginViewModel = loginViewModel
-                        )
+                        val navController = rememberNavController()
+                        NavHost(
+                            navController = navController,
+                            startDestination = if (
+                                composeRule.activity.viewModel.state.collectAsState().value.isLoggedIn
+                            ) Screens.Agenda.route else Screens.Login.route,
+                            modifier = Modifier.padding(paddingValues)
+                        ) {
+                            composable(route = Screens.Login.route) {
+                                LoginScreen(
+                                    onSignUp = { navController.navigate(Screens.Registration.route) },
+                                )
+                            }
+                            composable(route = Screens.Agenda.route) {
+                                AgendaScreen(
+                                    onAgendaItemClick = { agendaItem, isEditable ->
+                                        val route = when (agendaItem) {
+                                            is AgendaItem.Event -> Screens.Event.route + "?${NavigationConstants.EVENT_ITEM_ID}"
+                                            is AgendaItem.Task -> Screens.Task.route + "?${NavigationConstants.TASK_ITEM_ID}"
+                                            is AgendaItem.Reminder -> Screens.Reminder.route + "?${NavigationConstants.REMINDER_ITEM_ID}"
+                                        }
+                                        val parameters =
+                                            "=${agendaItem.id}&${NavigationConstants.IS_EDITABLE}=$isEditable"
+                                        navController.navigate("$route$parameters")
+                                    },
+                                    onNewAgendaItemClick = { agendaItemType ->
+                                        val route = when (agendaItemType) {
+                                            AgendaItemType.REMINDER -> Screens.Reminder.route
+                                            AgendaItemType.TASK -> Screens.Task.route
+                                            else -> Screens.Event.route
+                                        }
+                                        navController.navigate(route)
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -118,7 +118,6 @@ class LoginE2E {
 
     @Test
     fun logIn_success_agendaScreenWasOpen() {
-        authRepository.loginResult = Result.success(User("", "", ""))
         composeRule
             .onNodeWithTag("email_text_field")
             .performTextInput(validTestEmail)
@@ -135,10 +134,9 @@ class LoginE2E {
 
     @Test
     fun logIn_failure_errorWasShown() {
-        authRepository.loginResult = Result.failure(Throwable())
         composeRule
             .onNodeWithTag("email_text_field")
-            .performTextInput(validTestEmail)
+            .performTextInput(errorTestEmail)
         composeRule
             .onNodeWithTag("password_text_field")
             .performTextInput(validTestPassword)
