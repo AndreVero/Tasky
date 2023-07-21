@@ -14,7 +14,7 @@ data class ReminderDetailsState(
         title = "New reminder",
         description = "New reminder description",
         time = LocalDateTime.now().plusMinutes(30),
-        remindAt = LocalDateTime.now().minusMinutes(10)
+        remindAt = LocalDateTime.now().plusMinutes(20)
     ),
     val isEditable: Boolean = false,
     val isLoading: Boolean = false,

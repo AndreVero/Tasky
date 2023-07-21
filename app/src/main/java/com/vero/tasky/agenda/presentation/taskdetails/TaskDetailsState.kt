@@ -14,7 +14,7 @@ data class TaskDetailsState(
         title = "New task",
         description = "New task description",
         time = LocalDateTime.now().plusMinutes(30),
-        remindAt = LocalDateTime.now().minusMinutes(10),
+        remindAt = LocalDateTime.now().plusMinutes(20),
         isDone = false
     ),
     val isEditable: Boolean = false,

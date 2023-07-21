@@ -67,7 +67,7 @@ class EventDaoFake : EventDao {
 
     override suspend fun loadEvent(id: String): EventWithPhotosAndAttendees {
         return EventWithPhotosAndAttendees(
-            event = eventSet.first {it.id == id},
+            event = eventSet.first { it.id == id} ,
             attendees = attendeeSet.toList(),
             networkPhotos = remotePhotoSet.toList(),
             localPhotos = emptyList(),

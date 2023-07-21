@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.tasky.agenda.domain.model.ModificationType
 import com.vero.tasky.agenda.domain.usecase.reminder.ReminderUseCases
+import com.vero.tasky.agenda.domain.util.ReminderRangeParser
 import com.vero.tasky.agenda.presentation.model.ReminderRange
 import com.vero.tasky.agenda.presentation.util.LocalDateParser
 import com.vero.tasky.core.presentation.navigation.NavigationConstants
@@ -33,7 +34,8 @@ class ReminderDetailsViewModel @Inject constructor(
             isLoading = false,
         ) ?: ReminderDetailsState(
             isEditable = isEditable
-        ))
+        )
+    )
         private set
 
     private val channel = Channel<UiReminderDetailsEvent>()
@@ -42,7 +44,15 @@ class ReminderDetailsViewModel @Inject constructor(
     init {
         itemId?.let { id ->
             viewModelScope.launch {
-                updateState(state.copy(agendaItem = reminderUseCases.getReminder(id),))
+                val reminder = reminderUseCases.getReminder(id)
+                updateState(
+                    state.copy(
+                        agendaItem = reminderUseCases.getReminder(id),
+                        reminderRange = ReminderRangeParser.getRangeFromDateTime(
+                            reminder.time, reminder.remindAt
+                        )
+                    )
+                )
             }
         }
     }

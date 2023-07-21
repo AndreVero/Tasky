@@ -116,13 +116,13 @@ class AgendaRepositoryImplTest {
 
         agendaRepository.updateAgendaForDay(1)
         val tasks = taskDao.loadTasksForDay(1, 2).toList()
-        assertThat(tasks.size).isEqualTo(1)
+        assertThat(tasks).hasSize(1)
 
         val events = eventDao.loadEventsForDay(1, 2).toList()
-        assertThat(events.size).isEqualTo(1)
+        assertThat(events).hasSize(1)
 
         val reminders = reminderDao.loadRemindersForDay(1, 2).toList()
-        assertThat(reminders.size).isEqualTo(1)
+        assertThat(reminders).hasSize(1)
     }
 
     @Test
@@ -159,16 +159,16 @@ class AgendaRepositoryImplTest {
 
         agendaRepository.updateAgenda()
         val tasks = taskDao.loadTasksForDay(1, 2).toList()
-        assertThat(tasks.size).isEqualTo(1)
+        assertThat(tasks).hasSize(1)
 
         val events = eventDao.loadEventsForDay(1, 2).toList()
-        assertThat(events.size).isEqualTo(1)
+        assertThat(events).hasSize(1)
 
         assertThat(events.first().first().attendees).isNotEmpty()
         assertThat(events.first().first().networkPhotos).isNotEmpty()
 
         val reminders = reminderDao.loadRemindersForDay(1, 2).toList()
-        assertThat(reminders.size).isEqualTo(1)
+        assertThat(reminders).hasSize(1)
 
     }
 
