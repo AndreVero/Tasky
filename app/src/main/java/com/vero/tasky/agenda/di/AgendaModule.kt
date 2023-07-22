@@ -30,9 +30,7 @@ import com.vero.tasky.agenda.domain.repository.AgendaRepository
 import com.vero.tasky.agenda.domain.repository.EventRepository
 import com.vero.tasky.agenda.domain.repository.ReminderRepository
 import com.vero.tasky.agenda.domain.repository.TaskRepository
-import com.vero.tasky.agenda.domain.usecase.AgendaUseCases
-import com.vero.tasky.agenda.domain.usecase.GetAgendaForDayUseCase
-import com.vero.tasky.agenda.domain.usecase.UpdateAgendaForDayUseCase
+import com.vero.tasky.agenda.domain.usecase.*
 import com.vero.tasky.agenda.domain.usecase.event.*
 import com.vero.tasky.agenda.domain.usecase.reminder.DeleteReminderUseCase
 import com.vero.tasky.agenda.domain.usecase.reminder.GetReminderUseCase
@@ -156,6 +154,7 @@ object AgendaModule {
         taskRepository: TaskRepository,
         eventRepository: EventRepository,
         reminderRepository: ReminderRepository,
+        getFullAgendaUseCase: GetFullAgendaUseCase
     ) : AgendaUseCases {
         return AgendaUseCases(
             getAgendaForDay = GetAgendaForDayUseCase(agendaRepository),
@@ -163,7 +162,8 @@ object AgendaModule {
             deleteTaskUseCase = DeleteTaskUseCase(taskRepository),
             deleteEventUseCase = DeleteEventUseCase(eventRepository),
             deleteReminderUseCase = DeleteReminderUseCase(reminderRepository),
-            updateTask = SaveTaskUseCase(taskRepository)
+            updateTask = SaveTaskUseCase(taskRepository),
+            getFullAgenda = getFullAgendaUseCase
         )
     }
 

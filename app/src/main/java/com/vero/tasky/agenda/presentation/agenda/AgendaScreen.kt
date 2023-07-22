@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.vero.tasky.agenda.presentation.agenda
 
 import android.Manifest
@@ -13,6 +15,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +51,11 @@ fun AgendaScreen(
 
     val dialogState = rememberMaterialDialogState()
     val state = viewModel.state
+
+    val pullRefreshState = rememberPullRefreshState(
+        state.isRefreshing,
+        { viewModel.onEvent(AgendaEvent.RefreshAgenda) }
+    )
 
     var isLogOutDropDownVisible by remember {
         mutableStateOf(false)
@@ -120,6 +130,7 @@ fun AgendaScreen(
                 }
             }
         },
+        bodyModifier = Modifier.pullRefresh(pullRefreshState),
         bodyContent = {
             Column(modifier = Modifier.fillMaxSize()) {
                 LazyRow(
@@ -184,6 +195,7 @@ fun AgendaScreen(
                     tint = MaterialTheme.colors.buttonText
                 )
             }
+            PullRefreshIndicator(state.isRefreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
     )
 }

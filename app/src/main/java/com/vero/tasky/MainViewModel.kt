@@ -72,7 +72,7 @@ class MainViewModel @Inject constructor(
             .onSuccess {
                 _state.value = _state.value.copy(isLoading = false)
                 mainUseCases.syncAgendaUseCase.invoke()
-                mainUseCases.getFullAgendaUseCase.invoke()
+                mainUseCases.getFullAgendaWithWorkerUseCase.invoke()
             }
             .onFailure { error ->
                 if (error is HttpException && error.code() == 401) {
