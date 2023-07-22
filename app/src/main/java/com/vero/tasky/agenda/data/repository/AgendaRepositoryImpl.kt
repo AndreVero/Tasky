@@ -66,14 +66,16 @@ class AgendaRepositoryImpl(
     override suspend fun updateAgenda() = safeSuspendCall {
         val result = api.getFullAgenda()
         alarmHandler.cancelAllAlarms()
-        saveAgendaItems(result)
+        saveAgendaItems(agendaDto = result, clearEventDb = true)
         alarmHandler.setAlarmForFutureAgendaItems()
     }
 
-    private suspend fun saveAgendaItems(agendaDto: AgendaDto) {
+    private suspend fun saveAgendaItems(agendaDto: AgendaDto, clearEventDb: Boolean = false) {
         supervisorScope {
             val jobsList = mutableListOf<Job>()
             agendaDto.events.map { eventDto ->
+                if (clearEventDb)
+                    eventDao.removeAllNonUserItems()
                 eventDao.insertEvents(eventDto.toEventEntity())
                 eventDto.attendees.forEach {
                     jobsList.add( launch { eventDao.insertAttendees(it.toAttendeeEntity()) })

@@ -75,6 +75,8 @@ class EventDaoFake : EventDao {
         )
     }
 
+    override suspend fun removeAllNonUserItems() {}
+
     override suspend fun loadAllEvents(): List<EventWithPhotosAndAttendees> {
         if (eventSet.isEmpty())
             return emptyList()
