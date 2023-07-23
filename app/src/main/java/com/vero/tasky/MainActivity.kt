@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.compose.rememberNavController
 import com.vero.tasky.core.presentation.navigation.AppRoot
 import com.vero.tasky.ui.theme.TaskyTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TaskyTheme {
-                AppRoot()
+                AppRoot(navController = rememberNavController())
             }
         }
     }
