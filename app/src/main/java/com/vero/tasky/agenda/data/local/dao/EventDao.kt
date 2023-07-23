@@ -49,6 +49,10 @@ interface EventDao {
     suspend fun loadEvent(id: String) : EventWithPhotosAndAttendees
 
     @Transaction
+    @Query("DELETE FROM event WHERE isUserEventCreator != 1")
+    suspend fun removeAllNonUserItems()
+
+    @Transaction
     @Query("""
         SELECT *
         FROM event

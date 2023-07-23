@@ -15,6 +15,7 @@ fun BaseAgendaScreen(
     headerContent: @Composable BoxScope.() -> Unit,
     bodyContent: @Composable BoxScope.() -> Unit,
     modifier: Modifier = Modifier,
+    bodyModifier: Modifier = Modifier
 ) {
     Column (
         modifier = modifier.background(MaterialTheme.colors.background),
@@ -30,7 +31,7 @@ fun BaseAgendaScreen(
         )
         Box (
             content = bodyContent,
-            modifier = Modifier
+            modifier = bodyModifier
                 .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .fillMaxSize()
                 .background(MaterialTheme.colors.primaryVariant)

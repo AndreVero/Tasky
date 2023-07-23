@@ -12,4 +12,5 @@ data class AgendaUseCases constructor(
     val deleteReminderUseCase: DeleteReminderUseCase,
     val deleteEventUseCase: DeleteEventUseCase,
     val updateTask: SaveTaskUseCase,
+    val getFullAgenda: GetFullAgendaUseCase
 )

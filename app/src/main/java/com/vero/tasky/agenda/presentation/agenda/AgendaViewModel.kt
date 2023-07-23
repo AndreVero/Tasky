@@ -34,6 +34,7 @@ class AgendaViewModel @Inject constructor(
     private val agendaUseCases: AgendaUseCases,
     private val savedStateHandle: SavedStateHandle,
     private val authEventBus: AuthEventBus,
+
 ) : ViewModel() {
 
     var state by mutableStateOf(
@@ -69,6 +70,13 @@ class AgendaViewModel @Inject constructor(
                         task.copy(isDone = !task.isDone),
                         modificationType = ModificationType.UPDATED
                     )
+                }
+            }
+            AgendaEvent.RefreshAgenda -> {
+                viewModelScope.launch {
+                    updateState(newState = state.copy(isRefreshing = true))
+                    agendaUseCases.getFullAgenda()
+                    updateState(newState = state.copy(isRefreshing = false))
                 }
             }
         }
