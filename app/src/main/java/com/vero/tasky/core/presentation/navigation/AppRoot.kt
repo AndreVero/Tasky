@@ -14,12 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
 import com.vero.tasky.MainViewModel
 import com.vero.tasky.core.presentation.components.LocalSnackbarHostState
 
 @Composable
-fun AppRoot() {
+fun AppRoot(
+    navController: NavHostController
+) {
     val context = LocalContext.current
     val viewModel: MainViewModel = hiltViewModel()
 
@@ -48,7 +50,7 @@ fun AppRoot() {
             },
         ) { paddingValues ->
             RootNavigation(
-                navController = rememberNavController(),
+                navController = navController,
                 isLoggedIn = viewModel.state.collectAsState().value.isLoggedIn,
                 modifier = Modifier.padding(paddingValues)
             )

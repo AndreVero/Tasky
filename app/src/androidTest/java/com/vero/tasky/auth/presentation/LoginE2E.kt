@@ -1,8 +1,11 @@
 package com.vero.tasky.auth.presentation
 
+import android.Manifest
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.navigation.compose.rememberNavController
+import androidx.test.rule.GrantPermissionRule
 import com.vero.tasky.MainActivity
 import com.vero.tasky.auth.data.remote.AuthTestConstants.errorTestEmail
 import com.vero.tasky.auth.data.remote.AuthTestConstants.validTestEmail
@@ -25,15 +28,18 @@ class LoginE2E {
     @get:Rule
     val composeRule = createAndroidComposeRule<MainActivity>()
 
+    @get:Rule
+    val mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule
+        .grant(Manifest.permission.POST_NOTIFICATIONS)
+
     @Before
     fun setUp() {
         composeRule.activity.setContent {
             TaskyTheme {
-                AppRoot()
+                AppRoot(navController = rememberNavController())
             }
         }
     }
-
 
     @Test
     fun logIn_success_agendaScreenWasOpen() {

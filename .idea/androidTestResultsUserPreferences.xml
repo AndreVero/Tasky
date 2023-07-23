@@ -87,6 +87,8 @@
                   <entry key="Duration" value="90" />
                   <entry key="Google&#10; Pixel 7" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="Xiaomi&#10; M2101K6G" value="120" />
+                  <entry key="e26b12c0" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
@@ -144,6 +146,9 @@
                   <entry key="Duration" value="90" />
                   <entry key="Google&#10; Pixel 7" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="Xiaomi" value="120" />
+                  <entry key="Xiaomi&#10; M2101K6G" value="120" />
+                  <entry key="e26b12c0" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

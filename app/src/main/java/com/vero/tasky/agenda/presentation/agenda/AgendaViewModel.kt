@@ -38,7 +38,7 @@ class AgendaViewModel @Inject constructor(
 ) : ViewModel() {
 
     var state by mutableStateOf(
-        savedStateHandle.get(STATE_KEY)
+        (savedStateHandle.get(STATE_KEY) as? AgendaState?)?.copy(isRefreshing = false)
             ?: getInitialState(LocalDate.now())
     )
         private set
